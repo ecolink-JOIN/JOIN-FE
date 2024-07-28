@@ -31,6 +31,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "55b2505e-81ea-46d6-8477-0a93184c0249"
+      }
+    },
+    "owner": "promlee"
   }
 }
