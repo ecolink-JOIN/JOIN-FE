@@ -2,7 +2,7 @@ import { View } from 'react-native';
 
 import Button from '@/components/atoms/Button';
 
-function TypographySection() {
+function ButtonSection() {
   return (
     <View>
       <Button variant="contained">버튼</Button>
@@ -14,4 +14,4 @@ function TypographySection() {
   );
 }
 
-export default TypographySection;
+export default ButtonSection;
