@@ -69,3 +69,8 @@ export const Caption3 = styled.Text`
   font: 400 10px/14px 'Pretendard-Regular';
   letter-spacing: 0;
 `;
+
+export const Gnb = styled.Text`
+  font: 500 12px/16px 'Pretendard-Medium';
+  letter-spacing: -0.5%;
+`;
