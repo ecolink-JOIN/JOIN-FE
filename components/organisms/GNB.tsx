@@ -37,7 +37,7 @@ function GNB() {
         name="explore"
         options={{
           title: '인증',
-          tabBarIcon: ({ focused }) => <Icon name={focused ? 'auth' : 'auth-outline'} />,
+          tabBarIcon: ({ focused }) => <Icon name={focused ? 'verify' : 'verify-outline'} />,
         }}
       />
       <Tabs.Screen
