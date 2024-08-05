@@ -6,14 +6,16 @@ import Typography from '../Typography';
 
 interface ButtonProps extends PressableProps {
   variant: 'contained' | 'outlined';
+  fullWidth?: boolean;
+  size?: 'small' | 'medium';
   children: React.ReactNode;
 }
 
 const StyledButton = styled(Pressable)<ButtonProps>`
-  width: 100%;
-  height: 52px;
+  align-self: ${({ fullWidth }) => (fullWidth ? 'auto' : 'flex-start')};
+  height: ${({ size }) => (size === 'small' ? '40px' : '52px')};
   border-radius: 8px;
-  padding: 16px 20px;
+  padding: ${({ size }) => (size === 'small' ? '0 27.5px' : '0 20px')};
   justify-content: center;
   align-items: center;
   background-color: ${({ variant, disabled }) =>
@@ -34,9 +36,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const Button: React.FC<ButtonProps> = ({ variant, children, ...props }) => {
+const Button: React.FC<ButtonProps> = ({ variant, children, fullWidth, size = 'medium', ...props }) => {
   return (
-    <StyledButton variant={variant} {...props}>
+    <StyledButton variant={variant} fullWidth={fullWidth} size={size} {...props}>
       <Typography
         variant="button"
         style={props.disabled ? styles.disabled : styles[variant]}
