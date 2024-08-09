@@ -15,10 +15,11 @@ import {
   Caption1,
   Caption2,
   Caption3,
+  Gnb,
 } from './TypographyStyles';
 import { TextProps } from 'react-native';
 
-type TypographyVariant =
+export type TypographyVariant =
   | 'heading1'
   | 'heading2'
   | 'heading3'
@@ -32,7 +33,8 @@ type TypographyVariant =
   | 'body4'
   | 'caption1'
   | 'caption2'
-  | 'caption3';
+  | 'caption3'
+  | 'gnb';
 
 interface TypographyTextProps extends TextProps {
   variant: TypographyVariant;
@@ -55,6 +57,7 @@ const variantMap: Record<TypographyVariant, React.ElementType> = {
   caption1: Caption1,
   caption2: Caption2,
   caption3: Caption3,
+  gnb: Gnb,
 };
 
 function Typography({ variant, children, ...props }: TypographyProps) {
