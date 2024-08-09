@@ -31,6 +31,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="typography"
+        options={{
+          title: 'Typography',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
