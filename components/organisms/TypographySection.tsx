@@ -72,6 +72,9 @@ function TypographySection() {
       <Typography variant="caption3" style={typoStyles.color}>
         Caption3
       </Typography>
+      <Typography variant="gnb" style={typoStyles.color}>
+        Gnb
+      </Typography>
     </ParallaxScrollView>
   );
 }
