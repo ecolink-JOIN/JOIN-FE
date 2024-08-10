@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { colors } from '@/theme';
 import Icon from '@/components/atoms/Icon';
+import Typography from '../atoms/Typography';
 
 function GNB() {
   return (
@@ -18,11 +19,11 @@ function GNB() {
         tabBarIconStyle: {
           bottom: 0.5,
         },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          lineHeight: 16,
-          fontWeight: 500,
-        },
+        tabBarLabel: ({ children, color }) => (
+          <Typography variant="gnb" style={{ color }}>
+            {children}
+          </Typography>
+        ),
         tabBarLabelPosition: 'below-icon',
       }}
     >
