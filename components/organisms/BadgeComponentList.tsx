@@ -15,12 +15,13 @@ function BadgeComponentList() {
       />
       <Chip variant="outlined" size="small" value="Label" />
       <Chip variant="default" size="small" value="Label" />
-      <Chip variant="contained" size="medium" value="Label" />
-      <Chip variant="outlined" size="medium" value="Label" />
+      <Chip variant="contained" value="Label" />
+      <Chip variant="outlined" value="Label" />
       <Chip variant="default" size="medium" value="Label" />
       <Chip variant="contained" size="large" value="Label" />
       <Chip variant="outlined" size="large" value="Label" />
       <Chip variant="default" size="large" value="Label" />
+      <Chip variant="simple" value="Label" />
       <Chip icon="home" variant="contained" size="medium" value="Label" />
       <Chip icon="home" variant="outlined" size="medium" value="Label" />
       <Chip icon="home-outline" variant="default" size="medium" value="Label" />

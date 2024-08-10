@@ -7,6 +7,7 @@ import VerifyOutlineIcon from '@/assets/images/verify-outline.svg';
 import { SvgProps } from 'react-native-svg';
 import ChevronDownIcon from '@/assets/images/ChevronDown';
 import CloseIcon from '@/assets/images/CloseIcon';
+import CheckIcon from '@/assets/images/CheckIcon';
 
 export type IconTypes =
   | 'home'
@@ -18,7 +19,9 @@ export type IconTypes =
   | 'chevron-down'
   | 'chevron-down-outline'
   | 'close'
-  | 'close-outline';
+  | 'close-outline'
+  | 'check'
+  | 'check-outline';
 interface IconProps extends SvgProps {
   name?: IconTypes;
 }
@@ -44,6 +47,10 @@ function Icon({ name, ...rest }: IconProps) {
       return <CloseIcon stroke={colors.primary} {...rest} />;
     case 'close-outline':
       return <CloseIcon stroke={colors.gray[7]} {...rest} />;
+    case 'check':
+      return <CheckIcon fill={colors.primary} {...rest} />;
+    case 'check-outline':
+      return <CheckIcon fill={colors.white} {...rest} />;
     default:
       return null;
   }
