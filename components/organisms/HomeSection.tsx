@@ -1,9 +1,9 @@
 import { Image, StyleSheet, Platform } from 'react-native';
 
 import HelloWave from '@/components/molecules/HelloWave';
-import ParallaxScrollView from '@/components/molecules/View/ParallaxScrollView';
+import ParallaxScrollView from '@/components/atoms/View/ParallaxScrollView';
 import ThemedText from '@/components/atoms/ThemedText';
-import ThemedView from '@/components/molecules/View/ThemedView';
+import ThemedView from '@/components/atoms/View/ThemedView';
 
 const styles = StyleSheet.create({
   titleContainer: {

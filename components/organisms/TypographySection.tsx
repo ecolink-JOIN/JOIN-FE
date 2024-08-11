@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet } from 'react-native';
 
-import ParallaxScrollView from '@/components/molecules/View/ParallaxScrollView';
+import ParallaxScrollView from '@/components/atoms/View/ParallaxScrollView';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
 
