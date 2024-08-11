@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Image, Platform } from 'react-native';
 
-import Collapsible from '@/components/molecules/Collapsible';
+import Collapsible from '@/components/atoms/Collapsible';
 import ExternalLink from '@/components/atoms/ExternalLink';
 import ThemedText from '@/components/atoms/ThemedText';
 import ThemedView from '@/components/atoms/View/ThemedView';

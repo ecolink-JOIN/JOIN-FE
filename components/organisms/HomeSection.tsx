@@ -1,6 +1,6 @@
 import { Image, StyleSheet, Platform } from 'react-native';
 
-import HelloWave from '@/components/molecules/HelloWave';
+import HelloWave from '@/components/atoms/HelloWave';
 import ParallaxScrollView from '@/components/atoms/View/ParallaxScrollView';
 import ThemedText from '@/components/atoms/ThemedText';
 import ThemedView from '@/components/atoms/View/ThemedView';
