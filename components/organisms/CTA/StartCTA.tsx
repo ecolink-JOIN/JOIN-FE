@@ -5,16 +5,16 @@ import CTAView from '@/components/atoms/View/CTAView';
 function StartCTA() {
   const router = useRouter();
 
-  const handleStartPress = () => {
-    router.replace('/(tabs)');
+  const moveToSignIn = () => {
+    router.replace('/(auth)/sign-in');
   };
 
   return (
     <CTAView>
-      <Button variant="contained" fullWidth onPress={handleStartPress}>
+      <Button variant="contained" size="large" fullWidth onPress={moveToSignIn}>
         시작하기
       </Button>
-      <Button variant="contained" disabled fullWidth>
+      <Button variant="outlined" size="large" fullWidth onPress={moveToSignIn}>
         계정이 이미 있어요
       </Button>
     </CTAView>

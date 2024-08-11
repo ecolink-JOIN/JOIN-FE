@@ -8,6 +8,10 @@ import { SvgProps } from 'react-native-svg';
 import ChevronDownIcon from '@/assets/images/ChevronDown';
 import CloseIcon from '@/assets/images/CloseIcon';
 import CheckIcon from '@/assets/images/CheckIcon';
+import NaverIcon from '@/assets/images/naver.svg';
+import KakaoIcon from '@/assets/images/kakao.svg';
+import GoogleIcon from '@/assets/images/google.svg';
+import AppleIcon from '@/assets/images/apple-white.svg';
 
 export type IconTypes =
   | 'home'
@@ -21,7 +25,12 @@ export type IconTypes =
   | 'close'
   | 'close-outline'
   | 'check'
-  | 'check-outline';
+  | 'check-outline'
+  | 'kakao'
+  | 'google'
+  | 'apple'
+  | 'naver'
+  | 'apple';
 interface IconProps extends SvgProps {
   name?: IconTypes;
 }
@@ -51,6 +60,14 @@ function Icon({ name, ...rest }: IconProps) {
       return <CheckIcon fill={colors.primary} {...rest} />;
     case 'check-outline':
       return <CheckIcon fill={colors.white} {...rest} />;
+    case 'naver':
+      return <NaverIcon {...rest} />;
+    case 'kakao':
+      return <KakaoIcon {...rest} />;
+    case 'google':
+      return <GoogleIcon {...rest} />;
+    case 'apple':
+      return <AppleIcon {...rest} />;
     default:
       return null;
   }
