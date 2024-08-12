@@ -22,6 +22,6 @@ const ReasonDesc = styled(Typography)`
 `;
 
 const ReasonView = styled(View)`
-  padding: 24px 20px 0 20px;
+  padding-top: 24px;
   background-color: ${colors.white};
 `;
