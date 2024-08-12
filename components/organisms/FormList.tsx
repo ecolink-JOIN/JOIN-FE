@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
-import TextField from '../atoms/TextField';
-import FormControl from '../molecules/FormControl';
+import TextField from '@/components/atoms/TextField';
+import FormControl from '@/components/molecules/FormControl';
 
 function FormList() {
   const testRef = useRef(null);

@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
 
 import ThemedText from '@/components/atoms/ThemedText';
 import Colors from '@/constants/Colors';
-import ThemedView from '@/components/molecules/View/ThemedView';
+import ThemedView from '@/components/atoms/View/ThemedView';
 
 const styles = StyleSheet.create({
   heading: {

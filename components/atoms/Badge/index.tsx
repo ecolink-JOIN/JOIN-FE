@@ -2,7 +2,7 @@ import { colors } from '@/theme';
 import React, { CSSProperties } from 'react';
 import { View, Pressable, PressableProps } from 'react-native';
 import styled from 'styled-components/native';
-import Typography, { TypographyVariant } from '../../atoms/Typography';
+import Typography, { TypographyVariant } from '../Typography';
 import Icon, { IconTypes } from '@/components/atoms/Icon';
 
 interface ChipVariant {

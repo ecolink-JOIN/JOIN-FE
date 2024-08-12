@@ -4,8 +4,8 @@ import { StyleSheet, Image, Platform } from 'react-native';
 import Collapsible from '@/components/molecules/Collapsible';
 import ExternalLink from '@/components/atoms/ExternalLink';
 import ThemedText from '@/components/atoms/ThemedText';
-import ThemedView from '@/components/molecules/View/ThemedView';
-import ParallaxScrollView from '@/components/molecules/View/ParallaxScrollView';
+import ThemedView from '@/components/atoms/View/ThemedView';
+import ParallaxScrollView from '@/components/atoms/View/ParallaxScrollView';
 
 const styles = StyleSheet.create({
   headerImage: {

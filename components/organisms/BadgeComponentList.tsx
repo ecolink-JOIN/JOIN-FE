@@ -1,6 +1,6 @@
 import { Alert } from 'react-native';
-import Chip from '../molecules/Badge';
-import HorizontalScrollView from '../molecules/View/HorizontalScrollView';
+import Chip from '../atoms/Badge';
+import HorizontalScrollView from '../atoms/View/HorizontalScrollView';
 
 function BadgeComponentList() {
   return (
