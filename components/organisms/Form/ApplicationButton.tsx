@@ -4,13 +4,13 @@ import Button from '@/components/atoms/Button';
 import styled from 'styled-components/native';
 import { router } from 'expo-router';
 
-export default function ApplicationButton() {
+export default function ApplicationButton({ disabled }: { disabled: boolean }) {
   const handleApplicationPress = () => {
     router.replace('/(tabs)');
   };
   return (
     <ButtonView>
-      <Button variant="contained" onPress={handleApplicationPress}>
+      <Button variant="contained" onPress={handleApplicationPress} disabled={disabled}>
         신청 완료
       </Button>
     </ButtonView>

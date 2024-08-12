@@ -8,14 +8,18 @@ const ConsentTitle = `스터디장에게 (닉네임)님의 이력이 공개됩�
 const ConsentInfo = `* 공개정보\n 1. 닉네임\n 2. 현재 참여중인 스터디 개수\n 3. 현재 참여중인 스터디 평균 참여율\n 4. 지난 스터디 개수 및 평균 참여율`;
 const ConsentAgree = `정보 제공에 동의하십니까?`;
 
-export default function ApplicationConsent() {
-  const [agree, setAgreed] = useState(false);
+interface ApplicationConsentProps {
+  agree: boolean;
+  onChangeAgree: (value: boolean) => void;
+}
+
+export default function ApplicationConsent(props: ApplicationConsentProps) {
   return (
     <ConsentView>
       <Typography variant="body3">{ConsentTitle}</Typography>
       <Typography variant="caption2">{ConsentInfo}</Typography>
       <AgreeView>
-        <Checkbox selected={agree} onSelect={setAgreed} />
+        <Checkbox selected={props.agree} onSelect={props.onChangeAgree} />
         <Typography variant="body4">{ConsentAgree}</Typography>
       </AgreeView>
     </ConsentView>

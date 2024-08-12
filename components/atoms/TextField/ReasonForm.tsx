@@ -7,15 +7,15 @@ import Typography from '@/components/atoms/Typography';
 
 interface ReasonFormProps {
   placeholder: string;
-  value?: string;
-  onChangeText?: (text: string) => void;
+  value: string;
+  onChangeText: (text: string) => void;
 }
 
 export default function ReasonForm(props: ReasonFormProps) {
   return (
     <View>
-      <ReasonInput {...props} multiline={true} />
-      <TextLimit variant="body4">{props.value?.length || 0} / 200</TextLimit>
+      <ReasonInput {...props} multiline={true} onChangeText={(text) => props.onChangeText(text)} value={props.value} />
+      <TextLimit variant="body4">{props.value.length || 0} / 100</TextLimit>
     </View>
   );
 }
