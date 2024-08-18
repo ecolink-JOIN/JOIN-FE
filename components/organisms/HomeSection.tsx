@@ -1,61 +1,46 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { ScrollView } from 'react-native';
+import Typography from '@/components/atoms/Typography';
+import styled from 'styled-components/native';
+import Icon from '@/components/atoms/Icon';
+import StudySection from './StudySection';
+import AdsCarousel from './AdsCarousel';
 
-import HelloWave from '@/components/molecules/HelloWave';
-import ParallaxScrollView from '@/components/atoms/View/ParallaxScrollView';
-import ThemedText from '@/components/atoms/ThemedText';
-import ThemedView from '@/components/atoms/View/ThemedView';
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+const Container = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+`;
 
 function HomeSection() {
+  const cardData = new Array(4).fill(0).map(() => ({
+    title: '원어민 선생님과 함께 공부하실 스터디원ㅁㅇㄹㅁㅇㄴㄹㅁㄴ',
+    leader: '스터디장 닉네임',
+    leaderRating: 4.5,
+    member: '스터디원',
+    memberRating: 3.8,
+    views: 100,
+    liked: true,
+  }));
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={<Image source={require('@/assets/images/partial-react-logo.png')} style={styles.reactLogo} />}
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes. Press{' '}
-          <ThemedText type="defaultSemiBold">{Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}</ThemedText> to
-          open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>Tap the Explore tab to learn more about what's included in this starter app.</ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ScrollView>
+      <Container style={{ paddingVertical: 16, paddingHorizontal: 20 }}>
+        <Typography variant="heading3">로고</Typography>
+        <Container style={{ gap: 12 }}>
+          <Icon name="write" />
+          <Icon name="alarm" />
+          <Icon name="search" />
+        </Container>
+      </Container>
+
+      <AdsCarousel />
+
+      <StudySection title="🎯 나의 맞춤 스터디" data={cardData} />
+      <StudySection title="🔥 인기 스터디" data={cardData} />
+      <StudySection title="⭐️ 00님의 관심 스터디" data={cardData} />
+      <StudySection title="👀 최근 본 스터디" data={cardData} />
+    </ScrollView>
   );
 }
 
