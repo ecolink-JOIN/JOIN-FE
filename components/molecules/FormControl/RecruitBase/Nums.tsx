@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import FormModView from '@/components/atoms/View/FormMods';
 import Typography from '@/components/atoms/Typography';
 import { Radio } from '@/components/atoms/Radio';
 import { Stepper } from '@/components/atoms/Stepper';
@@ -9,17 +8,17 @@ export const Nums = () => {
   const [selected, setSelected] = React.useState(false);
   const [step, setStep] = React.useState(1);
   return (
-    <View>
-      <FormModView>
-        <Typography variant="button">모집 인원</Typography>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <View style={{ marginTop: 10, marginBottom: 10 }}>
+      <Typography variant="button">모집 인원</Typography>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
           <Radio selected={selected} onSelect={setSelected} />
-          <Typography variant="body2" style={{ marginLeft: 8 }}>
+          <Typography variant="body2" style={{ marginLeft: 8 }} onPress={() => setSelected(!selected)}>
             모집 인원 미정
           </Typography>
         </View>
-      </FormModView>
-      <Stepper active={!selected} step={step} stepConverter={setStep} />
+        <Stepper active={!selected} step={step} stepConverter={setStep} />
+      </View>
     </View>
   );
 };
