@@ -6,7 +6,7 @@ function StartCTA() {
   const router = useRouter();
 
   const moveToSignIn = () => {
-    router.replace('/(auth)/sign-in');
+    router.replace('/(form)/recruit-base');
   };
 
   return (
