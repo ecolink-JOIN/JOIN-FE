@@ -4,8 +4,12 @@ import FormModView from '@/components/atoms/View/FormMods';
 import Typography from '@/components/atoms/Typography';
 import { Radio } from '@/components/atoms/Radio';
 
-export const MeetingWay = () => {
-  const [online, setOnline] = React.useState(true);
+interface MeetingWayProps {
+  online: boolean;
+  setOnline: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const MeetingWay: React.FC<MeetingWayProps> = ({ online, setOnline }) => {
   return (
     <FormModView>
       <Typography variant="button">모집 방법</Typography>

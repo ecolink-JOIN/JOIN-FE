@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Typography from '@/components/atoms/Typography';
 import styled from 'styled-components/native';
 import {
@@ -21,18 +21,19 @@ interface durationProps {
 }
 
 export default function RecruitBaseInfo() {
-  const [endDate, setEndDate] = React.useState<dayjs.Dayjs | null>(null);
-  const [duration, setDuration] = React.useState<durationProps>({ start: null, end: null });
+  const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
+  const [duration, setDuration] = useState<durationProps>({ start: null, end: null });
   const bottomSheetModalRef1 = useRef<BottomSheetModal>(null);
   const bottomSheetModalRef2 = useRef<BottomSheetModal>(null);
+  const [online, setOnline] = useState(true);
   return (
     <StyledView>
       <Typography variant="heading4">스터디 기본 정보를 입력해주세요.</Typography>
       <Category />
       <Nums />
       <EndDate value={endDate} bottomSheetModalRef={bottomSheetModalRef1} />
-      <MeetingWay />
-      <MeetingLocation />
+      <MeetingWay online={online} setOnline={setOnline} />
+      {online || <MeetingLocation />}
       <ActivateDuration value={duration} bottomSheetModalRef={bottomSheetModalRef2} />
       <DateTime />
       <BottomSheetComp
