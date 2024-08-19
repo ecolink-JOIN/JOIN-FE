@@ -1,4 +1,3 @@
-// Typography.tsx
 import React from 'react';
 import {
   Heading1,

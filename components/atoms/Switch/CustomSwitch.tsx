@@ -4,8 +4,8 @@ import styled from 'styled-components/native';
 import { colors } from '@/theme';
 
 interface CustomSwitchProps {
-  value?: boolean; // Optional
-  onValueChange?: (value: boolean) => void; // Optional
+  value?: boolean;
+  onValueChange?: (value: boolean) => void;
 }
 
 const SwitchContainer = styled(Pressable)`

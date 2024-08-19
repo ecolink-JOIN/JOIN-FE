@@ -30,7 +30,7 @@ function GNB() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="(home)"
         options={{
           title: '홈',
           tabBarIcon: ({ focused }) => <Icon name={focused ? 'home' : 'home-outline'} />,

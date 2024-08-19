@@ -14,9 +14,10 @@ interface CardProps {
   memberRating: number;
   views: number;
   liked: boolean;
+  studyId: number;
 }
 
-function Card({ title, leader, leaderRating, member, memberRating, views, liked }: CardProps) {
+function Card({ title, leader, leaderRating, member, memberRating, views, liked, studyId }: CardProps) {
   return (
     <Wrapper>
       <View

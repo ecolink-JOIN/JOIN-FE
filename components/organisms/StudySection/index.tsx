@@ -4,6 +4,8 @@ import Typography from '@/components/atoms/Typography';
 import styled from 'styled-components/native';
 import Card from '@/components/molecules/Card';
 import { colors } from '@/theme';
+import { useRouter } from 'expo-router';
+import CardList from '@/components/molecules/CardList';
 
 const Container = styled.View`
   padding-top: 20px;
@@ -12,15 +14,11 @@ const Container = styled.View`
   justify-content: space-between;
 `;
 
-const CardsContainer = styled.View`
-  padding: 20px;
-  gap: 12px;
-  flex-direction: row;
-  flex-wrap: wrap;
-`;
-
 interface StudySectionProps {
-  title: string;
+  section: {
+    page: string;
+    title: string;
+  };
   data: {
     title: string;
     leader: string;
@@ -29,35 +27,33 @@ interface StudySectionProps {
     memberRating: number;
     views: number;
     liked: boolean;
+    studyId: number;
   }[];
 }
 
-const StudySection: React.FC<StudySectionProps> = ({ title, data }) => (
-  <View>
-    <Container>
-      <Typography variant="subtitle1">{title}</Typography>
-      <Pressable>
-        <Typography variant="subtitle2" style={{ color: colors.gray[7] }}>
-          전체보기
-        </Typography>
-      </Pressable>
-    </Container>
+const StudySection: React.FC<StudySectionProps> = ({ section, data }) => {
+  const router = useRouter();
+  const { title, page } = section;
 
-    <CardsContainer>
-      {data.map((item, index) => (
-        <Card
-          key={index}
-          title={item.title}
-          leader={item.leader}
-          leaderRating={item.leaderRating}
-          member={item.member}
-          memberRating={item.memberRating}
-          views={item.views}
-          liked={item.liked}
-        />
-      ))}
-    </CardsContainer>
-  </View>
-);
+  const handleMorePress = () => {
+    router.setParams({ title });
+    router.push(`/(tabs)/(home)/${page}`);
+  };
+
+  return (
+    <View>
+      <Container>
+        <Typography variant="subtitle1">{title}</Typography>
+        <Pressable onPress={handleMorePress}>
+          <Typography variant="subtitle2" style={{ color: colors.gray[7] }}>
+            전체보기
+          </Typography>
+        </Pressable>
+      </Container>
+
+      <CardList data={data} />
+    </View>
+  );
+};
 
 export default StudySection;

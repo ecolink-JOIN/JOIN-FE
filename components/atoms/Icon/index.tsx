@@ -19,6 +19,7 @@ import ControllerIcon from '@/assets/images/controller.svg';
 import LikeIcon from '@/assets/images/like.svg';
 import LikeOutlineIcon from '@/assets/images/like-outline.svg';
 import StarIcon from '@/assets/images/star.svg';
+import ArrowLeftIcon from '@/assets/images/arrow-left.svg';
 
 export type IconTypes =
   | 'home'
@@ -44,7 +45,8 @@ export type IconTypes =
   | 'controller'
   | 'like'
   | 'like-outline'
-  | 'star';
+  | 'star'
+  | 'arrow-left';
 interface IconProps extends SvgProps {
   name?: IconTypes;
 }
@@ -96,6 +98,8 @@ function Icon({ name, ...rest }: IconProps) {
       return <LikeOutlineIcon {...rest} />;
     case 'star':
       return <StarIcon {...rest} />;
+    case 'arrow-left':
+      return <ArrowLeftIcon {...rest} />;
     default:
       return null;
   }
