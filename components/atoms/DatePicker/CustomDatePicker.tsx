@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { Pressable } from 'react-native';
 import styled from 'styled-components/native';
 import Typography from '../Typography';
@@ -10,7 +10,6 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet';
 interface CustomStepperProps {
   placeholder: string;
   value: dayjs.Dayjs | null;
-  setValue: any;
   bottomSheetModalRef: React.RefObject<BottomSheetModal>;
 }
 

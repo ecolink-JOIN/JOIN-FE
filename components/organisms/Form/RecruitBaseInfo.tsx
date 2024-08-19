@@ -13,21 +13,57 @@ import {
 import BottomSheetComp from '@/components/organisms/BottomSheet';
 import dayjs from 'dayjs';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import DateTimePicker from 'react-native-ui-datepicker';
+
+interface durationProps {
+  start: dayjs.Dayjs | null;
+  end: dayjs.Dayjs | null;
+}
 
 export default function RecruitBaseInfo() {
   const [endDate, setEndDate] = React.useState<dayjs.Dayjs | null>(null);
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const [duration, setDuration] = React.useState<durationProps>({ start: null, end: null });
+  const bottomSheetModalRef1 = useRef<BottomSheetModal>(null);
+  const bottomSheetModalRef2 = useRef<BottomSheetModal>(null);
   return (
     <StyledView>
       <Typography variant="heading4">스터디 기본 정보를 입력해주세요.</Typography>
       <Category />
       <Nums />
-      <EndDate value={endDate} setValue={setEndDate} bottomSheetModalRef={bottomSheetModalRef} />
+      <EndDate value={endDate} bottomSheetModalRef={bottomSheetModalRef1} />
       <MeetingWay />
       <MeetingLocation />
-      <ActivateDuration />
+      <ActivateDuration value={duration} bottomSheetModalRef={bottomSheetModalRef2} />
       <DateTime />
-      <BottomSheetComp value={endDate} setValue={setEndDate} bottomSheetModalRef={bottomSheetModalRef} />
+      <BottomSheetComp
+        bottomSheetModalRef={bottomSheetModalRef1}
+        component={
+          <DateTimePicker
+            mode="single"
+            date={endDate || new Date()}
+            onChange={(params: any) => {
+              setEndDate(params.date);
+              bottomSheetModalRef1.current?.dismiss();
+            }}
+          />
+        }
+      />
+      <BottomSheetComp
+        bottomSheetModalRef={bottomSheetModalRef2}
+        component={
+          <DateTimePicker
+            mode="range"
+            startDate={duration.start}
+            endDate={duration.end}
+            onChange={({ startDate, endDate }: any) => {
+              if (duration.start !== startDate || duration.end !== endDate) {
+                setDuration({ start: startDate, end: endDate });
+              }
+              startDate && endDate && bottomSheetModalRef2.current?.dismiss();
+            }}
+          />
+        }
+      />
     </StyledView>
   );
 }

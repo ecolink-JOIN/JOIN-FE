@@ -6,14 +6,13 @@ import dayjs from 'dayjs';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 interface EndDateProps {
   value: dayjs.Dayjs | null;
-  setValue: any;
   bottomSheetModalRef: React.RefObject<BottomSheetModal>;
 }
-export const EndDate: React.FC<EndDateProps> = ({ value, setValue, bottomSheetModalRef }) => {
+export const EndDate: React.FC<EndDateProps> = ({ value, bottomSheetModalRef }) => {
   return (
     <FormModView>
       <Typography variant="button">모집 종료일</Typography>
-      <DatePicker placeholder="종료 일자" value={value} setValue={setValue} bottomSheetModalRef={bottomSheetModalRef} />
+      <DatePicker placeholder="종료 일자" value={value} bottomSheetModalRef={bottomSheetModalRef} />
     </FormModView>
   );
 };
