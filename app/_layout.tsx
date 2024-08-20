@@ -12,7 +12,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
-  initialRouteName: 'tabs',
+  initialRouteName: '(tabs)',
 };
 
 export default function RootLayout() {

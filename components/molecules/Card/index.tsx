@@ -5,6 +5,7 @@ import { colors } from '@/theme';
 import GradientBackground from './GradientBackground';
 import CardTitle from './CardTitle';
 import CardDescription from './CardDescription';
+import { useRouter } from 'expo-router';
 
 interface CardProps {
   title: string;
@@ -18,18 +19,18 @@ interface CardProps {
 }
 
 function Card({ title, leader, leaderRating, member, memberRating, views, liked, studyId }: CardProps) {
+  const router = useRouter();
+
+  const handleCardPress = () => {
+    router.push(`/(tabs)/(home)/(study)/${studyId}`);
+  };
+
   return (
-    <Wrapper>
-      <View
-        style={{
-          height: 72,
-        }}
-      >
+    <Wrapper onPress={handleCardPress}>
+      <View style={{ height: 72 }}>
         <GradientBackground liked={liked} />
       </View>
-
       <CardTitle>{title}</CardTitle>
-
       <CardDescription
         leader={leader}
         leaderRating={leaderRating}
@@ -43,7 +44,7 @@ function Card({ title, leader, leaderRating, member, memberRating, views, liked,
 
 export default Card;
 
-const Wrapper = styled.View`
+const Wrapper = styled.Pressable`
   width: 48%;
   height: 202px;
   border-radius: 8px;

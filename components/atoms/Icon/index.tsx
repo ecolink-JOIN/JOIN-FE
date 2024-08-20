@@ -19,7 +19,8 @@ import ControllerIcon from '@/assets/images/controller.svg';
 import LikeIcon from '@/assets/images/like.svg';
 import LikeOutlineIcon from '@/assets/images/like-outline.svg';
 import StarIcon from '@/assets/images/star.svg';
-import ArrowLeftIcon from '@/assets/images/arrow-left.svg';
+import ArrowLeftIcon from '@/assets/images/ArrowLeft';
+import EllipsisIcon from '@/assets/images/EllipsisIcon';
 
 export type IconTypes =
   | 'home'
@@ -46,7 +47,8 @@ export type IconTypes =
   | 'like'
   | 'like-outline'
   | 'star'
-  | 'arrow-left';
+  | 'arrow-left'
+  | 'ellipsis';
 interface IconProps extends SvgProps {
   name?: IconTypes;
 }
@@ -100,6 +102,8 @@ function Icon({ name, ...rest }: IconProps) {
       return <StarIcon {...rest} />;
     case 'arrow-left':
       return <ArrowLeftIcon {...rest} />;
+    case 'ellipsis':
+      return <EllipsisIcon {...rest} />;
     default:
       return null;
   }
