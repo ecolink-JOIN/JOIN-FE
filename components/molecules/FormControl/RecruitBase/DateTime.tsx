@@ -9,7 +9,6 @@ export interface DateTimeProps {
   day: string;
   startTime: string;
   endTime: string;
-  idx: number;
 }
 
 export const DateTime = () => {

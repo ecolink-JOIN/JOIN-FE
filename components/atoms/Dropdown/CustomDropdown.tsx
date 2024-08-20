@@ -19,7 +19,6 @@ const CustomDropdown: React.FC<CustomStepperProps> = ({ items, placeholder, show
       open={open}
       value={value}
       items={items}
-      stickyHeader={true}
       setOpen={setOpen}
       setValue={setValue}
       showTickIcon={true}
@@ -36,7 +35,6 @@ const CustomDropdown: React.FC<CustomStepperProps> = ({ items, placeholder, show
         borderColor: colors.gray[3],
         borderRadius: 8,
         height: 44,
-        flex: 1,
       }}
       dropDownContainerStyle={{
         borderColor: '#E8EAEB',

@@ -1,8 +1,9 @@
 import React, { Dispatch, useState } from 'react';
-import { Button, View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { DateTimeProps } from '@/components/molecules/FormControl/RecruitBase/DateTime';
 import { CustomDropdown } from '../Dropdown';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import Button from '@/components/atoms/Button';
 interface DateTimeListProps {
   dayTime: DateTimeProps[];
   setDayTime: Dispatch<DateTimeProps[]>;
@@ -25,7 +26,7 @@ const DateTimeList = ({ dayTime, setDayTime }: DateTimeListProps) => {
 
   const addDayTime = () => {
     const newDayTime = [...dayTime];
-    newDayTime.push({ day: '', startTime: '', endTime: '', idx: Math.random() });
+    newDayTime.push({ day: '', startTime: '', endTime: '' });
     setDayTime(newDayTime);
   };
 
@@ -56,40 +57,43 @@ const DateTimeList = ({ dayTime, setDayTime }: DateTimeListProps) => {
   };
   return (
     <View>
-      <Button onPress={addDayTime} title="Show time picker!" />
-      <View style={{ flexDirection: 'row', gap: 40, height: 100 }}>
-        {dayTime.map((item, idx) => (
-          <View style={{ flexDirection: 'row', gap: 40, height: 100 }} key={item.idx}>
-            <View style={{ width: 150 }}>
-              <CustomDropdown items={items} placeholder="요일" value={dayTime[idx].day} setValue={onChangeDay} />
+      <View style={{ height: 100, gap: 5 }}>
+        {dayTime.map((item, idx) => {
+          return (
+            <View style={{ flexDirection: 'row', gap: 40, height: 50 }} key={idx}>
+              <View style={{ width: 150 }}>
+                <CustomDropdown items={items} placeholder="요일" value={dayTime[idx].day} setValue={onChangeDay} />
+              </View>
+              <Pressable
+                onPress={() => {
+                  setStart(true);
+                  setIdx(idx);
+                  showTimepicker();
+                }}
+                style={{ borderColor: 'black', borderWidth: 1, width: 50, height: 50 }}
+              >
+                <Text>{item.startTime}시작</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  setStart(false);
+                  setIdx(idx);
+                  showTimepicker();
+                }}
+                style={{ borderColor: 'black', borderWidth: 1, width: 50, height: 50 }}
+              >
+                <Text>{item.endTime}종료</Text>
+              </Pressable>
             </View>
-            <Pressable
-              onPress={() => {
-                setStart(true);
-                setIdx(idx);
-                showTimepicker();
-              }}
-              key={idx}
-              style={{ borderColor: 'black', borderWidth: 1, width: 50, height: 50 }}
-            >
-              <Text>{item.startTime}시작</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setStart(false);
-                setIdx(idx);
-                showTimepicker();
-              }}
-              key={idx}
-              style={{ borderColor: 'black', borderWidth: 1, width: 50, height: 50 }}
-            >
-              <Text>{item.endTime}종료</Text>
-            </Pressable>
-          </View>
-        ))}
+          );
+        })}
       </View>
+      <Button variant="contained" onPress={addDayTime} style={{ margin: 10 }}>
+        +
+      </Button>
       {show && (
         <DateTimePicker
+          key={'key'}
           value={time}
           mode={'time'}
           is24Hour={true}
