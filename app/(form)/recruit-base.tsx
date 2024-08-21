@@ -52,34 +52,50 @@ export default function RecruitBase() {
       <BottomSheetComp
         bottomSheetModalRef={bottomSheetModalRef1}
         component={
-          <DateTimePicker
-            locale="ko"
-            mode="single"
-            selectedItemColor="#FF7F5F"
-            date={endDate || new Date()}
-            onChange={(params: any) => {
-              setEndDate(params.date);
-              bottomSheetModalRef1.current?.dismiss();
-            }}
-          />
+          <>
+            <DateTimePicker
+              locale="ko"
+              mode="single"
+              selectedItemColor="#FF7F5F"
+              date={endDate || new Date()}
+              onChange={(params: any) => {
+                setEndDate(params.date);
+              }}
+            />
+            <Button
+              variant="contained"
+              style={{ marginHorizontal: 'auto' }}
+              onPress={() => bottomSheetModalRef1.current?.dismiss()}
+            >
+              완료
+            </Button>
+          </>
         }
       />
       <BottomSheetComp
         bottomSheetModalRef={bottomSheetModalRef2}
         component={
-          <DateTimePicker
-            mode="range"
-            locale="ko"
-            selectedItemColor="#FF7F5F"
-            startDate={duration.start}
-            endDate={duration.end}
-            onChange={({ startDate, endDate }: any) => {
-              if (duration.start !== startDate || duration.end !== endDate) {
-                setDuration({ start: startDate, end: endDate });
-              }
-              startDate && endDate && bottomSheetModalRef2.current?.dismiss();
-            }}
-          />
+          <>
+            <DateTimePicker
+              mode="range"
+              locale="ko"
+              selectedItemColor="#FF7F5F"
+              startDate={duration.start}
+              endDate={duration.end}
+              onChange={({ startDate, endDate }: any) => {
+                if (duration.start !== startDate || duration.end !== endDate) {
+                  setDuration({ start: startDate, end: endDate });
+                }
+              }}
+            />
+            <Button
+              variant="contained"
+              style={{ marginHorizontal: 'auto' }}
+              onPress={() => bottomSheetModalRef2.current?.dismiss()}
+            >
+              완료
+            </Button>
+          </>
         }
       />
     </View>
