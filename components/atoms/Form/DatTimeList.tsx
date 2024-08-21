@@ -42,7 +42,13 @@ const DateTimeList = ({ dayTime, setDayTime }: DateTimeListProps) => {
   };
 
   const onChangeTime = (event: DateTimePickerEvent, selectedTime: Date | undefined) => {
-    const Time = selectedTime?.getHours() + ' : ' + selectedTime?.getMinutes();
+    if (event.type === 'dismissed' || selectedTime === undefined) {
+      setShow(false);
+      return;
+    }
+    const Hour = selectedTime.getHours().toString().padStart(2, '0');
+    const Min = selectedTime.getMinutes().toString().padStart(2, '0');
+    const Time = Hour + ' : ' + Min;
     const newDayTime = [...dayTime];
     if (start) newDayTime[idx].startTime = Time;
     else newDayTime[idx].endTime = Time;
