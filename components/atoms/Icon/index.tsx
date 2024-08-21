@@ -12,6 +12,14 @@ import NaverIcon from '@/assets/images/naver.svg';
 import KakaoIcon from '@/assets/images/kakao.svg';
 import GoogleIcon from '@/assets/images/google.svg';
 import AppleIcon from '@/assets/images/apple-white.svg';
+import WriteIcon from '@/assets/images/write.svg';
+import AlarmIcon from '@/assets/images/alarm.svg';
+import SearchIcon from '@/assets/images/search.svg';
+import ControllerIcon from '@/assets/images/controller.svg';
+import LikeIcon from '@/assets/images/like.svg';
+import LikeOutlineIcon from '@/assets/images/like-outline.svg';
+import StarIcon from '@/assets/images/star.svg';
+import ArrowLeftIcon from '@/assets/images/arrow-left.svg';
 
 export type IconTypes =
   | 'home'
@@ -30,7 +38,15 @@ export type IconTypes =
   | 'google'
   | 'apple'
   | 'naver'
-  | 'apple';
+  | 'apple'
+  | 'alarm'
+  | 'write'
+  | 'search'
+  | 'controller'
+  | 'like'
+  | 'like-outline'
+  | 'star'
+  | 'arrow-left';
 interface IconProps extends SvgProps {
   name?: IconTypes;
 }
@@ -68,6 +84,22 @@ function Icon({ name, ...rest }: IconProps) {
       return <GoogleIcon {...rest} />;
     case 'apple':
       return <AppleIcon {...rest} />;
+    case 'alarm':
+      return <AlarmIcon {...rest} />;
+    case 'write':
+      return <WriteIcon {...rest} />;
+    case 'search':
+      return <SearchIcon {...rest} />;
+    case 'controller':
+      return <ControllerIcon {...rest} />;
+    case 'like':
+      return <LikeIcon {...rest} />;
+    case 'like-outline':
+      return <LikeOutlineIcon {...rest} />;
+    case 'star':
+      return <StarIcon {...rest} />;
+    case 'arrow-left':
+      return <ArrowLeftIcon {...rest} />;
     default:
       return null;
   }
