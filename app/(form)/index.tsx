@@ -1,5 +1,5 @@
-import HomeSection from '@/components/organisms/HomeSection';
+import { View } from 'react-native';
 
 export default function HomeScreen() {
-  return <HomeSection />;
+  return <View />;
 }
