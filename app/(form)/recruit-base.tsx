@@ -15,8 +15,8 @@ import BottomSheetComp from '@/components/organisms/BottomSheet';
 import dayjs from 'dayjs';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import DateTimePicker from 'react-native-ui-datepicker';
-// import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View, FlatList } from 'react-native';
+import Button from '@/components/atoms/Button';
 
 interface durationProps {
   start: dayjs.Dayjs | null;
@@ -40,6 +40,9 @@ export default function RecruitBase() {
       {online || <MeetingLocation />}
       <ActivateDuration value={duration} bottomSheetModalRef={bottomSheetModalRef2} />
       <DateTime />
+      <Button variant="contained" style={{ marginHorizontal: 'auto' }}>
+        다음
+      </Button>
     </StyledView>
   );
 
@@ -50,7 +53,9 @@ export default function RecruitBase() {
         bottomSheetModalRef={bottomSheetModalRef1}
         component={
           <DateTimePicker
+            locale="ko"
             mode="single"
+            selectedItemColor="#FF7F5F"
             date={endDate || new Date()}
             onChange={(params: any) => {
               setEndDate(params.date);
@@ -64,6 +69,8 @@ export default function RecruitBase() {
         component={
           <DateTimePicker
             mode="range"
+            locale="ko"
+            selectedItemColor="#FF7F5F"
             startDate={duration.start}
             endDate={duration.end}
             onChange={({ startDate, endDate }: any) => {
