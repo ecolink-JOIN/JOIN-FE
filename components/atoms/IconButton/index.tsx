@@ -3,6 +3,7 @@ import { Pressable, PressableProps } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import Icon, { IconTypes } from '../Icon';
+import { SvgProps } from 'react-native-svg';
 
 const IconContainer = styled(Animated.View)`
   justify-content: center;
@@ -12,11 +13,11 @@ const IconContainer = styled(Animated.View)`
 
 interface IconButtonProps extends PressableProps {
   name: IconTypes;
+  svgProps?: SvgProps;
   size?: number;
-  color?: string;
 }
 
-const IconButton: React.FC<IconButtonProps> = ({ name, ...rest }) => {
+const IconButton: React.FC<IconButtonProps> = ({ name, svgProps, ...rest }) => {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -36,7 +37,7 @@ const IconButton: React.FC<IconButtonProps> = ({ name, ...rest }) => {
   return (
     <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} {...rest}>
       <IconContainer style={animatedStyle}>
-        <Icon name={name} />
+        <Icon name={name} {...svgProps} />
       </IconContainer>
     </Pressable>
   );

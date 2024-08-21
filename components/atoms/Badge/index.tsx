@@ -30,7 +30,6 @@ type VariantMap = Record<ChipVariant['variant'], Partial<CSSProperties>>;
 const ChipContainer = styled(View)`
   align-items: center;
   justify-content: center;
-  height: 100%;
 `;
 
 const sizeMap: SizeMap = {

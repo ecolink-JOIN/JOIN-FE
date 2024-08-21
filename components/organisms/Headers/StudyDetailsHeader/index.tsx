@@ -1,0 +1,42 @@
+import React from 'react';
+import styled from 'styled-components/native';
+import { useRouter } from 'expo-router';
+import IconButton from '@/components/atoms/IconButton';
+import { colors } from '@/theme';
+import Typography from '@/components/atoms/Typography';
+
+interface StudyDetailsHeaderProps {
+  title: string;
+}
+
+const HeaderContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  height: 60px;
+  background-color: ${colors.white};
+  padding-vertical: 8px;
+  padding-horizontal: 20px;
+`;
+
+const IconContainer = styled.View`
+  margin-right: 8px;
+`;
+
+const Title = styled(Typography).attrs({
+  variant: 'subtitle1',
+})<Partial<React.ComponentProps<typeof Typography>>>``;
+
+const StudyDetailsHeader: React.FC<StudyDetailsHeaderProps> = ({ title }) => {
+  const router = useRouter();
+
+  return (
+    <HeaderContainer>
+      <IconContainer>
+        <IconButton name="arrow-left" onPress={() => router.back()} />
+      </IconContainer>
+      <Title>{title}</Title>
+    </HeaderContainer>
+  );
+};
+
+export default StudyDetailsHeader;
