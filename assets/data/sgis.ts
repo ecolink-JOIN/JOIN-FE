@@ -1,4 +1,8 @@
-export const sgis = {
+interface Sgis {
+  [key: string]: string[];
+}
+
+export const sgis: Sgis = {
   서울특별시: [
     '종로구',
     '중구',

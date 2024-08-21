@@ -16,7 +16,7 @@ import dayjs from 'dayjs';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import DateTimePicker from 'react-native-ui-datepicker';
 // import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ScrollView, View, FlatList } from 'react-native';
+import { View, FlatList } from 'react-native';
 
 interface durationProps {
   start: dayjs.Dayjs | null;

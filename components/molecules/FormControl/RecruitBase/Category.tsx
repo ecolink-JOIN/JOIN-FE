@@ -4,7 +4,7 @@ import FormModView from '@/components/atoms/View/FormMods';
 import { CustomDropdown } from '@/components/atoms/Dropdown';
 
 export const Category = () => {
-  const [value, setValue] = useState<string | null>(null);
+  const [, setValue] = useState<string | null>(null);
   const [items] = useState([
     { label: 'eng', value: '영어' },
     { label: 'math', value: '수학' },

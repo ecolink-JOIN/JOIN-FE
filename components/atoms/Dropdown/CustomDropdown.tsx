@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { colors } from '@/theme';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ArrowDown from '@/assets/images/ArrowDown.svg';
@@ -28,6 +28,7 @@ const CustomDropdown: React.FC<CustomStepperProps> = ({ items, placeholder, show
       setValue={setValue}
       showTickIcon={true}
       showArrowIcon={showArrow}
+      listMode="SCROLLVIEW"
       ArrowDownIconComponent={() => <ArrowDown style={{ margin: 0 }} />}
       ArrowUpIconComponent={() => <ArrowDown style={{ transform: [{ rotate: '180deg' }], margin: 0 }} />}
       textStyle={{

@@ -1,46 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FormModView from '@/components/atoms/View/FormMods';
 import Typography from '@/components/atoms/Typography';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { colors } from '@/theme';
+import { View } from 'react-native';
+import { CustomDropdown } from '@/components/atoms/Dropdown';
+import { sgis } from '@/assets/data/sgis';
 
 export const MeetingLocation = () => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
-  const [items, setItems] = useState([
-    { label: 'eng', value: '영어' },
-    { label: 'math', value: '수학' },
-  ]);
+  const [province, setProvince] = useState<string | null>(null);
+  const [state, setState] = useState<string | null>(null);
+  const [provinceitems] = useState(Object.keys(sgis).map((key) => ({ label: key, value: key })));
+  const [stateitems, setStateitems] = useState([{ label: '', value: '' }]);
+
+  useEffect(() => {
+    if (province) {
+      setStateitems(sgis[province].map((state) => ({ label: state, value: state })));
+    }
+  }, [province, state]);
+
   return (
     <FormModView>
       <Typography variant="button">모임 장소</Typography>
-      <DropDownPicker
-        placeholder="시/도"
-        open={open}
-        value={value}
-        items={items}
-        stickyHeader={true}
-        showArrowIcon={false}
-        setOpen={setOpen}
-        setValue={setValue}
-        setItems={setItems}
-        showTickIcon={true}
-        textStyle={{
-          fontFamily: 'Pretendard-Medium',
-          fontSize: 16,
-          fontWeight: 500,
-          padding: 8,
-        }}
-        style={{
-          borderColor: colors.gray[3],
-          borderRadius: 8,
-          height: 44,
-          zIndex: 0,
-        }}
-        dropDownContainerStyle={{
-          borderColor: '#E8EAEB',
-        }}
-      />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', gap: 10 }}>
+        <View style={{ flex: 1 }}>
+          <CustomDropdown items={provinceitems} placeholder="시/도" onChangeValue={setProvince} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <CustomDropdown items={stateitems} placeholder="구/군" onChangeValue={setState} />
+        </View>
+      </View>
     </FormModView>
   );
 };
