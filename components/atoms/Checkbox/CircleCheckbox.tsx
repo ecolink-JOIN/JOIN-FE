@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable } from 'react-native';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
-import Icon from '../Icon'; // 아이콘 컴포넌트
+import Icon from '../Icon';
 
 interface CustomCircleCheckboxProps {
   selected?: boolean;

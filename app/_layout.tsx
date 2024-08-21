@@ -12,9 +12,9 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-// export const unstable_settings = {
-//   initialRouteName: 'auth/index',
-// };
+export const unstable_settings = {
+  initialRouteName: '(tabs)',
+};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -44,7 +44,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <RecoilRoot>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack>
+          <Stack initialRouteName="(tabs)">
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(form)" options={{ headerShown: false }} />

@@ -15,6 +15,8 @@ function GNB() {
           height: 80,
           paddingTop: 8,
           paddingBottom: 16,
+          borderTopColor: colors.sub2,
+          borderTopWidth: 1.5,
         },
         tabBarIconStyle: {
           bottom: 0.5,
@@ -28,7 +30,7 @@ function GNB() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="(home)"
         options={{
           title: '홈',
           tabBarIcon: ({ focused }) => <Icon name={focused ? 'home' : 'home-outline'} />,
