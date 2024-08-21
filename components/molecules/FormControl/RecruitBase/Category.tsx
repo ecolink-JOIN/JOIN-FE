@@ -12,7 +12,7 @@ export const Category = () => {
   return (
     <FormModView>
       <Typography variant="button">카테고리</Typography>
-      <CustomDropdown items={items} placeholder="카테고리를 선택해주세요." value={value} setValue={setValue} />
+      <CustomDropdown items={items} placeholder="카테고리를 선택해주세요." onChangeValue={setValue} />
     </FormModView>
   );
 };

@@ -1,9 +1,14 @@
 import React, { Dispatch, useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { DateTimeProps } from '@/components/molecules/FormControl/RecruitBase/DateTime';
 import { CustomDropdown } from '../Dropdown';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import Button from '@/components/atoms/Button';
+import TimePicker from './TimePicker';
+import Hyphen from '@/assets/images/hyphen.svg';
+import Plus from '@/assets/images/plus-circle-style-outline.svg';
+import CloseIcon from '@/assets/images/CloseIcon';
+import { colors } from '@/theme';
+import Typography from '../Typography';
 interface DateTimeListProps {
   dayTime: DateTimeProps[];
   setDayTime: Dispatch<DateTimeProps[]>;
@@ -26,12 +31,18 @@ const DateTimeList = ({ dayTime, setDayTime }: DateTimeListProps) => {
 
   const addDayTime = () => {
     const newDayTime = [...dayTime];
-    newDayTime.push({ day: '', startTime: '', endTime: '' });
+    newDayTime.push({ day: null, startTime: null, endTime: null });
+    setDayTime(newDayTime);
+  };
+
+  const deleteDayTime = (idx: number) => {
+    const newDayTime = [...dayTime];
+    newDayTime.splice(idx, 1);
     setDayTime(newDayTime);
   };
 
   const onChangeTime = (event: DateTimePickerEvent, selectedTime: Date | undefined) => {
-    const Time = selectedTime?.getHours() + ':' + selectedTime?.getMinutes();
+    const Time = selectedTime?.getHours() + ' : ' + selectedTime?.getMinutes();
     const newDayTime = [...dayTime];
     if (start) newDayTime[idx].startTime = Time;
     else newDayTime[idx].endTime = Time;
@@ -40,57 +51,56 @@ const DateTimeList = ({ dayTime, setDayTime }: DateTimeListProps) => {
     setTime(new Date());
   };
 
-  const onChangeDay = (value: string | null) => {
+  const onChangeDay = (value: string | null, idx?: number) => {
     const newDayTime = [...dayTime];
-    newDayTime[idx].day = value || '';
+    idx !== undefined && (newDayTime[idx].day = value || null);
     setDayTime(newDayTime);
   };
-
-  // useEffect(() => {
-  //   const newDayTime = [...dayTime];
-  //   newDayTime[idx].day = value || '';
-  //   setDayTime(newDayTime);
-  // }, [value]);
 
   const showTimepicker = () => {
     setShow(true);
   };
   return (
-    <View>
-      <View style={{ height: 100, gap: 5 }}>
-        {dayTime.map((item, idx) => {
-          return (
-            <View style={{ flexDirection: 'row', gap: 40, height: 50 }} key={idx}>
-              <View style={{ width: 150 }}>
-                <CustomDropdown items={items} placeholder="요일" value={dayTime[idx].day} setValue={onChangeDay} />
-              </View>
-              <Pressable
-                onPress={() => {
-                  setStart(true);
-                  setIdx(idx);
-                  showTimepicker();
-                }}
-                style={{ borderColor: 'black', borderWidth: 1, width: 50, height: 50 }}
-              >
-                <Text>{item.startTime}시작</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => {
-                  setStart(false);
-                  setIdx(idx);
-                  showTimepicker();
-                }}
-                style={{ borderColor: 'black', borderWidth: 1, width: 50, height: 50 }}
-              >
-                <Text>{item.endTime}종료</Text>
-              </Pressable>
+    <View style={{ gap: 12 }}>
+      {dayTime.map((item, idx) => {
+        return (
+          <View style={{ flexDirection: 'row', gap: 8, height: 44 }} key={idx}>
+            <View style={{ width: 84, height: 44 }}>
+              <CustomDropdown items={items} placeholder="요일" onChangeValue={onChangeDay} idx={idx} />
             </View>
-          );
-        })}
-      </View>
-      <Button variant="contained" onPress={addDayTime} style={{ margin: 10 }}>
-        +
-      </Button>
+            <Pressable
+              onPress={() => {
+                setStart(true);
+                setIdx(idx);
+                showTimepicker();
+              }}
+            >
+              <TimePicker time={item.startTime} />
+            </Pressable>
+            <Hyphen style={{ marginVertical: 'auto' }} />
+            <Pressable
+              onPress={() => {
+                setStart(false);
+                setIdx(idx);
+                showTimepicker();
+              }}
+            >
+              <TimePicker time={item.endTime} />
+            </Pressable>
+            <Pressable onPress={() => deleteDayTime(idx)}>
+              <CloseIcon stroke={colors.gray[9]} style={{ marginVertical: 'auto' }} width={24} height={24} />
+            </Pressable>
+          </View>
+        );
+      })}
+      {dayTime.length < 7 && (
+        <Pressable onPress={addDayTime} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12 }}>
+          <Plus />
+          <Typography variant="body2" style={{ color: colors.gray[7] }}>
+            추가하기
+          </Typography>
+        </Pressable>
+      )}
       {show && (
         <DateTimePicker
           key={'key'}

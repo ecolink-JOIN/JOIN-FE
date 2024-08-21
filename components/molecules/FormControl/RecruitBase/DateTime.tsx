@@ -6,9 +6,9 @@ import { Radio } from '@/components/atoms/Radio';
 import { DateTimeList } from '@/components/atoms/Form';
 
 export interface DateTimeProps {
-  day: string;
-  startTime: string;
-  endTime: string;
+  day: string | null;
+  startTime: string | null;
+  endTime: string | null;
 }
 
 export const DateTime = () => {
@@ -31,7 +31,7 @@ export const DateTime = () => {
           </Typography>
         </View>
       </View>
-      <DateTimeList dayTime={dayTime} setDayTime={setdayTime} />
+      {regular && <DateTimeList dayTime={dayTime} setDayTime={setdayTime} />}
     </FormModView>
   );
 };

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { colors } from '@/theme';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ArrowDown from '@/assets/images/ArrowDown.svg';
@@ -7,12 +7,17 @@ interface CustomStepperProps {
   items: { label: string; value: string }[];
   placeholder: string;
   showArrow?: boolean;
-  value: string | null;
-  setValue: Dispatch<SetStateAction<string | null>> | any;
+  onChangeValue: (value: string | null, idx?: number) => void;
+  idx?: number;
 }
 
-const CustomDropdown: React.FC<CustomStepperProps> = ({ items, placeholder, showArrow = true, value, setValue }) => {
+const CustomDropdown: React.FC<CustomStepperProps> = ({ items, placeholder, showArrow = true, onChangeValue, idx }) => {
+  const [value, setValue] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    onChangeValue(value, idx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
   return (
     <DropDownPicker
       placeholder={placeholder}
@@ -23,8 +28,8 @@ const CustomDropdown: React.FC<CustomStepperProps> = ({ items, placeholder, show
       setValue={setValue}
       showTickIcon={true}
       showArrowIcon={showArrow}
-      ArrowDownIconComponent={() => <ArrowDown style={{ margin: 12 }} />}
-      ArrowUpIconComponent={() => <ArrowDown style={{ transform: [{ rotate: '180deg' }], margin: 12 }} />}
+      ArrowDownIconComponent={() => <ArrowDown style={{ margin: 0 }} />}
+      ArrowUpIconComponent={() => <ArrowDown style={{ transform: [{ rotate: '180deg' }], margin: 0 }} />}
       textStyle={{
         fontFamily: 'Pretendard-Medium',
         fontSize: 16,
@@ -35,6 +40,7 @@ const CustomDropdown: React.FC<CustomStepperProps> = ({ items, placeholder, show
         borderColor: colors.gray[3],
         borderRadius: 8,
         height: 44,
+        zIndex: 0,
       }}
       dropDownContainerStyle={{
         borderColor: '#E8EAEB',
