@@ -6,12 +6,12 @@ import dayjs from 'dayjs';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { View } from 'react-native';
 
-interface durationProps {
+interface DurationProps {
   start: dayjs.Dayjs | null;
   end: dayjs.Dayjs | null;
 }
 interface EndDateProps {
-  value: durationProps;
+  value: DurationProps;
   bottomSheetModalRef: React.RefObject<BottomSheetModal>;
 }
 
