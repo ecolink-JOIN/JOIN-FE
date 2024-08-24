@@ -16,19 +16,25 @@ import dayjs from 'dayjs';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import DateTimePicker from 'react-native-ui-datepicker';
 import { View, FlatList } from 'react-native';
+import { useRouter } from 'expo-router';
 import Button from '@/components/atoms/Button';
 
-interface durationProps {
+interface DurationProps {
   start: dayjs.Dayjs | null;
   end: dayjs.Dayjs | null;
 }
 
 export default function RecruitBase() {
+  const router = useRouter();
   const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
-  const [duration, setDuration] = useState<durationProps>({ start: null, end: null });
+  const [duration, setDuration] = useState<DurationProps>({ start: null, end: null });
   const bottomSheetModalRef1 = useRef<BottomSheetModal>(null);
   const bottomSheetModalRef2 = useRef<BottomSheetModal>(null);
   const [online, setOnline] = useState(true);
+
+  const onSubmit = () => {
+    router.push('/(form)/recruit-add');
+  };
 
   const renderItem = () => (
     <StyledView>
@@ -40,7 +46,7 @@ export default function RecruitBase() {
       {online || <MeetingLocation />}
       <ActivateDuration value={duration} bottomSheetModalRef={bottomSheetModalRef2} />
       <DateTime />
-      <Button variant="contained" style={{ marginHorizontal: 'auto' }}>
+      <Button variant="contained" style={{ marginHorizontal: 'auto' }} onPress={onSubmit}>
         다음
       </Button>
     </StyledView>
