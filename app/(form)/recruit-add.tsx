@@ -23,7 +23,6 @@ export default function RecruitAdd() {
   const showToast = ({ text1 }: { text1: string }) => {
     Toast.show({
       type: 'form',
-      // And I can pass any custom props I want
       text1,
       position: 'bottom',
       visibilityTime: 2000,
