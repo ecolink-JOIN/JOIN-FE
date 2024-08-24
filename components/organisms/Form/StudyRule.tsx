@@ -35,16 +35,21 @@ export default function StudyRule({ value, onChange }: StudyRuleProps) {
         </Typography>
       </View>
       <CheckBoxContainer>
-        {rules.map((rule) => (
-          <Pressable
-            key={rule.id}
-            style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}
-            onPress={() => handleSelect(rule.id)}
-          >
-            <CustomCheckbox selected={value.includes(rule.id)} />
-            <Typography variant="body4">{rule.title}</Typography>
-          </Pressable>
-        ))}
+        {rules.map((rule) => {
+          const isSelected = value.includes(rule.id);
+          return (
+            <Pressable
+              key={rule.id}
+              style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}
+              onPress={() => handleSelect(rule.id)}
+            >
+              <CustomCheckbox selected={isSelected} />
+              <Typography variant={'body3'} style={{ color: isSelected ? colors.black : colors.gray[7] }}>
+                {rule.title}
+              </Typography>
+            </Pressable>
+          );
+        })}
       </CheckBoxContainer>
     </View>
   );

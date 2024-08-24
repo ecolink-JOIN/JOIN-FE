@@ -11,16 +11,21 @@ import StyledTextInput from '@/components/atoms/TextField';
 
 export default function RecruitAdd() {
   const { control, formState } = useForm({
-    defaultValues: { title: '', desc: '', rules: [], content: '', eligibility: '' },
+    defaultValues: { title: '', desc: '', rules: [], content: '', rulesDesc: '', eligibility: '' },
   });
-  const { title, desc, content, eligibility } = formState.dirtyFields;
+  const { title, desc, content } = formState.dirtyFields;
   const onSubmit = () => {
-    if (title && desc && content && eligibility) {
+    if (title && desc && content) {
       console.log('submit');
-    } else {
-      console.log('fail');
+    } else if (!title) {
+      console.log('제목을 입력해주세요');
+    } else if (!desc) {
+      console.log('스터디 소개를 입력해주세요');
+    } else if (!content) {
+      console.log('활동 내용을 입력해주세요');
     }
   };
+
   const renderItem = () => (
     <StyledView>
       <Typography variant="heading4">스터디에 대해 소개해주세요.</Typography>
@@ -68,7 +73,7 @@ export default function RecruitAdd() {
           render={({ field: { onChange, value } }) => <StudyRule value={value} onChange={onChange} />}
         />
         <Controller
-          name="content"
+          name="rulesDesc"
           control={control}
           rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
@@ -97,7 +102,7 @@ export default function RecruitAdd() {
         )}
       />
       <Button variant="contained" style={{ marginHorizontal: 'auto' }} onPress={onSubmit}>
-        다음
+        글 등록하기
       </Button>
     </StyledView>
   );
