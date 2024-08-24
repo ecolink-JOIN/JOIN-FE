@@ -57,9 +57,9 @@ export default function StudyRule({ value, onChange }: StudyRuleProps) {
 
 const CheckBoxContainer = styled(View)`
   flex-direction: row;
-  row-gap: 12;
-  column-gap: 32;
+  row-gap: 12px;
+  column-gap: 32px;
   flex-wrap: wrap;
-  margin-vertical: 16;
+  margin: 16px 0px;
   align-items: center;
 `;

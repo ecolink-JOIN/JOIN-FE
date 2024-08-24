@@ -8,21 +8,40 @@ import Button from '@/components/atoms/Button';
 import { useForm, Controller } from 'react-hook-form';
 import StudyRule from '@/components/organisms/Form/StudyRule';
 import StyledTextInput from '@/components/atoms/TextField';
+import Toast from 'react-native-toast-message';
+
+interface FormData {
+  title: string;
+  desc: string;
+  rules: number[];
+  content: string;
+  rulesDesc: string;
+  eligibility: string;
+}
 
 export default function RecruitAdd() {
-  const { control, formState } = useForm({
+  const showToast = ({ text1 }: { text1: string }) => {
+    Toast.show({
+      type: 'form',
+      // And I can pass any custom props I want
+      text1,
+      position: 'bottom',
+      visibilityTime: 2000,
+    });
+  };
+  const { control, formState, handleSubmit } = useForm({
     defaultValues: { title: '', desc: '', rules: [], content: '', rulesDesc: '', eligibility: '' },
   });
   const { title, desc, content } = formState.dirtyFields;
-  const onSubmit = () => {
+  const onSubmit = (data: FormData) => {
     if (title && desc && content) {
-      console.log('submit');
+      console.log('submit', data);
     } else if (!title) {
-      console.log('제목을 입력해주세요');
+      showToast({ text1: '제목을 입력해주세요' });
     } else if (!desc) {
-      console.log('스터디 소개를 입력해주세요');
+      showToast({ text1: '스터디 소개를 입력해주세요' });
     } else if (!content) {
-      console.log('활동 내용을 입력해주세요');
+      showToast({ text1: '활동 내용을 입력해주세요' });
     }
   };
 
@@ -32,7 +51,6 @@ export default function RecruitAdd() {
       <Controller
         name="title"
         control={control}
-        rules={{ required: true }}
         render={({ field: { onChange, value } }) => (
           <NormalTextInput title={'제목'} value={value} onChangeText={onChange} placeholder="글 제목을 입력해주세요." />
         )}
@@ -40,7 +58,6 @@ export default function RecruitAdd() {
       <Controller
         name="desc"
         control={control}
-        rules={{ required: true }}
         render={({ field: { onChange, value } }) => (
           <NormalTextInput
             title={'스터디 소개'}
@@ -54,7 +71,6 @@ export default function RecruitAdd() {
       <Controller
         name="content"
         control={control}
-        rules={{ required: true }}
         render={({ field: { onChange, value } }) => (
           <NormalTextInput
             title={'활동 내용'}
@@ -69,13 +85,11 @@ export default function RecruitAdd() {
         <Controller
           name="rules"
           control={control}
-          rules={{ required: true }}
           render={({ field: { onChange, value } }) => <StudyRule value={value} onChange={onChange} />}
         />
         <Controller
           name="rulesDesc"
           control={control}
-          rules={{ required: true }}
           render={({ field: { onChange, value } }) => (
             <ReasonInput
               onChangeText={onChange}
@@ -90,7 +104,6 @@ export default function RecruitAdd() {
       <Controller
         name="eligibility"
         control={control}
-        rules={{ required: true }}
         render={({ field: { onChange, value } }) => (
           <NormalTextInput
             title={'지원 자격'}
@@ -101,7 +114,7 @@ export default function RecruitAdd() {
           />
         )}
       />
-      <Button variant="contained" style={{ marginHorizontal: 'auto' }} onPress={onSubmit}>
+      <Button variant="contained" style={{ marginHorizontal: 'auto' }} onPress={handleSubmit(onSubmit)}>
         글 등록하기
       </Button>
     </StyledView>
