@@ -1,36 +1,56 @@
 import StaticView from '@/components/atoms/View/StaticView';
-import React, { useState } from 'react';
+import React from 'react';
 import Typography from '@/components/atoms/Typography';
 import styled from 'styled-components/native';
-import { Category, DateTime, MeetingLocation, MeetingWay, Nums } from '@/components/molecules/FormControl/RecruitBase';
 import NormalTextInput from '@/components/organisms/Form/NormalTextInput';
 import { View, FlatList } from 'react-native';
 import Button from '@/components/atoms/Button';
+import { useForm, Controller } from 'react-hook-form';
 
 export default function RecruitAdd() {
-  const [title, setTitle] = useState('');
-  const [desc, setDesc] = useState('');
-  const [content, setContent] = useState('');
+  const { control, handleSubmit } = useForm();
 
+  const onSubmit = handleSubmit((data) => console.log(data));
   const renderItem = () => (
     <StyledView>
       <Typography variant="heading4">스터디에 대해 소개해주세요.</Typography>
-      <NormalTextInput title={'제목'} value={title} onChangeText={setTitle} placeholder="글 제목을 입력해주세요." />
-      <NormalTextInput
-        title={'스터디 소개'}
-        value={desc}
-        onChangeText={setDesc}
-        placeholder="스터디에 대해 소개해주세요!"
-        height={88}
+      <Controller
+        control={control}
+        rules={{ required: true }}
+        render={({ field: { onChange, value } }) => (
+          <NormalTextInput title={'제목'} value={value} onChangeText={onChange} placeholder="글 제목을 입력해주세요." />
+        )}
+        name="title"
       />
-      <NormalTextInput
-        title={'활동 내용'}
-        value={content}
-        onChangeText={setContent}
-        placeholder="어떤 활동을 하게 되나요?"
-        height={88}
+      <Controller
+        control={control}
+        rules={{ required: true }}
+        render={({ field: { onChange, value } }) => (
+          <NormalTextInput
+            title={'스터디 소개'}
+            value={value}
+            onChangeText={onChange}
+            placeholder="스터디에 대해 소개해주세요!"
+            height={88}
+          />
+        )}
+        name="desc"
       />
-      <Button variant="contained" style={{ marginHorizontal: 'auto' }}>
+      <Controller
+        control={control}
+        rules={{ required: true }}
+        render={({ field: { onChange, value } }) => (
+          <NormalTextInput
+            title={'활동 내용'}
+            value={value}
+            onChangeText={onChange}
+            placeholder="어떤 활동을 하게 되나요?"
+            height={88}
+          />
+        )}
+        name="content"
+      />
+      <Button variant="contained" style={{ marginHorizontal: 'auto' }} onPress={onSubmit}>
         다음
       </Button>
     </StyledView>
