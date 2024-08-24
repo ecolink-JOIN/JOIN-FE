@@ -4,16 +4,15 @@ import styled from 'styled-components/native';
 import Typography from '@/components/atoms/Typography';
 import StyledTextInput from '@/components/atoms/TextField';
 
-interface ApplicationReasonProps {
+interface NormalTextInputProps {
   title: string;
-  line?: number;
   placeholder: string;
   value: string;
   height?: number;
   onChangeText: (value: string) => void;
 }
 
-export default function NormalTextInput(props: ApplicationReasonProps) {
+export default function NormalTextInput(props: NormalTextInputProps) {
   return (
     <View>
       <Typography variant="button">{props.title}</Typography>
