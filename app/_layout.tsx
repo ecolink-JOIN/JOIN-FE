@@ -6,8 +6,9 @@ import { useEffect } from 'react';
 import { RecoilRoot } from 'recoil';
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
+import Toast from 'react-native-toast-message';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { toastConfig } from '@/components/atoms/Toast/CustomToast';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -15,7 +16,6 @@ SplashScreen.preventAutoHideAsync();
 export const unstable_settings = {
   initialRouteName: '(tabs)',
 };
-
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -50,6 +50,7 @@ export default function RootLayout() {
             <Stack.Screen name="(form)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
+          <Toast config={toastConfig} />
         </GestureHandlerRootView>
       </RecoilRoot>
     </ThemeProvider>
