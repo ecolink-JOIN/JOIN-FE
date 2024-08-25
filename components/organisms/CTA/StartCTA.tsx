@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
-import Button from '@/components/atoms/Button';
 import CTAView from '@/components/atoms/View/CTAView';
+import IconButton from '@/components/molecules/IconButton';
 
 function StartCTA() {
   const router = useRouter();
@@ -11,12 +11,9 @@ function StartCTA() {
 
   return (
     <CTAView>
-      <Button variant="contained" size="large" fullWidth onPress={moveToSignIn}>
-        시작하기
-      </Button>
-      <Button variant="outlined" size="large" fullWidth onPress={moveToSignIn}>
-        계정이 이미 있어요
-      </Button>
+      <IconButton name="naver" onPress={moveToSignIn} />
+      <IconButton name="kakao" onPress={moveToSignIn} />
+      <IconButton name="google" onPress={moveToSignIn} />
     </CTAView>
   );
 }

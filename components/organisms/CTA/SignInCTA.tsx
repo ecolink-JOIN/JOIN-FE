@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import CTAView from '@/components/atoms/View/CTAView';
-import OauthButton from '@/components/atoms/Button/OauthButton';
 import { Platform } from 'react-native';
+import Button from '@/components/atoms/Button';
 
 function SignInCTA() {
   const router = useRouter();
@@ -12,20 +12,20 @@ function SignInCTA() {
 
   return (
     <CTAView>
-      <OauthButton size="small" oauth="naver" fullWidth onPress={handleStartPress}>
+      <Button size="small" fullWidth onPress={handleStartPress} variant={'contained'}>
         네이버로 로그인
-      </OauthButton>
-      <OauthButton size="small" oauth="kakao" fullWidth onPress={handleStartPress}>
+      </Button>
+      <Button size="small" fullWidth onPress={handleStartPress} variant={'contained'}>
         카카오톡 계정으로 로그인
-      </OauthButton>
-      <OauthButton size="small" oauth="google" fullWidth onPress={handleStartPress}>
+      </Button>
+      <Button size="small" fullWidth onPress={handleStartPress} variant={'contained'}>
         Google 계정으로 로그인
-      </OauthButton>
+      </Button>
       {Platform.select({
         ios: (
-          <OauthButton size="small" oauth="apple" fullWidth onPress={handleStartPress}>
+          <Button size="small" fullWidth onPress={handleStartPress} variant={'contained'}>
             Apple 계정으로 로그인
-          </OauthButton>
+          </Button>
         ),
       })}
     </CTAView>

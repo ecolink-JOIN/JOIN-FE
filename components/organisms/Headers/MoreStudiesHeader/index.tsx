@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import { useRouter } from 'expo-router';
-import IconButton from '@/components/atoms/IconButton';
+import IconButton from '@/components/molecules/IconButton';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
 
