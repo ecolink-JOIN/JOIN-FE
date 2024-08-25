@@ -3,6 +3,7 @@ import React from 'react';
 import Button from '@/components/atoms/Button';
 import styled from 'styled-components/native';
 import { router } from 'expo-router';
+import RowView from '@/components/atoms/View/RowView';
 
 export default function ApplicationButton({ disabled }: { disabled: boolean }) {
   const handleApplicationPress = () => {
@@ -17,8 +18,7 @@ export default function ApplicationButton({ disabled }: { disabled: boolean }) {
   );
 }
 
-const ButtonView = styled(View)`
+const ButtonView = styled(RowView)`
   width: 100%;
-  flex-direction: row;
   justify-content: center;
 `;

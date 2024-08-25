@@ -6,6 +6,7 @@ import { colors } from '@/theme';
 import Calander from '@/assets/images/Calander.svg';
 import dayjs from 'dayjs';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import RowView from '../View/RowView';
 
 interface CustomStepperProps {
   placeholder: string;
@@ -32,8 +33,7 @@ const CustomDatePicker: React.FC<CustomStepperProps> = ({ placeholder, value, bo
 
 export default CustomDatePicker;
 
-const StepperView = styled.View`
-  flex-direction: row;
+const StepperView = styled(RowView)`
   align-items: center;
   justify-content: space-around;
   display: flex;

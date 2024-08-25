@@ -4,6 +4,7 @@ import styled from 'styled-components/native';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import CustomCheckbox from '@/components/atoms/Checkbox/SquareCheckbox';
+import RowView from '@/components/atoms/View/RowView';
 
 interface StudyRuleProps {
   value: number[];
@@ -28,12 +29,12 @@ export default function StudyRule({ value, onChange }: StudyRuleProps) {
 
   return (
     <View>
-      <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+      <RowView style={{ gap: 8, alignItems: 'center' }}>
         <Typography variant="button">스터디 규칙</Typography>
         <Typography variant="body4" style={{ color: colors.primary }}>
           (중복 선택 가능)
         </Typography>
-      </View>
+      </RowView>
       <CheckBoxContainer>
         {rules.map((rule) => {
           const isSelected = value.includes(rule.id);
@@ -55,8 +56,7 @@ export default function StudyRule({ value, onChange }: StudyRuleProps) {
   );
 }
 
-const CheckBoxContainer = styled(View)`
-  flex-direction: row;
+const CheckBoxContainer = styled(RowView)`
   row-gap: 12px;
   column-gap: 32px;
   flex-wrap: wrap;

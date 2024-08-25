@@ -6,9 +6,9 @@ import BottomSheet from '@/components/molecules/BottomSheet';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
 import CardList from '@/components/molecules/CardList';
+import RowView from '@/components/atoms/View/RowView';
 
-const Container = styled.View`
-  flex-direction: row;
+const Container = styled(RowView)`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;

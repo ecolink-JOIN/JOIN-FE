@@ -5,6 +5,7 @@ import Typography from '../Typography';
 import { colors } from '@/theme';
 import Minus from '@/assets/images/Minus.svg';
 import Plus from '@/assets/images/Plus.svg';
+import RowView from '../View/RowView';
 
 interface CustomStepperProps {
   active: boolean;
@@ -31,8 +32,7 @@ const CustomStepper: React.FC<CustomStepperProps> = ({ active, step, stepConvert
 
 export default CustomStepper;
 
-const StepperView = styled.View`
-  flex-direction: row;
+const StepperView = styled(RowView)`
   align-items: center;
   justify-content: space-between;
   display: flex;

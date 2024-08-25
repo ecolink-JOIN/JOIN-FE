@@ -1,11 +1,11 @@
-import { SafeAreaView, View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import Typography from '@/components/atoms/Typography';
 import Icon from '@/components/atoms/Icon';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
+import RowView from '@/components/atoms/View/RowView';
 
-const HeaderContainer = styled.View`
-  flex-direction: row;
+const HeaderContainer = styled(RowView)`
   justify-content: space-between;
   align-items: center;
   padding-vertical: 16px;
@@ -13,8 +13,7 @@ const HeaderContainer = styled.View`
   background-color: ${colors.white};
 `;
 
-const IconContainer = styled.View`
-  flex-direction: row;
+const IconContainer = styled(RowView)`
   gap: 12px;
 `;
 

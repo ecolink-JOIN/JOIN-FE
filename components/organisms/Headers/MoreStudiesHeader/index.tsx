@@ -4,13 +4,13 @@ import { useRouter } from 'expo-router';
 import IconButton from '@/components/molecules/IconButton';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
+import RowView from '@/components/atoms/View/RowView';
 
 interface MoreStudiesHeaderProps {
   title: string;
 }
 
-const HeaderContainer = styled.View`
-  flex-direction: row;
+const HeaderContainer = styled(RowView)`
   align-items: center;
   height: 60px;
   background-color: ${colors.white};

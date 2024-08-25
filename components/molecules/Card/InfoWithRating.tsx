@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import Rating from '../Rating';
+import RowView from '@/components/atoms/View/RowView';
 
 interface InfoWithRatingProps {
   name: string;
@@ -20,8 +21,7 @@ const InfoWithRating: React.FC<InfoWithRatingProps> = ({ name, rating }) => {
 
 export default InfoWithRating;
 
-const Container = styled.View`
-  flex-direction: row;
+const Container = styled(RowView)`
   gap: 4px;
 `;
 

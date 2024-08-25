@@ -4,6 +4,7 @@ import Typography from '@/components/atoms/Typography';
 import { View } from 'react-native';
 import { CustomDropdown } from '@/components/atoms/Dropdown';
 import { sgis } from '@/assets/data/sgis';
+import RowView from '@/components/atoms/View/RowView';
 
 export const MeetingLocation = () => {
   const [province, setProvince] = useState<string | null>(null);
@@ -20,14 +21,14 @@ export const MeetingLocation = () => {
   return (
     <FormModView>
       <Typography variant="button">모임 장소</Typography>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around', gap: 10 }}>
+      <RowView style={{ justifyContent: 'space-around', gap: 10 }}>
         <View style={{ flex: 1 }}>
           <CustomDropdown items={provinceitems} placeholder="시/도" onChangeValue={setProvince} />
         </View>
         <View style={{ flex: 1 }}>
           <CustomDropdown items={stateitems} placeholder="구/군" onChangeValue={setState} />
         </View>
-      </View>
+      </RowView>
     </FormModView>
   );
 };
