@@ -5,7 +5,7 @@ import MyIcon from '@/assets/images/my.svg';
 import MyOutlineIcon from '@/assets/images/my-outline.svg';
 import VerifyOutlineIcon from '@/assets/images/verify-outline.svg';
 import { SvgProps } from 'react-native-svg';
-import ChevronDownIcon from '@/assets/images/ChevronDown';
+import ChevronDownIcon from '@/assets/images/ChevronDownIcon';
 import CloseIcon from '@/assets/images/CloseIcon';
 import CheckIcon from '@/assets/images/CheckIcon';
 import NaverIcon from '@/assets/images/naver.svg';
@@ -19,8 +19,9 @@ import ControllerIcon from '@/assets/images/controller.svg';
 import LikeIcon from '@/assets/images/like.svg';
 import LikeOutlineIcon from '@/assets/images/like-outline.svg';
 import StarIcon from '@/assets/images/star.svg';
-import ArrowLeftIcon from '@/assets/images/ArrowLeft';
+import ArrowLeftIcon from '@/assets/images/ArrowLeftIcon';
 import EllipsisIcon from '@/assets/images/EllipsisIcon';
+import ThinCheckIcon from '@/assets/images/ThinCheckIcon';
 
 export type IconTypes =
   | 'home'
@@ -35,6 +36,7 @@ export type IconTypes =
   | 'close-outline'
   | 'check'
   | 'check-outline'
+  | 'thin-check'
   | 'kakao'
   | 'google'
   | 'apple'
@@ -78,6 +80,8 @@ function Icon({ name, ...rest }: IconProps) {
       return <CheckIcon fill={colors.primary} {...rest} />;
     case 'check-outline':
       return <CheckIcon fill={colors.white} {...rest} />;
+    case 'thin-check':
+      return <ThinCheckIcon {...rest} />;
     case 'naver':
       return <NaverIcon {...rest} />;
     case 'kakao':

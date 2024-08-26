@@ -1,15 +1,17 @@
 import React from 'react';
 import StaticView from '@/components/atoms/View/StaticView';
-import StartGuide from '@/components/organisms/Guide/StartGuide';
-import StartCTA from '@/components/organisms/CTA/StartCTA';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SignInGuide from '@/components/organisms/Guide/SignInGuide';
+import SignInCTA from '@/components/organisms/CTA/SignInCTA';
 
-function SignScreen() {
+function SignInScreen() {
   return (
     <StaticView>
-      <StartGuide />
-      <StartCTA />
+      <SafeAreaView style={{ marginTop: 40 }} />
+      <SignInGuide />
+      <SignInCTA />
     </StaticView>
   );
 }
 
-export default SignScreen;
+export default SignInScreen;
