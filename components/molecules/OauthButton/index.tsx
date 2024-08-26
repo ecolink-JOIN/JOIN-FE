@@ -30,15 +30,16 @@ const IconContainer = styled(Animated.View)<IconContainerProps>`
         return 'transparent';
     }
   }};
+  border: ${({ provider }) => (provider === 'google' ? `1px solid ${colors.gray[3]}` : 'none')};
 `;
 
-interface IconButtonProps extends PressableProps {
+interface OauthButtonProps extends PressableProps {
   provider: IconTypes;
   svgProps?: SvgProps;
   size?: number;
 }
 
-const IconButton: React.FC<IconButtonProps> = ({ svgProps, provider, ...rest }) => {
+const OauthButton: React.FC<OauthButtonProps> = ({ svgProps, provider, ...rest }) => {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -64,4 +65,4 @@ const IconButton: React.FC<IconButtonProps> = ({ svgProps, provider, ...rest }) 
   );
 };
 
-export default IconButton;
+export default OauthButton;

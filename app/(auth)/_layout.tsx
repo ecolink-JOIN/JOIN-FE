@@ -6,6 +6,7 @@ import { Pressable } from 'react-native';
 function AuthLayout() {
   return (
     <Stack
+      initialRouteName="index"
       screenOptions={({ navigation }) => ({
         headerShown: true,
         headerShadowVisible: false,
