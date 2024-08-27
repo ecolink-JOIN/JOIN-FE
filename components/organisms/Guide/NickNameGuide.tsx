@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
-import { Keyboard, View, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard, View, TouchableWithoutFeedback, TextInput } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
-import TextField from '@/components/atoms/TextField';
 import Typography from '@/components/atoms/Typography';
 import ContentView from '@/components/atoms/View/ContentView';
 import RowView from '@/components/atoms/View/RowView';
-import Button from '@/components/atoms/Button';
 import { useNickNameContext } from '@/context/NickNameContext';
+import { colors } from '@/theme';
+import DuplicateCheckButton from '@/components/atoms/DuplicateCheckButton';
 
 type FormValues = {
   nickname: string;
@@ -57,18 +57,18 @@ function NickNameGuide() {
           <CameraIcon source={require('@/assets/images/camera.png')} />
         </ProfileContainer>
         <View style={{ width: '100%', gap: 12 }}>
-          <RowView>
-            <Controller
-              name="nickname"
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <StyledTextField value={value} onChangeText={onChange} placeholder="닉네임을 입력하세요" />
-              )}
-            />
-            <Button variant="outlined" onPress={handleSubmit(onSubmit)}>
-              <Typography variant="button">중복 확인</Typography>
-            </Button>
-          </RowView>
+          <TextFieldContainer>
+            <RowView>
+              <Controller
+                name="nickname"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <StyledTextField value={value} onChangeText={onChange} placeholder="닉네임을 입력하세요" />
+                )}
+              />
+              <DuplicateCheckButton onPress={handleSubmit(onSubmit)} />
+            </RowView>
+          </TextFieldContainer>
           <ValidationMessage color={getMessageColor()}>{validationMessage || ' '}</ValidationMessage>
         </View>
         <Typography variant="body2">닉네임은 추후에 변경할 수 없어요.{'\n'}신중하게 닉네임을 설정해주세요.</Typography>
@@ -82,7 +82,7 @@ const ProfileContainer = styled.View`
   align-self: center;
   width: 140px;
   height: 140px;
-  border-radius: 50%;
+  border-radius: 70px;
   margin-top: 20px;
 `;
 
@@ -100,9 +100,15 @@ const CameraIcon = styled.Image`
   border-radius: 20px;
 `;
 
-const StyledTextField = styled(TextField)`
+const TextFieldContainer = styled.View`
+  border-bottom-width: 1px;
+  border-bottom-color: ${colors.gray[7]};
+`;
+
+const StyledTextField = styled(TextInput)`
   flex: 1;
   margin-right: 8px;
+  margin-bottom: 12px;
 `;
 
 const ValidationMessage = styled(Typography).attrs({

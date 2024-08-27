@@ -12,7 +12,7 @@ interface IconContainerProps {
 const IconContainer = styled(Animated.View)<IconContainerProps>`
   justify-content: center;
   align-items: center;
-  border-radius: 50%;
+  border-radius: 32px;
   width: 64px;
   height: 64px;
   padding: 0;
