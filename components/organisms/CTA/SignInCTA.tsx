@@ -1,33 +1,30 @@
 import { useRouter } from 'expo-router';
 import CTAView from '@/components/atoms/View/CTAView';
-import OauthButton from '@/components/atoms/Button/OauthButton';
+import OauthButton from '@/components/molecules/OauthButton';
 import { Platform } from 'react-native';
+import RowView from '@/components/atoms/View/RowView';
+import { IconTypes } from '@/components/atoms/Icon';
 
 function SignInCTA() {
   const router = useRouter();
 
-  const handleStartPress = () => {
-    router.replace('/(auth)/nickname');
+  const providers: IconTypes[] = ['naver', 'kakao', 'google', 'apple'];
+  const signIn = (provider: (typeof providers)[number]) => {
+    router.push(`(auth)/kakao-webview?provider=${provider}`);
   };
 
   return (
     <CTAView>
-      <OauthButton size="small" oauth="naver" fullWidth onPress={handleStartPress}>
-        네이버로 로그인
-      </OauthButton>
-      <OauthButton size="small" oauth="kakao" fullWidth onPress={handleStartPress}>
-        카카오톡 계정으로 로그인
-      </OauthButton>
-      <OauthButton size="small" oauth="google" fullWidth onPress={handleStartPress}>
-        Google 계정으로 로그인
-      </OauthButton>
-      {Platform.select({
-        ios: (
-          <OauthButton size="small" oauth="apple" fullWidth onPress={handleStartPress}>
-            Apple 계정으로 로그인
-          </OauthButton>
-        ),
-      })}
+      <RowView style={{ gap: 24, alignSelf: 'center' }}>
+        {providers.map((provider) => {
+          if (provider === 'apple') {
+            return Platform.select({
+              ios: <OauthButton key={provider} provider={provider} onPress={() => signIn(provider)} />,
+            });
+          }
+          return <OauthButton key={provider} provider={provider} onPress={() => signIn(provider)} />;
+        })}
+      </RowView>
     </CTAView>
   );
 }

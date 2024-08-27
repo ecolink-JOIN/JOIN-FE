@@ -3,6 +3,7 @@ import { View, ViewStyle } from 'react-native';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import Badge from '@/components/atoms/Badge';
+import RowView from '@/components/atoms/View/RowView';
 
 interface StudyInfoSectionProps {
   title: string;
@@ -24,16 +25,11 @@ const StudyInfoSection: React.FC<StudyInfoSectionProps> = ({ title, content, tag
         {title}
       </Typography>
       {tags && (
-        <View
-          style={{
-            flexDirection: 'row',
-            gap: 10,
-          }}
-        >
+        <RowView style={{ gap: 10 }}>
           {tags.map((tag) => (
             <Badge key={tag} variant="simple" value={tag} size="small" />
           ))}
-        </View>
+        </RowView>
       )}
       <Typography variant="body2" style={{ color: colors.gray[11] }}>
         {content}

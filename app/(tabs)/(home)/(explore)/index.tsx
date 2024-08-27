@@ -7,9 +7,9 @@ import StudySection from '@/components/organisms/StudySection';
 import { colors } from '@/theme';
 import BottomSheet from '@/components/molecules/BottomSheet';
 import studySections from '@/constants/StudySections';
+import RowView from '@/components/atoms/View/RowView';
 
-const Container = styled.View`
-  flex-direction: row;
+const Container = styled(RowView)`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;

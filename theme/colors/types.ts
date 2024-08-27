@@ -20,5 +20,4 @@ interface ColorValueTypes {
   white: ColorValue;
 }
 
-// Combine both interfaces
 export type ColorTypes = ColorStepTypes & ColorValueTypes;

@@ -2,6 +2,7 @@ import styled from 'styled-components/native';
 import Icon from '@/components/atoms/Icon';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
+import RowView from '@/components/atoms/View/RowView';
 
 interface RatingProps {
   value: number;
@@ -18,8 +19,7 @@ const Rating: React.FC<RatingProps> = ({ value }) => {
 
 export default Rating;
 
-const RatingContainer = styled.View`
-  flex-direction: row;
+const RatingContainer = styled(RowView)`
   align-items: center;
 `;
 

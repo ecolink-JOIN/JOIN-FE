@@ -2,15 +2,14 @@ import React from 'react';
 import { View, Pressable } from 'react-native';
 import Typography from '@/components/atoms/Typography';
 import styled from 'styled-components/native';
-import Card from '@/components/molecules/Card';
 import { colors } from '@/theme';
 import { useRouter } from 'expo-router';
 import CardList from '@/components/molecules/CardList';
+import RowView from '@/components/atoms/View/RowView';
 
-const Container = styled.View`
+const Container = styled(RowView)`
   padding-top: 20px;
   padding-horizontal: 20px;
-  flex-direction: row;
   justify-content: space-between;
 `;
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, PressableProps } from 'react-native';
 import styled from 'styled-components/native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import Icon, { IconTypes } from '../Icon';
+import Icon, { IconTypes } from '../../atoms/Icon';
 import { SvgProps } from 'react-native-svg';
 
 const IconContainer = styled(Animated.View)`

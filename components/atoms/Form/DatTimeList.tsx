@@ -9,6 +9,7 @@ import Plus from '@/assets/images/plus-circle-style-outline.svg';
 import CloseIcon from '@/assets/images/CloseIcon';
 import { colors } from '@/theme';
 import Typography from '../Typography';
+import RowView from '../View/RowView';
 interface DateTimeListProps {
   dayTime: DateTimeProps[];
   setDayTime: Dispatch<DateTimeProps[]>;
@@ -70,7 +71,7 @@ const DateTimeList = ({ dayTime, setDayTime }: DateTimeListProps) => {
     <View style={{ gap: 12 }}>
       {dayTime.map((item, idx) => {
         return (
-          <View style={{ flexDirection: 'row', gap: 8, height: 44 }} key={idx}>
+          <RowView style={{ gap: 8, height: 44 }} key={idx}>
             <View style={{ width: 84, height: 44 }}>
               <CustomDropdown items={items} placeholder="요일" onChangeValue={onChangeDay} idx={idx} />
             </View>
@@ -96,7 +97,7 @@ const DateTimeList = ({ dayTime, setDayTime }: DateTimeListProps) => {
             <Pressable onPress={() => deleteDayTime(idx)}>
               <CloseIcon stroke={colors.gray[9]} style={{ marginVertical: 'auto' }} width={24} height={24} />
             </Pressable>
-          </View>
+          </RowView>
         );
       })}
       {dayTime.length < 7 && (

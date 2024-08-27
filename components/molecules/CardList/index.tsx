@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import Card from '@/components/molecules/Card';
+import RowView from '@/components/atoms/View/RowView';
 
 interface CardData {
   title: string;
@@ -17,10 +18,9 @@ interface CardListProps {
   data: CardData[];
 }
 
-const CardsContainer = styled.View`
+const CardsContainer = styled(RowView)`
   padding: 20px;
   gap: 12px;
-  flex-direction: row;
   flex-wrap: wrap;
 `;
 

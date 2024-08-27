@@ -1,4 +1,4 @@
-import IconButton from '@/components/atoms/IconButton';
+import IconButton from '@/components/molecules/IconButton';
 import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 

@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 
 import Collapsible from '@/components/molecules/Collapsible';
 import ExternalLink from '@/components/atoms/ExternalLink';
@@ -54,7 +54,6 @@ function ExploreSection() {
           For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
           <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for different screen densities
         </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
         <ExternalLink href="https://reactnative.dev/docs/images">
           <ThemedText type="link">Learn more</ThemedText>
         </ExternalLink>

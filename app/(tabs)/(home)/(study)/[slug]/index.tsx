@@ -14,9 +14,9 @@ const StudyDetailsScreen: React.FC = () => {
       deadline="마감 D-3"
     >
       <StudyOverviewSection />
-      <Divider />
+      <Divider style={{ height: 4 }} />
       <StudyRulesSection />
-      <Divider />
+      <Divider style={{ height: 4 }} />
       <StudyApplicationSection />
     </StudyDetailsTemplate>
   );

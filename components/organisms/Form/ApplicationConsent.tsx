@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import { Checkbox } from '@/components/atoms/Checkbox';
+import RowView from '@/components/atoms/View/RowView';
 
 const ConsentTitle = `스터디장에게 (닉네임)님의 이력이 공개됩니다.`;
 const ConsentInfo = `* 공개정보\n 1. 닉네임\n 2. 현재 참여중인 스터디 개수\n 3. 현재 참여중인 스터디 평균 참여율\n 4. 지난 스터디 개수 및 평균 참여율`;
@@ -32,10 +33,9 @@ const ConsentView = styled.View`
   background-color: ${colors.white};
 `;
 
-const AgreeView = styled.View`
+const AgreeView = styled(RowView)`
   width: 100%;
   gap: 4px;
-  flex-direction: row;
   align-items: center;
   justify-content: center;
 `;

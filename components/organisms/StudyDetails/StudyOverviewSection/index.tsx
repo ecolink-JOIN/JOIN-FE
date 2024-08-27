@@ -4,13 +4,13 @@ import Badge from '@/components/atoms/Badge';
 import InfoWithRating from '@/components/molecules/Card/InfoWithRating';
 import StudyInfoSection from '@/components/molecules/StudyInfoSection';
 import { colors } from '@/theme';
+import RowView from '@/components/atoms/View/RowView';
 
 const StudyOverviewSection: React.FC = () => {
   return (
     <View style={{ paddingHorizontal: 20 }}>
-      <View
+      <RowView
         style={{
-          flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
           paddingTop: 28,
@@ -18,15 +18,15 @@ const StudyOverviewSection: React.FC = () => {
           paddingRight: 8,
         }}
       >
-        <View style={{ flexDirection: 'row', gap: 8 }}>
+        <RowView style={{ gap: 8 }}>
           <Badge variant="outlined" value="오프라인" />
           <Badge variant="contained" value="모집중" />
-        </View>
+        </RowView>
         <View style={{ gap: 4 }}>
           <InfoWithRating name="스터디장" rating={4.5} />
           <InfoWithRating name="스터디원" rating={3.8} />
         </View>
-      </View>
+      </RowView>
 
       <View
         style={{

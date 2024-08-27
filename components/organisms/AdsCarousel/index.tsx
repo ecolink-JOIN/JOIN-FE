@@ -3,9 +3,9 @@ import { useState } from 'react';
 import Carousel from 'react-native-reanimated-carousel';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
+import RowView from '@/components/atoms/View/RowView';
 
-const DotsContainer = styled.View`
-  flex-direction: row;
+const DotsContainer = styled(RowView)`
   justify-content: center;
   margin-top: 16px;
 `;
