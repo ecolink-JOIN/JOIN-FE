@@ -44,7 +44,7 @@ function GNB() {
         }}
       />
       <Tabs.Screen
-        name="typography"
+        name="(my)"
         options={{
           title: '마이',
           tabBarIcon: ({ focused }) => <Icon name={focused ? 'mypage' : 'mypage-outline'} />,
