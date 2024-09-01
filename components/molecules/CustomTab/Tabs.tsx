@@ -10,22 +10,21 @@ interface Props {
 }
 
 const Tabs = ({ selectedIndex, onSelectHandler, menus }: Props) => {
-  const length = 3;
-  const gap = 30;
-  const animatedValue = useRef(new Animated.Value(0)).current;
+  const length = menus.length;
   const windowWidth = Dimensions.get('window').width;
+  const gap = windowWidth * 0.06;
+  const animatedValue = useRef(new Animated.Value(0)).current;
   const tabWidth = (windowWidth - gap * (length + 1)) / length;
 
   useEffect(() => {
     let toValue = 0;
     toValue = selectedIndex * (tabWidth + gap);
-    console.log('🚀 ~ useEffect ~ toValue:', toValue);
     Animated.timing(animatedValue, {
       toValue,
       duration: 200,
       useNativeDriver: true,
     }).start();
-  }, [selectedIndex, tabWidth, animatedValue]);
+  }, [selectedIndex, tabWidth, animatedValue, gap]);
 
   const renderTabIndicator = () => (
     <Animated.View
@@ -52,7 +51,7 @@ const Tabs = ({ selectedIndex, onSelectHandler, menus }: Props) => {
       key={menu}
       onPress={() => onSelectHandler(index)}
     >
-      <Typography variant="body3" style={{ color: colors.primary }}>
+      <Typography variant="body3" style={{ color: selectedIndex === index ? colors.primary : colors.gray[7] }}>
         {menu}
       </Typography>
     </Pressable>

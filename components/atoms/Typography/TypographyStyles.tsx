@@ -25,7 +25,7 @@ export const Heading4 = styled.Text`
 `;
 
 export const Subtitle1 = styled.Text`
-  font: 700 20px/28px 'Pretendard-Bold';
+  font: 20px/28px 'Pretendard-Bold';
   letter-spacing: -0.4px;
   text-align: left;
 `;

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Dimensions, View, ScrollView } from 'react-native';
 import Tabs from './Tabs';
+import { colors } from '@/theme';
 
 interface Props {
   menus: string[];
@@ -36,14 +37,16 @@ const TabScreen = ({ menus, initTabIndex = 0, contents }: Props) => {
         }}
       >
         {contents.map((content, index) => (
-          <View
+          <ScrollView
             key={index}
             style={{
               width: windowWidth,
+              padding: 20,
+              backgroundColor: colors.gray[2],
             }}
           >
-            {content}
-          </View>
+            <View style={{ paddingBottom: 50 }}>{content}</View>
+          </ScrollView>
         ))}
       </ScrollView>
     </View>

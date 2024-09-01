@@ -23,6 +23,7 @@ import StarIcon from '@/assets/images/star.svg';
 import ArrowLeftIcon from '@/assets/images/ArrowLeftIcon';
 import EllipsisIcon from '@/assets/images/EllipsisIcon';
 import ThinCheckIcon from '@/assets/images/ThinCheckIcon';
+import Pencil from '@/assets/images/pencil.svg';
 
 export type IconTypes =
   | 'home'
@@ -52,7 +53,8 @@ export type IconTypes =
   | 'like-outline'
   | 'star'
   | 'arrow-left'
-  | 'ellipsis';
+  | 'ellipsis'
+  | 'pencil';
 interface IconProps extends SvgProps {
   name?: IconTypes;
   unread?: boolean;
@@ -113,6 +115,8 @@ function Icon({ name, unread, ...rest }: IconProps) {
       return <ArrowLeftIcon {...rest} />;
     case 'ellipsis':
       return <EllipsisIcon {...rest} />;
+    case 'pencil':
+      return <Pencil {...rest} />;
     default:
       return null;
   }

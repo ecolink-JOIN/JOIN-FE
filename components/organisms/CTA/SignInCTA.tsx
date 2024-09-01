@@ -10,8 +10,7 @@ function SignInCTA() {
 
   const providers: IconTypes[] = ['naver', 'kakao', 'google', 'apple'];
   const signIn = (provider: (typeof providers)[number]) => {
-    // router.push(`(auth)/kakao-webview?provider=${provider}`);
-    router.push(`/(my)`);
+    router.push(`(auth)/kakao-webview?provider=${provider}`);
   };
 
   return (
