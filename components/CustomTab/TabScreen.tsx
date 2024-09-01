@@ -22,7 +22,7 @@ const TabScreen = ({ menus, initTabIndex = 0, contents }: Props) => {
   };
 
   return (
-    <View style={{ flex: 1, marginTop: 30 }}>
+    <View style={{ flex: 1 }}>
       <Tabs menus={menus} selectedIndex={selectedIndex} onSelectHandler={onSelectTab} />
       <ScrollView
         horizontal
@@ -31,7 +31,7 @@ const TabScreen = ({ menus, initTabIndex = 0, contents }: Props) => {
         scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={(e) => {
-          const newIndex = Math.floor(Math.max(0, e.nativeEvent.contentOffset.x) / windowWidth);
+          const newIndex = Math.max(0, e.nativeEvent.contentOffset.x) / windowWidth;
           setSelectedIndex(newIndex);
         }}
       >

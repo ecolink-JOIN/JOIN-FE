@@ -1,22 +1,16 @@
-import { View, Text } from 'react-native';
 import TabScreen from '@/components/CustomTab/TabScreen';
+import { ManageStudy, JoinedStudy, InterestStudy } from '@/components/organisms/MyPage/Main/StudyTabs';
+import FormalInfo from '@/components/organisms/MyPage/Main/FormalInfo';
 
 const Screen = () => {
   return (
-    <TabScreen
-      menus={['메뉴1', '메뉴2', '메뉴3']}
-      contents={[
-        <View style={{ backgroundColor: '#C6DBDA', flex: 1 }}>
-          <Text>Content1</Text>
-        </View>,
-        <View style={{ backgroundColor: '#FED7C3', flex: 1 }}>
-          <Text>Content2</Text>
-        </View>,
-        <View style={{ backgroundColor: '#ECD5E3', flex: 1 }}>
-          <Text>Content3</Text>
-        </View>,
-      ]}
-    ></TabScreen>
+    <>
+      <FormalInfo />
+      <TabScreen
+        menus={['운영 스터디', '가입 스터디', '관심 스터디']}
+        contents={[<ManageStudy />, <JoinedStudy />, <InterestStudy />]}
+      />
+    </>
   );
 };
 
