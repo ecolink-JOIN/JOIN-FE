@@ -2,9 +2,8 @@ import React from 'react';
 import { router, Stack } from 'expo-router';
 import { View } from 'react-native';
 import Icon from '@/components/atoms/Icon';
-import Typography from '@/components/atoms/Typography';
 
-function MyLayout() {
+function ManageLayout() {
   return (
     <Stack
       screenOptions={{
@@ -12,7 +11,7 @@ function MyLayout() {
       }}
     >
       <Stack.Screen
-        name="index"
+        name="progress/[id]"
         options={{
           headerShown: true,
           headerShadowVisible: false,
@@ -20,7 +19,8 @@ function MyLayout() {
             borderTopColor: '#FF000000',
             borderTopWidth: 3,
           },
-          headerTitle: () => <Typography variant="heading4">마이</Typography>,
+          headerTitle: '',
+          headerLeft: () => <Icon name="arrow-left" onPress={() => router.back()} />,
           headerRight: () => (
             <View style={{ flexDirection: 'row', gap: 12 }}>
               <Icon name="alarm-unread" onPress={() => router.push('alarm')} />
@@ -33,4 +33,4 @@ function MyLayout() {
   );
 }
 
-export default MyLayout;
+export default ManageLayout;
