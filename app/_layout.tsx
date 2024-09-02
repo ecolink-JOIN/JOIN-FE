@@ -41,18 +41,18 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <RecoilRoot>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack initialRouteName="(tabs)">
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(form)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <Toast config={toastConfig} />
-        </GestureHandlerRootView>
-      </RecoilRoot>
-    </ThemeProvider>
+    // <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <RecoilRoot>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Stack initialRouteName="(tabs)">
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(form)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <Toast config={toastConfig} />
+      </GestureHandlerRootView>
+    </RecoilRoot>
+    // </ThemeProvider>
   );
 }

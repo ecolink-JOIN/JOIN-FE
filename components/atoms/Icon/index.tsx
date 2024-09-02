@@ -14,6 +14,7 @@ import GoogleIcon from '@/assets/images/google.svg';
 import AppleIcon from '@/assets/images/apple-white.svg';
 import WriteIcon from '@/assets/images/write.svg';
 import AlarmIcon from '@/assets/images/alarm.svg';
+import AlarmUnreadIcon from '@/assets/images/alarm_unread.svg';
 import SearchIcon from '@/assets/images/search.svg';
 import ControllerIcon from '@/assets/images/controller.svg';
 import LikeIcon from '@/assets/images/like.svg';
@@ -22,6 +23,7 @@ import StarIcon from '@/assets/images/star.svg';
 import ArrowLeftIcon from '@/assets/images/ArrowLeftIcon';
 import EllipsisIcon from '@/assets/images/EllipsisIcon';
 import ThinCheckIcon from '@/assets/images/ThinCheckIcon';
+import Pencil from '@/assets/images/pencil.svg';
 
 export type IconTypes =
   | 'home'
@@ -43,6 +45,7 @@ export type IconTypes =
   | 'naver'
   | 'apple'
   | 'alarm'
+  | 'alarm-unread'
   | 'write'
   | 'search'
   | 'controller'
@@ -50,11 +53,13 @@ export type IconTypes =
   | 'like-outline'
   | 'star'
   | 'arrow-left'
-  | 'ellipsis';
+  | 'ellipsis'
+  | 'pencil';
 interface IconProps extends SvgProps {
   name?: IconTypes;
+  unread?: boolean;
 }
-function Icon({ name, ...rest }: IconProps) {
+function Icon({ name, unread, ...rest }: IconProps) {
   switch (name) {
     case 'home':
       return <HomeIcon fill={colors.primary} stroke={colors.primary} {...rest} />;
@@ -92,6 +97,8 @@ function Icon({ name, ...rest }: IconProps) {
       return <AppleIcon {...rest} />;
     case 'alarm':
       return <AlarmIcon {...rest} />;
+    case 'alarm-unread':
+      return <AlarmUnreadIcon {...rest} />;
     case 'write':
       return <WriteIcon {...rest} />;
     case 'search':
@@ -108,6 +115,8 @@ function Icon({ name, ...rest }: IconProps) {
       return <ArrowLeftIcon {...rest} />;
     case 'ellipsis':
       return <EllipsisIcon {...rest} />;
+    case 'pencil':
+      return <Pencil {...rest} />;
     default:
       return null;
   }

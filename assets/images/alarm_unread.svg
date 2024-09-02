@@ -1,0 +1,9 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icons">
+<g id="bell">
+<path id="Rectangle 4" fill-rule="evenodd" clip-rule="evenodd" d="M12 2C15.7279 2 18.75 5.02204 18.75 8.74996C18.75 10.8604 18.75 12.9711 18.75 14.2571C18.75 17.6 21 18.7143 21 18.7143L3 18.7143C3 18.7143 5.25 17.6 5.25 14.2571C5.25 12.9711 5.25 10.8604 5.25 8.74996C5.25 5.02204 8.27208 2 12 2V2Z" stroke="#222222" stroke-width="1.5" stroke-linejoin="round"/>
+<path id="Oval" d="M9.42843 18.7139C9.42843 20.134 10.5797 21.2853 11.9999 21.2853C13.42 21.2853 14.5713 20.134 14.5713 18.7139" stroke="#222222" stroke-width="1.5"/>
+</g>
+<circle id="Ellipse 2393" cx="22" cy="2" r="2" fill="#FF7F5F"/>
+</g>
+</svg>
