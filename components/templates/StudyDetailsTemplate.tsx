@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, TouchableOpacity, Text, Modal } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 
@@ -9,6 +9,7 @@ import IconButtonGroup from '../molecules/IconButtonGroup';
 import StudyHeaderInfo from '../organisms/StudyDetails/StudyHeaderInfo';
 import { colors } from '@/theme';
 import { useStudyDetailsHeaderAnimation } from '@/hooks/useStudyDetailsHeaderAnimation';
+import Button from '../atoms/Button';
 
 const HEADER_HEIGHT = 130;
 
@@ -49,6 +50,15 @@ const BackgroundContainer = styled(Animated.View)`
   z-index: -1;
 `;
 
+const ModalContainer = styled.View`
+  flex: 1;
+  justify-content: flex-end;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding-horizontal: 20px;
+  gap: 8px;
+  padding-bottom: 40px;
+`;
+
 type Props = {
   children: React.ReactNode;
   title: string;
@@ -59,6 +69,7 @@ type Props = {
 
 const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, deadline }) => {
   const router = useRouter();
+  const [isModalVisible, setModalVisible] = useState(false);
   const {
     scrollHandler,
     headerAnimatedStyle,
@@ -68,15 +79,19 @@ const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, 
     blackStrokeStyle,
   } = useStudyDetailsHeaderAnimation();
 
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
   return (
     <Container>
       <BackgroundContainer style={scrollViewBackgroundStyle} />
       <IconContainer style={iconBackgroundStyle}>
         <Animated.View style={whiteStrokeStyle}>
-          <IconButtonGroup strokeColor={colors.white} onBackPress={() => router.back()} />
+          <IconButtonGroup strokeColor={colors.white} onBackPress={() => router.back()} onEllipsisPress={toggleModal} />
         </Animated.View>
         <Animated.View style={blackStrokeStyle}>
-          <IconButtonGroup strokeColor={colors.black} onBackPress={() => router.back()} />
+          <IconButtonGroup strokeColor={colors.black} onBackPress={() => router.back()} onEllipsisPress={toggleModal} />
         </Animated.View>
       </IconContainer>
       <Animated.ScrollView
@@ -89,6 +104,17 @@ const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, 
         </Header>
         <Content>{children}</Content>
       </Animated.ScrollView>
+
+      <Modal visible={isModalVisible} transparent animationType="fade" onRequestClose={toggleModal}>
+        <ModalContainer>
+          <Button variant="contained" fullWidth size="large" onPress={() => router.push('/(report)')}>
+            신고하기
+          </Button>
+          <Button variant="default" fullWidth size="large" onPress={toggleModal}>
+            취소
+          </Button>
+        </ModalContainer>
+      </Modal>
     </Container>
   );
 };

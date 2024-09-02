@@ -45,8 +45,8 @@ export default function RootLayout() {
     <RecoilRoot>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Stack initialRouteName="(tabs)">
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(form)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
