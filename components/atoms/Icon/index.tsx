@@ -53,6 +53,7 @@ export type IconTypes =
   | 'like-outline'
   | 'star'
   | 'arrow-left'
+  | 'arrow-right'
   | 'ellipsis'
   | 'pencil';
 interface IconProps extends SvgProps {
@@ -113,6 +114,8 @@ function Icon({ name, unread, ...rest }: IconProps) {
       return <StarIcon {...rest} />;
     case 'arrow-left':
       return <ArrowLeftIcon {...rest} />;
+    case 'arrow-right':
+      return <ArrowLeftIcon {...rest} style={[rest.style, { transform: [{ rotateY: '180deg' }] }]} />;
     case 'ellipsis':
       return <EllipsisIcon {...rest} />;
     case 'pencil':

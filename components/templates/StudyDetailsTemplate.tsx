@@ -107,7 +107,15 @@ const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, 
 
       <Modal visible={isModalVisible} transparent animationType="fade" onRequestClose={toggleModal}>
         <ModalContainer>
-          <Button variant="contained" fullWidth size="large" onPress={() => router.push('/(report)')}>
+          <Button
+            variant="contained"
+            fullWidth
+            size="large"
+            onPress={() => {
+              toggleModal();
+              router.push(`/(report)/${123456}`);
+            }}
+          >
             신고하기
           </Button>
           <Button variant="default" fullWidth size="large" onPress={toggleModal}>

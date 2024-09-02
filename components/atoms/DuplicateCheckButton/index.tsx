@@ -14,14 +14,14 @@ function DuplicateCheckButton({ onPress }: DuplicateCheckButtonProps) {
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
-      toValue: 0.9, // 버튼이 살짝 작아지게
+      toValue: 0.9,
       useNativeDriver: true,
     }).start();
   };
 
   const handlePressOut = () => {
     Animated.spring(scaleAnim, {
-      toValue: 1, // 원래 크기로 돌아옴
+      toValue: 1,
       friction: 3,
       tension: 40,
       useNativeDriver: true,
