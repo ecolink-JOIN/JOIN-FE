@@ -1,9 +1,12 @@
+import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import Typography from '@/components/atoms/Typography';
 import Icon from '@/components/atoms/Icon';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
 import RowView from '@/components/atoms/View/RowView';
+import IconButton from '@/components/molecules/IconButton';
+import SearchModal from '../../SearchModal';
 
 const HeaderContainer = styled(RowView)`
   justify-content: space-between;
@@ -17,7 +20,17 @@ const IconContainer = styled(RowView)`
   gap: 12px;
 `;
 
-const HomeHeader = () => {
+const HomeHeader: React.FC = () => {
+  const [isModalVisible, setModalVisible] = useState<boolean>(false);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <SafeAreaView>
       <HeaderContainer>
@@ -25,9 +38,11 @@ const HomeHeader = () => {
         <IconContainer>
           <Icon name="write" />
           <Icon name="alarm" />
-          <Icon name="search" />
+          <IconButton name="search" onPress={openModal} />
         </IconContainer>
       </HeaderContainer>
+
+      <SearchModal visible={isModalVisible} onClose={closeModal} />
     </SafeAreaView>
   );
 };
