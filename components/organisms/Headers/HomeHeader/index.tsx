@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native';
 import Typography from '@/components/atoms/Typography';
 import Icon from '@/components/atoms/Icon';
 import styled from 'styled-components/native';
@@ -7,6 +6,7 @@ import { colors } from '@/theme';
 import RowView from '@/components/atoms/View/RowView';
 import IconButton from '@/components/molecules/IconButton';
 import SearchModal from '../../SearchModal';
+import SafeAreaView from '@/components/atoms/View/SafeAreaView';
 
 const HeaderContainer = styled(RowView)`
   justify-content: space-between;

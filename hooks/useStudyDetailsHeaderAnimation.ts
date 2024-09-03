@@ -20,6 +20,14 @@ export const useStudyDetailsHeaderAnimation = () => {
     },
   });
 
+  const haderBackgroundStyle = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(scrollY.value, [0, HEADER_HEIGHT], [colors.primary, colors.white]);
+
+    return {
+      backgroundColor,
+    };
+  });
+
   const headerAnimatedStyle = useAnimatedStyle(() => {
     const translateY = interpolate(
       scrollY.value,
@@ -27,7 +35,7 @@ export const useStudyDetailsHeaderAnimation = () => {
       [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT],
     );
 
-    const backgroundColor = interpolateColor(scrollY.value, [0, HEADER_HEIGHT], [colors.primary, 'white']);
+    const backgroundColor = interpolateColor(scrollY.value, [0, HEADER_HEIGHT], [colors.primary, colors.white]);
 
     return {
       transform: [{ translateY }],
@@ -36,12 +44,12 @@ export const useStudyDetailsHeaderAnimation = () => {
   });
 
   const iconBackgroundStyle = useAnimatedStyle(() => {
-    const backgroundColor = scrollY.value >= COVER_THRESHOLD ? 'white' : 'transparent';
+    const backgroundColor = scrollY.value >= COVER_THRESHOLD ? colors.white : 'transparent';
     return { backgroundColor };
   });
 
   const scrollViewBackgroundStyle = useAnimatedStyle(() => {
-    const backgroundColor = scrollY.value >= HEADER_HEIGHT ? 'white' : colors.primary;
+    const backgroundColor = scrollY.value >= HEADER_HEIGHT ? colors.white : colors.primary;
     return { backgroundColor };
   });
 
@@ -58,6 +66,7 @@ export const useStudyDetailsHeaderAnimation = () => {
   return {
     scrollY,
     scrollHandler,
+    haderBackgroundStyle,
     headerAnimatedStyle,
     iconBackgroundStyle,
     scrollViewBackgroundStyle,

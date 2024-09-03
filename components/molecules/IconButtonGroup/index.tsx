@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
   iconButtonContainer: {
     width: '100%',
     flexDirection: 'row',
+    marginTop: 40,
     justifyContent: 'space-between',
   },
 });

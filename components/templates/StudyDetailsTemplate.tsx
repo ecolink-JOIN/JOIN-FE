@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, Text, Modal } from 'react-native';
+import { Modal, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
-
-import ThemedView from '@/components/atoms/View/ThemedView';
 import { useRouter } from 'expo-router';
 import IconButtonGroup from '../molecules/IconButtonGroup';
 import StudyHeaderInfo from '../organisms/StudyDetails/StudyHeaderInfo';
 import { colors } from '@/theme';
 import { useStudyDetailsHeaderAnimation } from '@/hooks/useStudyDetailsHeaderAnimation';
 import Button from '../atoms/Button';
+import SafeAreaView from '../atoms/View/SafeAreaView';
 
-const HEADER_HEIGHT = 130;
+const HEADER_HEIGHT = 80;
 
-const Container = styled(ThemedView)`
+const Container = styled(SafeAreaView)`
   flex: 1;
   position: relative;
 `;
@@ -22,10 +21,10 @@ const Header = styled(Animated.View)`
   overflow: hidden;
 `;
 
-const Content = styled(ThemedView)`
+const Content = styled(View)`
   flex: 1;
   gap: 24px;
-  padding-bottom: 20px;
+  background-color: ${colors.white};
   overflow: hidden;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
@@ -72,6 +71,7 @@ const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, 
   const [isModalVisible, setModalVisible] = useState(false);
   const {
     scrollHandler,
+    haderBackgroundStyle,
     headerAnimatedStyle,
     iconBackgroundStyle,
     scrollViewBackgroundStyle,
@@ -85,7 +85,7 @@ const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, 
 
   return (
     <Container>
-      <BackgroundContainer style={scrollViewBackgroundStyle} />
+      <BackgroundContainer style={haderBackgroundStyle} />
       <IconContainer style={iconBackgroundStyle}>
         <Animated.View style={whiteStrokeStyle}>
           <IconButtonGroup strokeColor={colors.white} onBackPress={() => router.back()} onEllipsisPress={toggleModal} />
@@ -94,12 +94,8 @@ const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, 
           <IconButtonGroup strokeColor={colors.black} onBackPress={() => router.back()} onEllipsisPress={toggleModal} />
         </Animated.View>
       </IconContainer>
-      <Animated.ScrollView
-        scrollEventThrottle={16}
-        onScroll={scrollHandler}
-        style={[{ flex: 1 }, scrollViewBackgroundStyle]}
-      >
-        <Header style={[headerAnimatedStyle, styles.header]}>
+      <Animated.ScrollView scrollEventThrottle={16} onScroll={scrollHandler} style={[scrollViewBackgroundStyle]}>
+        <Header style={[headerAnimatedStyle]}>
           <StudyHeaderInfo title={title} leader={leader} date={date} deadline={deadline} />
         </Header>
         <Content>{children}</Content>
@@ -126,11 +122,4 @@ const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, 
     </Container>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    paddingTop: 60,
-  },
-});
-
 export default StudyDetailsTemplate;
