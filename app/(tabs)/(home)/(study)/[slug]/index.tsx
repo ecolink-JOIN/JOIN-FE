@@ -4,8 +4,11 @@ import StudyRulesSection from '@/components/organisms/StudyDetails/StudyRulesSec
 import StudyApplicationSection from '@/components/organisms/StudyDetails/StudyApplicationSection';
 import StudyDetailsTemplate from '@/components/templates/StudyDetailsTemplate';
 import StudyOverviewSection from '@/components/organisms/StudyDetails/StudyOverviewSection';
+import { useLocalSearchParams } from 'expo-router';
 
 const StudyDetailsScreen: React.FC = () => {
+  const params = useLocalSearchParams<{ slug: string }>();
+
   return (
     <StudyDetailsTemplate
       title="직장인 영어 회화 스터디 1기"

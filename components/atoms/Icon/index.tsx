@@ -15,7 +15,7 @@ import AppleIcon from '@/assets/images/apple-white.svg';
 import WriteIcon from '@/assets/images/write.svg';
 import AlarmIcon from '@/assets/images/alarm.svg';
 import AlarmUnreadIcon from '@/assets/images/alarm_unread.svg';
-import SearchIcon from '@/assets/images/search.svg';
+import SearchIcon from '@/assets/images/SearchIcon';
 import ControllerIcon from '@/assets/images/controller.svg';
 import LikeIcon from '@/assets/images/like.svg';
 import LikeOutlineIcon from '@/assets/images/like-outline.svg';
@@ -24,6 +24,7 @@ import ArrowLeftIcon from '@/assets/images/ArrowLeftIcon';
 import EllipsisIcon from '@/assets/images/EllipsisIcon';
 import ThinCheckIcon from '@/assets/images/ThinCheckIcon';
 import Pencil from '@/assets/images/pencil.svg';
+import ClockIcon from '@/assets/images/clock.svg';
 
 export type IconTypes =
   | 'home'
@@ -53,8 +54,10 @@ export type IconTypes =
   | 'like-outline'
   | 'star'
   | 'arrow-left'
+  | 'arrow-right'
   | 'ellipsis'
-  | 'pencil';
+  | 'pencil'
+  | 'clock';
 interface IconProps extends SvgProps {
   name?: IconTypes;
   unread?: boolean;
@@ -113,10 +116,14 @@ function Icon({ name, unread, ...rest }: IconProps) {
       return <StarIcon {...rest} />;
     case 'arrow-left':
       return <ArrowLeftIcon {...rest} />;
+    case 'arrow-right':
+      return <ArrowLeftIcon {...rest} style={[rest.style, { transform: [{ rotateY: '180deg' }] }]} />;
     case 'ellipsis':
       return <EllipsisIcon {...rest} />;
     case 'pencil':
       return <Pencil {...rest} />;
+    case 'clock':
+      return <ClockIcon {...rest} />;
     default:
       return null;
   }
