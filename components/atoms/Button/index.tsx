@@ -12,24 +12,39 @@ const styles = StyleSheet.create({
   outlined: {
     color: colors.primary,
   },
+  default: {
+    color: colors.gray[7],
+  },
   disabled: {
     color: colors.gray[7],
   },
 });
 
 interface PrimaryButtonProps extends ButtonProps {
-  variant: 'contained' | 'outlined';
+  variant: 'contained' | 'outlined' | 'default';
   children: React.ReactNode;
 }
 
 const PrimaryButton = styled(StyledButton)<PrimaryButtonProps>`
   background-color: ${({ variant, disabled }) =>
-    disabled ? colors.gray[2] : variant === 'contained' ? colors.primary : 'transparent'};
+    disabled
+      ? colors.gray[2]
+      : variant === 'contained'
+        ? colors.primary
+        : variant === 'default'
+          ? colors.gray[2]
+          : 'transparent'};
   border-width: ${({ variant }) => (variant === 'outlined' ? '1px' : 0)};
   border-color: ${({ variant }) => (variant === 'outlined' ? colors.primary : 'transparent')};
 `;
 
-const Button: React.FC<PrimaryButtonProps> = ({ variant, children, fullWidth, size = 'medium', ...props }) => {
+const Button: React.FC<PrimaryButtonProps> = ({
+  variant = 'default',
+  children,
+  fullWidth,
+  size = 'medium',
+  ...props
+}) => {
   return (
     <PrimaryButton variant={variant} fullWidth={fullWidth} size={size} {...props}>
       <Typography

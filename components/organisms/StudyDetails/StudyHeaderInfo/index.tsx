@@ -1,8 +1,9 @@
 import React from 'react';
-import { SafeAreaView, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
 import Bar from '@/components/atoms/Bar';
+import SafeAreaView from '@/components/atoms/View/SafeAreaView';
 
 type StudyHeaderInfoProps = {
   title: string;

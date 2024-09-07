@@ -20,6 +20,7 @@ const StudyApplicationSection: React.FC = () => {
       <View
         style={{
           padding: 20,
+          paddingBottom: 40,
         }}
       >
         <Button variant="contained" fullWidth size="large" onPress={handlePress}>
