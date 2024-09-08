@@ -1,14 +1,9 @@
 import React from 'react';
 // import { useLocalSearchParams } from 'expo-router';
-import {
-  ManageView,
-  ManageBox,
-  ManageBoxView,
-  shadowStyles,
-  ListComponent,
-} from '@/components/molecules/MyMolecules/ManageView';
+import { ManageView, ManageBox, ListComponent } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import { Status, Attendance, Approval, KakaoLink } from '@/components/organisms/MyPage/Manage';
+import { FlatList } from 'react-native';
 
 const Progress = () => {
   // const { id } = useLocalSearchParams();
@@ -31,14 +26,18 @@ const Progress = () => {
         <ListComponent title="스터디 공지" href="#" />
         <ListComponent title="자동 알림 메세지 설정" href="#" />
       </ManageBox>
-      <ManageBox title="스터디 카카오톡 링크">
+      <ManageBox title="스터디 카카오톡 링크" icon="pencil" onPress={() => {}}>
         <KakaoLink />
       </ManageBox>
-      <ManageBoxView style={shadowStyles.shadow}>
+      <ManageBox>
         <ListComponent title="스터디 종료하기" href="#" />
-      </ManageBoxView>
+      </ManageBox>
     </ManageView>
   );
 };
 
-export default Progress;
+const ProgressWraper = () => {
+  return <FlatList data={[null]} renderItem={Progress} />;
+};
+
+export default ProgressWraper;

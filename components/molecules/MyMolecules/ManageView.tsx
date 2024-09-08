@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { PropsWithChildren } from 'react';
 import Typography from '../../atoms/Typography';
 import { router } from 'expo-router';
-import Icon from '../../atoms/Icon';
+import Icon, { IconTypes } from '../../atoms/Icon';
 
 export const ManageView = styled.View`
   background-color: ${colors.gray[2]};
@@ -29,17 +29,31 @@ export const shadowStyles = StyleSheet.create({
   },
 });
 
-const ManageBoxTitle = styled(Typography)`
-  color: ${colors.gray[9]};
+const ManageBoxTitle = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   border-bottom-width: 1px;
   border-bottom-color: ${colors.gray[2]};
   padding: 8px 20px;
 `;
 
-export const ManageBox = ({ title, children }: PropsWithChildren<{ title?: string }>) => {
+export const ManageBox = ({
+  title,
+  children,
+  icon,
+  onPress,
+}: PropsWithChildren<{ title?: string; icon?: IconTypes; onPress?: any }>) => {
   return (
     <ManageBoxView style={shadowStyles.shadow}>
-      {title && <ManageBoxTitle variant="body3">{title}</ManageBoxTitle>}
+      {title && (
+        <ManageBoxTitle>
+          <Typography variant="body3" style={{ color: colors.gray[9] }}>
+            {title}
+          </Typography>
+          {icon && <Icon name={icon} onPress={onPress} />}
+        </ManageBoxTitle>
+      )}
       <View style={{ paddingHorizontal: 20 }}>{children}</View>
     </ManageBoxView>
   );
@@ -47,7 +61,7 @@ export const ManageBox = ({ title, children }: PropsWithChildren<{ title?: strin
 const ListView = styled.Pressable`
   flex-direction: row;
   justify-content: space-between;
-  padding: 8px 0;
+  padding: 12px 0;
   border-bottom-color: ${colors.gray[3]};
 `;
 
