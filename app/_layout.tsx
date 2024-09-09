@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { toastConfig } from '@/components/atoms/Toast/CustomToast';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -43,14 +44,16 @@ export default function RootLayout() {
     // <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
     <RecoilRoot>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack initialRouteName="(tabs)">
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(form)" options={{ headerShown: false }} />
-          <Stack.Screen name="(report)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <Toast config={toastConfig} />
+        <BottomSheetModalProvider>
+          <Stack initialRouteName="(tabs)">
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(form)" options={{ headerShown: false }} />
+            <Stack.Screen name="(report)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <Toast config={toastConfig} />
+        </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </RecoilRoot>
     // </ThemeProvider>

@@ -6,7 +6,7 @@ import Typography, { TypographyVariant } from '../Typography';
 import Icon, { IconTypes } from '@/components/atoms/Icon';
 
 interface ChipVariant {
-  variant: 'outlined' | 'contained' | 'default' | 'mixed' | 'simple';
+  variant: 'outlined' | 'contained' | 'default' | 'mixed' | 'simple' | 'primary' | 'white';
   size: 'large' | 'medium' | 'small';
 }
 
@@ -78,6 +78,16 @@ const variantMap: VariantMap = {
     background: colors.gray[3],
     borderColor: 'transparent',
     color: colors.gray[9],
+  },
+  primary: {
+    background: colors.primary,
+    borderColor: 'transparent',
+    color: colors.white,
+  },
+  white: {
+    background: colors.white,
+    borderColor: colors.gray[4],
+    color: colors.gray[10],
   },
 };
 const ChipPressable = styled(Pressable)<ChipVariant>`

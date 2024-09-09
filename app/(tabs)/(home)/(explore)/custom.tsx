@@ -6,7 +6,7 @@ import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
 import CardList from '@/components/molecules/CardList';
 import RowView from '@/components/atoms/View/RowView';
-import BottomSheet from '@/components/molecules/FilterBottomSheet';
+import BottomSheet from '@/components/organisms/FilterBottomSheet';
 
 const Container = styled(RowView)`
   justify-content: space-between;

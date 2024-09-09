@@ -7,7 +7,7 @@ import StudySection from '@/components/organisms/StudySection';
 import { colors } from '@/theme';
 import studySections from '@/constants/StudySections';
 import RowView from '@/components/atoms/View/RowView';
-import FilterBottomSheet from '@/components/molecules/FilterBottomSheet';
+import FilterBottomSheet from '@/components/organisms/FilterBottomSheet';
 
 const Container = styled(RowView)`
   justify-content: space-between;
