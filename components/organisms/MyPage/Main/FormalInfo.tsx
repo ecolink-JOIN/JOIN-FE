@@ -4,6 +4,7 @@ import styled from 'styled-components/native';
 import Typography from '@/components/atoms/Typography';
 import Chip from '@/components/atoms/Badge';
 import { colors } from '@/theme';
+import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
 
 const FormalInfo = () => {
   const InfoList = [
@@ -25,16 +26,7 @@ const FormalInfo = () => {
           />
         </View>
       </NicknameView>
-      <InfoView>
-        {InfoList.map((info) => (
-          <View key={info.title} style={{ alignItems: 'center', gap: 11 }}>
-            <Typography variant="body3" style={{ color: colors.primary }}>
-              {info.title}
-            </Typography>
-            <Typography variant="heading3">{info.value}</Typography>
-          </View>
-        ))}
-      </InfoView>
+      <InfoViewBox InfoList={InfoList} />
     </StyledView>
   );
 };
@@ -53,15 +45,6 @@ const NicknameView = styled.View`
   flex-direction: row;
   gap: 24px;
   align-items: center;
-`;
-
-const InfoView = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 40px;
-  background-color: ${colors.primary + '30'};
-  border-radius: 16px;
 `;
 
 const ProfileImage = styled.Image`
