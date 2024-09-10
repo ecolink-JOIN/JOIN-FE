@@ -25,6 +25,8 @@ import EllipsisIcon from '@/assets/images/EllipsisIcon';
 import ThinCheckIcon from '@/assets/images/ThinCheckIcon';
 import Pencil from '@/assets/images/pencil.svg';
 import ClockIcon from '@/assets/images/clock.svg';
+import DoubleDownIcon from '@/assets/images/double-down.svg';
+import ResetOutlineIcon from '@/assets/images/reset-outline.svg';
 
 export type IconTypes =
   | 'home'
@@ -57,7 +59,9 @@ export type IconTypes =
   | 'arrow-right'
   | 'ellipsis'
   | 'pencil'
-  | 'clock';
+  | 'clock'
+  | 'double-down'
+  | 'reset-outline';
 interface IconProps extends SvgProps {
   name?: IconTypes;
   unread?: boolean;
@@ -124,6 +128,10 @@ function Icon({ name, unread, ...rest }: IconProps) {
       return <Pencil {...rest} />;
     case 'clock':
       return <ClockIcon {...rest} />;
+    case 'double-down':
+      return <DoubleDownIcon {...rest} />;
+    case 'reset-outline':
+      return <ResetOutlineIcon {...rest} />;
     default:
       return null;
   }

@@ -11,7 +11,7 @@ import {
   MeetingWay,
   Nums,
 } from '@/components/molecules/FormControl/RecruitBase';
-import BottomSheetComp from '@/components/organisms/BottomSheet';
+import BottomSheetComp from '@/components/molecules/BottomSheet';
 import dayjs from 'dayjs';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import DateTimePicker from 'react-native-ui-datepicker';

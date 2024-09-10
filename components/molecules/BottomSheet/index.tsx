@@ -1,41 +1,33 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
-import IconButton from '@/components/molecules/IconButton';
+import React, { useCallback } from 'react';
+import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 
-const App = () => {
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['65%'], []);
+interface BottomSheetProps {
+  bottomSheetModalRef: React.RefObject<BottomSheetModal>;
+  component: React.ReactNode;
+  snapPoints?: string[];
+}
 
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
+const BottomSheet: React.FC<BottomSheetProps> = ({ bottomSheetModalRef, component, snapPoints = ['70%'] }) => {
   const renderBackdrop = useCallback(
     (props: any) => <BottomSheetBackdrop {...props} pressBehavior="close" appearsOnIndex={0} disappearsOnIndex={-1} />,
     [],
   );
-
   return (
-    <View style={styles.container}>
-      <IconButton name="controller" onPress={handlePresentModalPress} />
-
-      <BottomSheetModal ref={bottomSheetModalRef} index={0} snapPoints={snapPoints} backdropComponent={renderBackdrop}>
-        <View style={styles.contentContainer}>
-          <Text>상세 검색창 아직 디자인 작업중이라고 함</Text>
-        </View>
-      </BottomSheetModal>
-    </View>
+    <BottomSheetModal
+      ref={bottomSheetModalRef}
+      index={0}
+      snapPoints={snapPoints}
+      style={{
+        zIndex: 10,
+        elevation: 10,
+      }}
+      backdropComponent={renderBackdrop}
+      handleComponent={null}
+      enablePanDownToClose={false}
+    >
+      <BottomSheetView style={{ flex: 1 }}>{component}</BottomSheetView>
+    </BottomSheetModal>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-});
-
-export default App;
+export default BottomSheet;

@@ -2,11 +2,11 @@ import React from 'react';
 import { SafeAreaView } from 'react-native';
 import { ScrollView } from 'react-native';
 import styled from 'styled-components/native';
-import BottomSheet from '@/components/molecules/BottomSheet';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
 import CardList from '@/components/molecules/CardList';
 import RowView from '@/components/atoms/View/RowView';
+import BottomSheet from '@/components/organisms/FilterBottomSheet';
 
 const Container = styled(RowView)`
   justify-content: space-between;

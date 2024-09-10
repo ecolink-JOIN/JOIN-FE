@@ -5,9 +5,9 @@ import styled from 'styled-components/native';
 import AdsCarousel from '@/components/organisms/AdsCarousel';
 import StudySection from '@/components/organisms/StudySection';
 import { colors } from '@/theme';
-import BottomSheet from '@/components/molecules/BottomSheet';
 import studySections from '@/constants/StudySections';
 import RowView from '@/components/atoms/View/RowView';
+import FilterBottomSheet from '@/components/organisms/FilterBottomSheet';
 
 const Container = styled(RowView)`
   justify-content: space-between;
@@ -34,7 +34,7 @@ function HomeScreen() {
 
         <Container style={{ paddingVertical: 16, paddingHorizontal: 20 }}>
           <Typography variant="subtitle1">(닉네임)님의 스터디 설정</Typography>
-          <BottomSheet />
+          <FilterBottomSheet />
         </Container>
 
         <StudySection section={studySections.custom} data={cardData} />

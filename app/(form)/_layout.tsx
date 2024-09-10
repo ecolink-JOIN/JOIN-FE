@@ -1,8 +1,8 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 
-function TabLayout() {
+function FormLayout() {
   return <Stack screenOptions={{ headerShown: false }} />;
 }
 
-export default TabLayout;
+export default FormLayout;
