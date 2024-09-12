@@ -4,7 +4,6 @@ import Typography from '@/components/atoms/Typography';
 import React from 'react';
 import styled from 'styled-components/native';
 import { Switch } from '@/components/atoms/Switch';
-import JoinedStatus from './Main/JoinedStatus';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
 import Badge from '@/components/atoms/Badge';
 import Icon from '@/components/atoms/Icon';

@@ -6,15 +6,15 @@ import NoList from '@/components/molecules/StudyInfoSection/NoList';
 const studyLinks: StudyLinkList[] = [
   {
     title: '진행 관리',
-    href: '/manage/progress',
+    href: '/manage/[id]/progress',
   },
   {
     title: '스터디원 관리',
-    href: '/manage/member',
+    href: '/manage/[id]/member',
   },
   {
     title: '운영 규칙 관리',
-    href: '/manage/rule',
+    href: '/manage/[id]/rule',
   },
 ];
 
