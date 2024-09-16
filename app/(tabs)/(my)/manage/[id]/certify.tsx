@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native';
+import { View } from 'react-native';
 import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { ManageView, shadowStyles, ManageBoxView } from '@/components/molecules/MyMolecules/ManageView';

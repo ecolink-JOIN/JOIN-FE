@@ -1,12 +1,11 @@
 import React from 'react';
-// import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { ManageView, ManageBox, ListComponent } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import { Status, Attendance, Approval, KakaoLink } from '@/components/organisms/MyPage/Manage';
 import { FlatList } from 'react-native';
 
-const Progress = () => {
-  // const { id } = useLocalSearchParams();
+const Progress = (id: string | string[] | undefined) => {
   return (
     <ManageView>
       <Typography variant="heading3">진행 관리</Typography>
@@ -20,7 +19,7 @@ const Progress = () => {
         <Approval />
       </ManageBox>
       <ManageBox>
-        <ListComponent title="스터디 회차 설정" href="#" />
+        <ListComponent title="스터디 회차 설정" href={`/manage/${id}/round`} />
       </ManageBox>
       <ManageBox title="스터디 메시지">
         <ListComponent title="스터디 공지" href="#" />
@@ -37,7 +36,8 @@ const Progress = () => {
 };
 
 const ProgressWraper = () => {
-  return <FlatList data={[null]} renderItem={Progress} />;
+  const { id } = useLocalSearchParams();
+  return <FlatList data={[null]} renderItem={() => Progress(id)} />;
 };
 
 export default ProgressWraper;
