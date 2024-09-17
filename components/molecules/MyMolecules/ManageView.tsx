@@ -65,9 +65,13 @@ const ListView = styled.Pressable`
   border-bottom-color: ${colors.gray[3]};
 `;
 
-export const ListComponent = ({ title, href }: { title: string; href: string }) => {
+export const ListComponent = ({ title, href, onPress }: { title: string; href?: string; onPress?: any }) => {
   return (
-    <ListView onPress={() => router.push(href)}>
+    <ListView
+      onPress={() => {
+        href ? router.push(href) : onPress();
+      }}
+    >
       <Typography variant="button">{title}</Typography>
       <Icon
         name="arrow-left"
