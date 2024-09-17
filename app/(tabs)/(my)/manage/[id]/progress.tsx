@@ -22,7 +22,7 @@ const Progress = (id: string | string[] | undefined) => {
         <ListComponent title="스터디 회차 설정" href={`/manage/${id}/round`} />
       </ManageBox>
       <ManageBox title="스터디 메시지">
-        <ListComponent title="스터디 공지" href="#" />
+        <ListComponent title="스터디 공지" href={`/manage/${id}/notice`} />
         <ListComponent title="자동 알림 메세지 설정" href="#" />
       </ManageBox>
       <ManageBox title="스터디 카카오톡 링크" icon="pencil" onPress={() => {}}>

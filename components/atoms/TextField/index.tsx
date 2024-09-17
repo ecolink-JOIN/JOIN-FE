@@ -4,7 +4,7 @@ import styled from 'styled-components/native';
 import { colors } from '@/theme';
 
 const StyledTextInput = styled(TextInput)<{ isFocused: boolean }>`
-  font: 500 16px 'Pretendard-Medium';
+  font: 400 16px 'Pretendard-Medium';
   letter-spacing: -0.08px;
   width: 100%;
   height: 44px;
