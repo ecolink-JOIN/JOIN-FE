@@ -5,6 +5,7 @@ import StyledTextInput from '@/components/atoms/TextField';
 import styled from 'styled-components/native';
 import colors from '@/theme/colors';
 import Button from '@/components/atoms/Button';
+
 const Notice = () => {
   const [value, onChangeText] = React.useState('');
 
@@ -16,7 +17,6 @@ const Notice = () => {
           onChangeText={onChangeText}
           value={value}
           placeholder={'스터디 공지를 작성해주세요.'}
-          style={{ height: 200 }}
           multiline={true}
         />
         <TextLimit variant="body4">{value.length || 0} / 100</TextLimit>
@@ -38,6 +38,7 @@ const BoxView = styled(ManageBoxView)`
 const ReasonInput = styled(StyledTextInput)`
   padding: 0;
   text-align-vertical: top;
+  height: 200px;
   font-size: 16px;
   border-radius: 12px;
   border: none;
