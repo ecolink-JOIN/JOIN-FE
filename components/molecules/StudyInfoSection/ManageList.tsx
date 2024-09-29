@@ -15,14 +15,19 @@ interface ManageListProps {
 }
 
 const ManageList: FC<ManageListProps> = ({ title, id, editHref, active, studyLinks }) => {
+  const href = `/manage/${id}/progress`;
   return active ? (
     <Container style={styles.shadow}>
       <TitleView>
         <Typography variant="subtitle1">{title}</Typography>
-        {editHref && <Icon name="pencil" onPress={() => router.push(editHref + '/' + id)} />}
+        {editHref && <Icon name="pencil" onPress={() => router.push(editHref)} />}
       </TitleView>
       {studyLinks.map((list, idx) => (
-        <ListView key={idx} onPress={() => router.push(list.href + '/' + id)} last={idx === studyLinks.length - 1}>
+        <ListView
+          key={idx}
+          onPress={() => router.push(list.href.replace('[id]', id.toString()))}
+          last={idx === studyLinks.length - 1}
+        >
           <Typography variant="button">{list.title}</Typography>
           <Icon
             name="arrow-left"

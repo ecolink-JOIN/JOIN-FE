@@ -27,6 +27,7 @@ import Pencil from '@/assets/images/pencil.svg';
 import ClockIcon from '@/assets/images/clock.svg';
 import DoubleDownIcon from '@/assets/images/double-down.svg';
 import ResetOutlineIcon from '@/assets/images/reset-outline.svg';
+import PlusCircleOutlined from '@/assets/images/plus-circle-style-outline.svg';
 
 export type IconTypes =
   | 'home'
@@ -61,7 +62,8 @@ export type IconTypes =
   | 'pencil'
   | 'clock'
   | 'double-down'
-  | 'reset-outline';
+  | 'reset-outline'
+  | 'plus-circle-outline';
 interface IconProps extends SvgProps {
   name?: IconTypes;
   unread?: boolean;
@@ -132,6 +134,8 @@ function Icon({ name, unread, ...rest }: IconProps) {
       return <DoubleDownIcon {...rest} />;
     case 'reset-outline':
       return <ResetOutlineIcon {...rest} />;
+    case 'plus-circle-outline':
+      return <PlusCircleOutlined {...rest} />;
     default:
       return null;
   }
