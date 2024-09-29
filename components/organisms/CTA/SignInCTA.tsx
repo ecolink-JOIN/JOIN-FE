@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { Href, useRouter } from 'expo-router';
 import CTAView from '@/components/atoms/View/CTAView';
 import OauthButton from '@/components/molecules/OauthButton';
 import { Platform } from 'react-native';
@@ -10,8 +10,8 @@ function SignInCTA() {
 
   const providers: IconTypes[] = ['naver', 'kakao', 'google', 'apple'];
   const signIn = (provider: (typeof providers)[number]) => {
-    // router.push(`(auth)/oauth?provider=${provider}`);
-    router.push(`(auth)/terms`);
+    const path: Href<string> = `/(auth)/oauth?provider=${provider}`;
+    router.push(path);
   };
 
   return (
