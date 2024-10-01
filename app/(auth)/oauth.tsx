@@ -10,6 +10,7 @@ const WebViewOauthScreen = () => {
   const { provider } = useLocalSearchParams();
   const router = useRouter();
 
+  // NOTE: https 여야 정상 동작합니다.
   const url = `http://3.38.27.246/api/v1/oauth2/authorization/${provider}`;
 
   const handleWebViewMessage = async (event: any) => {
@@ -46,13 +47,18 @@ const WebViewOauthScreen = () => {
   return (
     <View style={styles.container}>
       <WebView
-        source={{ uri: url }}
+        source={{
+          uri: url,
+        }}
+        userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         javaScriptEnabled={true}
         onMessage={handleWebViewMessage}
         injectedJavaScript={`
           (function() {
-            const bodyText = document.body.innerText || '';
-            window.ReactNativeWebView.postMessage(bodyText);
+            window.onload = function() {
+              const bodyText = document.body.innerText || '';
+              window.ReactNativeWebView.postMessage(bodyText);
+            };
           })();
           true;
         `}
