@@ -65,14 +65,22 @@ const ListView = styled.Pressable`
   border-bottom-color: ${colors.gray[3]};
 `;
 
-export const ListComponent = ({ title, href, onPress }: { title: string; href?: string; onPress?: any }) => {
+export const ListComponent = ({
+  title,
+  href,
+  onPress,
+  children,
+}: PropsWithChildren<{ title: string; href?: string; onPress?: any }>) => {
   return (
     <ListView
       onPress={() => {
         href ? router.push(href) : onPress();
       }}
     >
-      <Typography variant="button">{title}</Typography>
+      <View style={{ flexDirection: 'row', gap: 8 }}>
+        <Typography variant="button">{title}</Typography>
+        {children}
+      </View>
       <Icon
         name="arrow-left"
         stroke={colors.primary}
