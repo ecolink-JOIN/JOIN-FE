@@ -5,13 +5,22 @@ interface BottomSheetProps {
   bottomSheetModalRef: React.RefObject<BottomSheetModal>;
   component: React.ReactNode;
   snapPoints?: string[];
+  [key: string]: any;
 }
 
-const BottomSheet: React.FC<BottomSheetProps> = ({ bottomSheetModalRef, component, snapPoints = ['70%'] }) => {
+const BottomSheet: React.FC<BottomSheetProps> = ({
+  bottomSheetModalRef,
+  component,
+  snapPoints = ['70%'],
+  ...props
+}) => {
   const renderBackdrop = useCallback(
-    (props: any) => <BottomSheetBackdrop {...props} pressBehavior="close" appearsOnIndex={0} disappearsOnIndex={-1} />,
+    (backdropProps: any) => (
+      <BottomSheetBackdrop {...backdropProps} pressBehavior="close" appearsOnIndex={0} disappearsOnIndex={-1} />
+    ),
     [],
   );
+
   return (
     <BottomSheetModal
       ref={bottomSheetModalRef}
@@ -24,6 +33,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ bottomSheetModalRef, componen
       backdropComponent={renderBackdrop}
       handleComponent={null}
       enablePanDownToClose={false}
+      {...props}
     >
       <BottomSheetView style={{ flex: 1 }}>{component}</BottomSheetView>
     </BottomSheetModal>

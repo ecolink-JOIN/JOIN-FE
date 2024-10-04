@@ -25,10 +25,10 @@ const SliderSection: React.FC<SliderSectionProps> = ({ value, onValueChange }) =
     />
     <View style={{ position: 'relative', paddingRight: 20, bottom: 8 }}>
       <RowView style={{ justifyContent: 'space-between' }}>
-        <Typography variant="body4" style={{ color: colors.gray[7] }}>
+        <Typography variant="body3" style={{ color: colors.gray[7] }}>
           1회
         </Typography>
-        <Typography variant="body4" style={{ marginRight: -20, color: colors.gray[7] }}>
+        <Typography variant="body3" style={{ marginRight: -20, color: colors.gray[7] }}>
           7회
         </Typography>
       </RowView>
