@@ -102,6 +102,72 @@ export const StudySchedule = () => {
   );
 };
 
+// 스터디 평가
+export const StudyEvaluation = () => {
+  const memberInfo = [
+    {
+      name: '김지수',
+      leader: true,
+      id: 1,
+      profile: require('@/assets/images/profile.png'),
+    },
+    {
+      name: '박지수',
+      leader: false,
+      id: 2,
+      profile: require('@/assets/images/profile.png'),
+    },
+    {
+      name: '이지수',
+      leader: false,
+      id: 3,
+      profile: require('@/assets/images/profile.png'),
+    },
+    {
+      name: '홍지수',
+      leader: false,
+      id: 4,
+      profile: require('@/assets/images/profile.png'),
+    },
+    {
+      name: '미지수',
+      leader: false,
+      id: 5,
+      profile: require('@/assets/images/profile.png'),
+    },
+  ];
+  return (
+    <View style={{ marginVertical: 16 }}>
+      {memberInfo.map((member, index) => (
+        <View
+          key={index}
+          style={{ flexDirection: 'row', paddingVertical: 8, alignItems: 'center', justifyContent: 'space-between' }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Image source={member.profile} style={{ width: 24, height: 24 }} />
+            <Typography variant="body3" style={{ color: colors.gray[9] }}>
+              {member.name}
+              {member.leader ? ' (스터디장)' : ''}
+            </Typography>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            <Typography variant="body3" style={{ color: colors.gray[9] }}>
+              평가하기
+            </Typography>
+            <Icon name="arrow-right" />
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+};
+
 // 스터디 출석 및 인증 현황
 export const Attendance = () => {
   const memberInfo = [

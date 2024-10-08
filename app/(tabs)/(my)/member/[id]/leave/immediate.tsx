@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { ManageView, ManageBox } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
-import StyledTextInput from '@/components/atoms/TextField';
 import { colors } from '@/theme';
-import styled from 'styled-components/native';
 import Button from '@/components/atoms/Button';
 import { View } from 'react-native';
 
-const LeaveRequest = () => {
-  const [value, onChangeText] = React.useState('');
+const LeaveImmediate = () => {
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const toggleDeleteModal = () => {
@@ -61,23 +58,4 @@ const LeaveRequest = () => {
   );
 };
 
-export default LeaveRequest;
-
-const LeaveMessage = styled(StyledTextInput)`
-  padding: 16px;
-  margin: 8px 0;
-  text-align-vertical: top;
-  border-width: 1px;
-  border-color: ${colors.gray[3]};
-  background-color: ${colors.gray[2]};
-  height: 160px;
-  font-size: 16px;
-  line-height: 24px;
-  border-radius: 12px;
-`;
-
-const TextLimit = styled(Typography)`
-  margin: 0 0 8px 0;
-  text-align: right;
-  color: ${colors.gray[8]};
-`;
+export default LeaveImmediate;
