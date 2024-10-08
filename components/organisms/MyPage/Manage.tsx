@@ -7,7 +7,7 @@ import { Switch } from '@/components/atoms/Switch';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
 import Badge from '@/components/atoms/Badge';
 import Icon from '@/components/atoms/Icon';
-import { router, useLocalSearchParams } from 'expo-router';
+import { Href, router, useLocalSearchParams } from 'expo-router';
 import RowView from '@/components/atoms/View/RowView';
 import Divider from '@/components/atoms/Divider';
 
@@ -39,10 +39,16 @@ export const Status = ({ value }: { value: boolean }) => {
   );
 };
 
-// 나의 스터디 출석 및 인증 현황
-export const MyAttendance = () => {
+interface MyAttendanceProps {
+  id: string;
+}
+export const MyAttendance = ({ id }: MyAttendanceProps) => {
+  const handlePress = () => {
+    router.push(`/member/${id}/my-attendance` as Href);
+  };
+
   return (
-    <View style={{ marginVertical: 16 }}>
+    <View style={{ marginTop: 16, marginBottom: 10 }}>
       <InfoViewBox
         InfoList={[
           { title: '나의 출석률', value: '100%' },
@@ -50,12 +56,14 @@ export const MyAttendance = () => {
         ]}
       />
       <Divider style={{ height: 2, marginHorizontal: -20, width: 'auto', marginTop: 16 }} />
-      <RowView style={{ paddingTop: 16, justifyContent: 'space-between' }}>
-        <Typography variant="button" style={{ color: colors.gray[8] }}>
-          자세히 보기
-        </Typography>
-        <Icon name="arrow-right-outline" width={24} height={24} stroke={colors.gray[8]} />
-      </RowView>
+      <Pressable onPress={handlePress}>
+        <RowView style={{ paddingTop: 16, justifyContent: 'space-between' }}>
+          <Typography variant="button" style={{ color: colors.gray[8] }}>
+            자세히 보기
+          </Typography>
+          <Icon name="arrow-right-outline" width={24} height={24} stroke={colors.gray[8]} />
+        </RowView>
+      </Pressable>
     </View>
   );
 };

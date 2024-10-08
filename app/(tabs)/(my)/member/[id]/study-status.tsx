@@ -3,9 +3,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { ManageView, ManageBox, ListComponent } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import {
-  Status,
   Attendance,
-  Approval,
   KakaoLink,
   StudyAnnouncement,
   MyAttendance,
@@ -42,7 +40,7 @@ const StudyStatus = ({
         <StudyAnnouncement />
       </ManageBox>
       <ManageBox title="나의 출석 및 인증 현황">
-        <MyAttendance />
+        <MyAttendance id="123" />
       </ManageBox>
       <ManageBox title="스터디 출석 및 인증 현황">
         <Attendance />
