@@ -7,15 +7,15 @@ import JoinedStatus from '../JoinedStatus';
 const studyLinks: StudyLinkList[] = [
   {
     title: '스터디 현황',
-    href: '(member)/status',
+    href: '/member/study-status',
   },
   {
     title: '스터디원 평가',
-    href: '(member)/evaluation',
+    href: '/member/evaluation',
   },
   {
     title: '운영 규칙 확인',
-    href: '(member)/rule',
+    href: '/member/rule',
   },
 ];
 

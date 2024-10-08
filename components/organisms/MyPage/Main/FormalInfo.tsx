@@ -26,7 +26,7 @@ const FormalInfo = () => {
           />
         </View>
       </NicknameView>
-      <InfoViewBox InfoList={InfoList} />
+      <InfoViewBox InfoList={InfoList} center />
     </StyledView>
   );
 };
