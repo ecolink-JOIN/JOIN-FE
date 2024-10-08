@@ -72,7 +72,7 @@ const StudyStatus = ({ id }: { id: string | string[] | undefined }) => {
           <KakaoLink />
         </ManageBox>
         <ManageBox>
-          <ListComponent title="스터디 탈퇴" />
+          <ListComponent title="스터디 탈퇴" onPress={() => router.push(`member/${_id}/leave` as Href)} />
         </ManageBox>
       </ManageView>
 

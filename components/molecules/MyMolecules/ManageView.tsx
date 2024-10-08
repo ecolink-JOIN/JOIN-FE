@@ -1,9 +1,9 @@
 import { styled } from 'styled-components/native';
 import { colors } from '@/theme';
 import { StyleSheet, View } from 'react-native';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import Typography from '../../atoms/Typography';
-import { router } from 'expo-router';
+import { Href, router } from 'expo-router';
 import Icon, { IconTypes } from '../../atoms/Icon';
 
 export const ManageView = styled.View`
@@ -43,7 +43,11 @@ export const ManageBox = ({
   children,
   icon,
   onPress,
-}: PropsWithChildren<{ title?: string; icon?: IconTypes; onPress?: any }>) => {
+}: PropsWithChildren<{
+  title?: string;
+  icon?: IconTypes;
+  onPress?: () => void;
+}>) => {
   return (
     <ManageBoxView style={shadowStyles.shadow}>
       {title && (
@@ -58,6 +62,7 @@ export const ManageBox = ({
     </ManageBoxView>
   );
 };
+
 const ListView = styled.Pressable`
   flex-direction: row;
   justify-content: space-between;
@@ -70,11 +75,19 @@ export const ListComponent = ({
   href,
   onPress,
   children,
-}: PropsWithChildren<{ title: string; href?: string; onPress?: any }>) => {
+}: PropsWithChildren<{
+  title: string;
+  href?: string;
+  onPress?: () => void;
+}>) => {
   return (
     <ListView
       onPress={() => {
-        href ? router.push(href) : onPress();
+        if (href) {
+          router.push(href as Href);
+        } else if (onPress) {
+          onPress();
+        }
       }}
     >
       <View style={{ flexDirection: 'row', gap: 8 }}>

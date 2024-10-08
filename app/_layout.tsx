@@ -13,7 +13,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
-  initialRouteName: '(tabs)',
+  initialRouteName: '(tabs)/',
 };
 export default function RootLayout() {
   const colorScheme = useColorScheme();
