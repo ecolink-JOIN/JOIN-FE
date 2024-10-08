@@ -5,38 +5,37 @@ import StyledTextInput from '@/components/atoms/TextField';
 import { colors } from '@/theme';
 import styled from 'styled-components/native';
 import Button from '@/components/atoms/Button';
-import { Pressable, View } from 'react-native';
-import { ModalWrapper } from '@/components/molecules/ModalViews';
-import { Daypicker, TimePicker } from '@/components/atoms/DatePicker';
+import { View } from 'react-native';
 
-const AlarmAdd = () => {
+const LeaveRequest = () => {
   const [value, onChangeText] = React.useState('');
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [isEditModalVisible, setEditModalVisible] = useState(false);
 
   const toggleDeleteModal = () => {
     setDeleteModalVisible(!isDeleteModalVisible);
-  };
-
-  const toggleEditModal = () => {
-    setEditModalVisible(!isEditModalVisible);
   };
 
   return (
     <ManageView>
       <Typography variant="heading3">스터디 탈퇴</Typography>
       <ManageBox>
-        <Typography
-          variant="subtitle1"
+        <View
           style={{
-            paddingTop: 24,
-            paddingBottom: 12,
+            alignItems: 'center',
           }}
         >
-          스터디장에게 탈퇴 승인받기
-        </Typography>
+          <Typography
+            variant="subtitle1"
+            style={{
+              paddingTop: 16,
+              paddingBottom: 8,
+            }}
+          >
+            스터디장에게 탈퇴 승인받기
+          </Typography>
+        </View>
 
-        <AlarmMessage
+        <LeaveMessage
           onChangeText={onChangeText}
           value={value}
           placeholder={'탈퇴 사유를 알려주세요.\n(최소 10자, 최대 150자 입력)'}
@@ -57,9 +56,9 @@ const AlarmAdd = () => {
   );
 };
 
-export default AlarmAdd;
+export default LeaveRequest;
 
-const AlarmMessage = styled(StyledTextInput)`
+const LeaveMessage = styled(StyledTextInput)`
   padding: 16px;
   margin: 8px 0;
   text-align-vertical: top;
@@ -76,19 +75,4 @@ const TextLimit = styled(Typography)`
   margin: 0 0 8px 0;
   text-align: right;
   color: ${colors.gray[8]};
-`;
-
-const ButtonWrapper = styled.View`
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-`;
-
-const ModalContents = styled.View`
-  gap: 24px;
-  justify-content: center;
-  align-items: center;
-  padding: 32px;
 `;
