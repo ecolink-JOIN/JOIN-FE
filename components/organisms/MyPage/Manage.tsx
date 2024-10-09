@@ -12,6 +12,67 @@ import RowView from '@/components/atoms/View/RowView';
 import Divider from '@/components/atoms/Divider';
 import Evaluator from '@/components/molecules/Evaluator';
 import Button from '@/components/atoms/Button';
+import FineOptions from '@/components/molecules/FineOption';
+
+// 스터디 모임 방법
+export const MeetingType = () => {
+  return (
+    <View style={{ paddingTop: 16, paddingBottom: 12 }}>
+      <Typography variant="button" numberOfLines={4} ellipsizeMode="tail" style={{ textAlign: 'left' }}>
+        온라인
+      </Typography>
+    </View>
+  );
+};
+
+// 스터디 운영 상세 규칙
+export const StudyRuleDetails = () => {
+  const options = [
+    {
+      name: '지각',
+      fine: 1000,
+    },
+    {
+      name: '결석',
+      fine: 2000,
+    },
+    {
+      name: '미인증',
+      fine: 1000,
+    },
+  ];
+  return (
+    <View style={{ paddingTop: 16, paddingBottom: 12 }}>
+      <Typography variant="button" numberOfLines={4} ellipsizeMode="tail" style={{ textAlign: 'left' }}>
+        벌금
+      </Typography>
+
+      <FineOptions options={options} />
+
+      <Divider style={{ height: 2, marginHorizontal: -20, width: 'auto', marginTop: 8 }} />
+
+      <Typography
+        variant="button"
+        numberOfLines={4}
+        ellipsizeMode="tail"
+        style={{ textAlign: 'left', paddingVertical: 16 }}
+      >
+        규칙 안내 메세지
+      </Typography>
+
+      <View
+        style={{
+          backgroundColor: colors.sub2,
+          borderRadius: 12,
+          padding: 20,
+          gap: 10,
+        }}
+      >
+        <Typography variant="button">지각하지 마세요</Typography>
+      </View>
+    </View>
+  );
+};
 
 // 스터디 공지
 export const StudyAnnouncement = () => {

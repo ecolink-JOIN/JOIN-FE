@@ -40,11 +40,13 @@ const ManageBoxTitle = styled.View`
 
 export const ManageBox = ({
   title,
+  caption,
   children,
   icon,
   onPress,
 }: PropsWithChildren<{
   title?: string;
+  caption?: string;
   icon?: IconTypes;
   onPress?: () => void;
 }>) => {
@@ -52,9 +54,21 @@ export const ManageBox = ({
     <ManageBoxView style={shadowStyles.shadow}>
       {title && (
         <ManageBoxTitle>
-          <Typography variant="body3" style={{ color: colors.gray[9] }}>
-            {title}
-          </Typography>
+          <View style={{ gap: 10, justifyContent: 'center' }}>
+            <Typography variant="body3" style={{ color: colors.gray[9] }}>
+              {title}
+            </Typography>
+            {caption && (
+              <Typography
+                variant="caption1"
+                style={{
+                  color: colors.gray[9],
+                }}
+              >
+                {caption}
+              </Typography>
+            )}
+          </View>
           {icon && <Icon name={icon} onPress={onPress} />}
         </ManageBoxTitle>
       )}

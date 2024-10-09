@@ -8,8 +8,6 @@ import { FlatList, View } from 'react-native';
 const Evaluation = () => {
   const params = useLocalSearchParams<{ memberId: string }>();
 
-  console.log(params);
-
   return (
     <View>
       <FlatList

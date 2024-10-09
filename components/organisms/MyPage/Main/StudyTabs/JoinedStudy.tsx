@@ -40,7 +40,6 @@ const JoinedStudy = () => {
           {...{
             title: study.title,
             id: study.id,
-            editHref: 'changename',
             studyLinks,
             active: study.active,
           }}
