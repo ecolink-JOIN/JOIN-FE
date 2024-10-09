@@ -3,11 +3,16 @@ import { colors } from '@/theme';
 import { View } from 'react-native';
 import Typography from '../../atoms/Typography';
 
-const InfoView = styled.View`
+interface InfoViewProps {
+  center?: boolean;
+}
+
+const InfoView = styled.View<InfoViewProps>`
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: ${({ center }) => (center ? 'space-between' : 'flex-start')};
   align-items: center;
-  padding: 16px 40px;
+  padding: ${({ center }) => (center ? '16px 40px' : '16px 20px')};
+  gap: 24px;
   background-color: ${colors.primary + '30'};
   border-radius: 16px;
 `;
@@ -17,15 +22,29 @@ interface InfoProps {
   value: string;
 }
 
-export const InfoViewBox = ({ InfoList }: { InfoList: InfoProps[] }) => {
+interface InfoViewBoxProps {
+  InfoList: InfoProps[];
+  center?: boolean;
+}
+
+export const InfoViewBox = ({ InfoList, center = false }: InfoViewBoxProps) => {
   return (
-    <InfoView>
+    <InfoView center={center}>
       {InfoList.map((info) => (
-        <View key={info.title} style={{ alignItems: 'center', gap: 11, flex: 1 }}>
+        <View
+          key={info.title}
+          style={{
+            alignItems: center ? 'center' : 'flex-start',
+            gap: 8,
+            flex: center ? 1 : 0,
+          }}
+        >
           <Typography variant="body3" style={{ color: colors.primary }}>
             {info.title}
           </Typography>
-          <Typography variant="heading3">{info.value}</Typography>
+          <Typography variant="heading3" style={{ paddingHorizontal: 5 }}>
+            {info.value}
+          </Typography>
         </View>
       ))}
     </InfoView>

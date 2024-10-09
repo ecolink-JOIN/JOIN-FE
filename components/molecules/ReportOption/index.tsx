@@ -28,7 +28,7 @@ const ReportOption: React.FC<ReportOptionProps> = ({ onPress, text, color = colo
       >
         {text}
       </Typography>
-      <Icon name="arrow-right" />
+      <Icon name="arrow-right-outline" />
     </Container>
   );
 };

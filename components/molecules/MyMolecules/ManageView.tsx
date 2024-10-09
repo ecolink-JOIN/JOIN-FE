@@ -3,7 +3,7 @@ import { colors } from '@/theme';
 import { StyleSheet, View } from 'react-native';
 import { PropsWithChildren } from 'react';
 import Typography from '../../atoms/Typography';
-import { router } from 'expo-router';
+import { Href, router } from 'expo-router';
 import Icon, { IconTypes } from '../../atoms/Icon';
 
 export const ManageView = styled.View`
@@ -40,17 +40,35 @@ const ManageBoxTitle = styled.View`
 
 export const ManageBox = ({
   title,
+  caption,
   children,
   icon,
   onPress,
-}: PropsWithChildren<{ title?: string; icon?: IconTypes; onPress?: any }>) => {
+}: PropsWithChildren<{
+  title?: string;
+  caption?: string;
+  icon?: IconTypes;
+  onPress?: () => void;
+}>) => {
   return (
     <ManageBoxView style={shadowStyles.shadow}>
       {title && (
         <ManageBoxTitle>
-          <Typography variant="body3" style={{ color: colors.gray[9] }}>
-            {title}
-          </Typography>
+          <View style={{ gap: 10, justifyContent: 'center' }}>
+            <Typography variant="body3" style={{ color: colors.gray[9] }}>
+              {title}
+            </Typography>
+            {caption && (
+              <Typography
+                variant="caption1"
+                style={{
+                  color: colors.gray[9],
+                }}
+              >
+                {caption}
+              </Typography>
+            )}
+          </View>
           {icon && <Icon name={icon} onPress={onPress} />}
         </ManageBoxTitle>
       )}
@@ -58,6 +76,7 @@ export const ManageBox = ({
     </ManageBoxView>
   );
 };
+
 const ListView = styled.Pressable`
   flex-direction: row;
   justify-content: space-between;
@@ -70,11 +89,19 @@ export const ListComponent = ({
   href,
   onPress,
   children,
-}: PropsWithChildren<{ title: string; href?: string; onPress?: any }>) => {
+}: PropsWithChildren<{
+  title: string;
+  href?: string;
+  onPress?: () => void;
+}>) => {
   return (
     <ListView
       onPress={() => {
-        href ? router.push(href) : onPress();
+        if (href) {
+          router.push(href as Href);
+        } else if (onPress) {
+          onPress();
+        }
       }}
     >
       <View style={{ flexDirection: 'row', gap: 8 }}>
