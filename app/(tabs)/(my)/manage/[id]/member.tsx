@@ -1,22 +1,15 @@
-import { ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import React from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { ManageView, shadowStyles, ManageBoxView, ListComponent } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import { styled } from 'styled-components/native';
-import Button from '@/components/atoms/Button';
-import { CircleCheckbox } from '@/components/atoms/Checkbox';
+import Icon from '@/components/atoms/Icon';
 
 const Member = () => {
-  const params = useLocalSearchParams<{ user: string }>();
-  const [selected, setSelected] = React.useState([false, false, false, false, false, false, false, false, false]);
+  const { id } = useLocalSearchParams();
 
-  const selectedToggle = (index: number) => {
-    const newSelected = [...selected];
-    newSelected[index] = !newSelected[index];
-    setSelected(newSelected);
-  };
   const memebers = [
     {
       id: 1,
@@ -93,10 +86,14 @@ const Member = () => {
           </Typography>
           {memebers.map((member, index) => {
             return (
-              <ContentsWrapper key={index}>
+              <ContentsWrapper
+                key={index}
+                onPress={() => router.push(`/manage/${id}/member-detail?userid=${member.id}`)}
+              >
                 <ContentViewTop>
                   <ProfileImage source={member.profile} style={{ width: 28, height: 28, borderRadius: 100 }} />
                   <Typography variant="body3">{member.nickname}</Typography>
+                  <Icon name="arrow-right" stroke={colors.gray[7]} style={{ marginLeft: 'auto' }} />
                 </ContentViewTop>
                 <ContentViewBottom>
                   <Typography variant="body3" style={{ color: colors.gray[9] }}>
@@ -114,7 +111,7 @@ const Member = () => {
           })}
         </ManageBoxView>
         <ManageBox style={shadowStyles.shadow}>
-          <ListComponent title="탈퇴 요청 승인" />
+          <ListComponent title="탈퇴 요청 승인" href={`/manage/${id}/withdrawal`} />
         </ManageBox>
       </ManageView>
     </ScrollView>
@@ -123,7 +120,7 @@ const Member = () => {
 
 export default Member;
 
-const ContentsWrapper = styled.View`
+const ContentsWrapper = styled.Pressable`
   border-top-width: 2px;
   border-top-color: ${colors.gray[2]};
   padding: 10px 20px;
