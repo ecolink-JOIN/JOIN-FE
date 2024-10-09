@@ -1,7 +1,7 @@
 import { styled } from 'styled-components/native';
 import { colors } from '@/theme';
 import { StyleSheet, View } from 'react-native';
-import { PropsWithChildren, ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 import Typography from '../../atoms/Typography';
 import { Href, router } from 'expo-router';
 import Icon, { IconTypes } from '../../atoms/Icon';

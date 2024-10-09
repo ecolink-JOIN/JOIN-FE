@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ManageView, ManageBox } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import { StudyEvaluation } from '@/components/organisms/MyPage/Manage';

@@ -1,7 +1,7 @@
 import { Image, Pressable, View } from 'react-native';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
 import { Switch } from '@/components/atoms/Switch';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
@@ -10,6 +10,8 @@ import Icon from '@/components/atoms/Icon';
 import { Href, router, useLocalSearchParams } from 'expo-router';
 import RowView from '@/components/atoms/View/RowView';
 import Divider from '@/components/atoms/Divider';
+import Evaluator from '@/components/molecules/Evaluator';
+import Button from '@/components/atoms/Button';
 
 // 스터디 공지
 export const StudyAnnouncement = () => {
@@ -102,7 +104,86 @@ export const StudySchedule = () => {
   );
 };
 
-// 스터디 평가
+export const MemberEvaluation = () => {
+  const [selectedScores, setSelectedScores] = useState<{ [key: string]: number | null }>({
+    diligence: null,
+    programKnowledge: null,
+    learningAtmosphereInfluence: null,
+  });
+
+  const handleScoreChange = (badgeValue: string, score: number) => {
+    setSelectedScores((prev) => ({
+      ...prev,
+      [badgeValue]: score,
+    }));
+  };
+
+  const evaluations = [
+    {
+      badgeValue: '성실도',
+      question: '스터디원은 얼마나 성실하게 스터디에 임했나요?',
+    },
+    {
+      badgeValue: '프로그램 숙지도',
+      question: '스터디원은 스터디 프로그램을 잘 숙지하고 있었나요?',
+    },
+    {
+      badgeValue: '학습 분위기 영향',
+      question: '스터디원은 학습 분위기에 긍정적인 영향을 주었나요?',
+    },
+  ];
+
+  return (
+    <View
+      style={{
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 10,
+        paddingTop: 24,
+        paddingBottom: 20,
+      }}
+    >
+      <Image
+        source={require('@/assets/images/profile.png')}
+        style={{
+          width: 80,
+          height: 80,
+        }}
+      />
+      <Typography variant="heading4">닉네임</Typography>
+      <InfoViewBox
+        center
+        InfoList={[
+          { title: '출석률', value: '95%' },
+          { title: '인증률', value: '100%' },
+        ]}
+      />
+
+      {evaluations.map((evalItem) => (
+        <Evaluator
+          key={evalItem.badgeValue}
+          badgeValue={evalItem.badgeValue}
+          question={evalItem.question}
+          selectedValue={selectedScores[evalItem.badgeValue]}
+          onValueChange={(score: number) => handleScoreChange(evalItem.badgeValue, score)}
+        />
+      ))}
+
+      <View
+        style={{
+          justifyContent: 'center',
+          padding: 16,
+        }}
+      >
+        <Button variant="contained" onPress={() => router.back()}>
+          제출하기
+        </Button>
+      </View>
+    </View>
+  );
+};
+
+// 평가할 스터디원 선택
 export const StudyEvaluation = () => {
   const memberInfo = [
     {
@@ -136,32 +217,37 @@ export const StudyEvaluation = () => {
       profile: require('@/assets/images/profile.png'),
     },
   ];
+
+  const handleEvaluationPress = (memberId: string | number) => {
+    router.push(`/member/evaluation?user=${memberId}` as Href);
+  };
+
   return (
     <View style={{ marginVertical: 16 }}>
-      {memberInfo.map((member, index) => (
+      {memberInfo.map((member) => (
         <View
-          key={index}
+          key={member.id}
           style={{ flexDirection: 'row', paddingVertical: 8, alignItems: 'center', justifyContent: 'space-between' }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 6, gap: 8 }}>
             <Image source={member.profile} style={{ width: 24, height: 24 }} />
-            <Typography variant="body3" style={{ color: colors.gray[9] }}>
+            <Typography
+              variant="body3"
+              style={{ color: colors.gray[9], fontWeight: member.leader ? 'bold' : 'normal' }}
+            >
               {member.name}
               {member.leader ? ' (스터디장)' : ''}
             </Typography>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-            }}
+          <Pressable
+            onPress={() => handleEvaluationPress(member.id)}
+            style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 8 }}
           >
             <Typography variant="body3" style={{ color: colors.gray[9] }}>
               평가하기
             </Typography>
             <Icon name="arrow-right" />
-          </View>
+          </Pressable>
         </View>
       ))}
     </View>
