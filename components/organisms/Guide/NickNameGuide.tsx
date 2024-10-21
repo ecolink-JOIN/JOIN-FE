@@ -8,13 +8,14 @@ import RowView from '@/components/atoms/View/RowView';
 import { useNickNameContext } from '@/context/NickNameContext';
 import { colors } from '@/theme';
 import DuplicateCheckButton from '@/components/atoms/DuplicateCheckButton';
+import { Avatars } from '@/agent/avatars';
 
 type FormValues = {
   nickname: string;
 };
 
 function NickNameGuide() {
-  const { setIsNickNameValid } = useNickNameContext();
+  const { setIsNickNameValid, setNickname } = useNickNameContext();
   const [validationMessage, setValidationMessage] = useState<string>('');
   const { control, handleSubmit, watch } = useForm<FormValues>({
     defaultValues: {
@@ -29,16 +30,22 @@ function NickNameGuide() {
     setIsNickNameValid(false);
   }, [nickname, setIsNickNameValid]);
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
+    // const res = await Avatars.checkNickname({ nickname });
+    // console.log(nickname, res);
+
     if (data.nickname.length < 2 || data.nickname.length > 7) {
       setValidationMessage('2~7자리 한글 및 영문으로 입력해주세요.');
+      setNickname('');
       setIsNickNameValid(false);
     } else if (data.nickname === 'existingNickname') {
       setValidationMessage('이미 사용 중인 닉네임이에요.');
+      setNickname('');
       setIsNickNameValid(false);
     } else {
       setValidationMessage('사용 가능한 닉네임이에요.');
       setIsNickNameValid(true);
+      setNickname(nickname);
     }
   };
 

@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
 });
 
-interface PrimaryButtonProps extends ButtonProps {
+export interface PrimaryButtonProps extends ButtonProps {
   variant: 'contained' | 'outlined' | 'default';
   children: React.ReactNode;
 }

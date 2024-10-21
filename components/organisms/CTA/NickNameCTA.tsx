@@ -3,13 +3,18 @@ import { useRouter } from 'expo-router';
 import Button from '@/components/atoms/Button';
 import CTAView from '@/components/atoms/View/CTAView';
 import { useNickNameContext } from '@/context/NickNameContext';
+import { Avatars } from '@/agent/avatars';
 
 function NickNameCTA() {
-  const { isNickNameValid } = useNickNameContext();
+  const { isNickNameValid, nickname } = useNickNameContext();
   const router = useRouter();
 
   const handleButtonClick = async () => {
-    router.replace('/(tabs)');
+    if (nickname) {
+      const res = await Avatars.changeNickname({ nickname });
+      console.log(res);
+      router.replace('/(tabs)');
+    }
   };
 
   return (
