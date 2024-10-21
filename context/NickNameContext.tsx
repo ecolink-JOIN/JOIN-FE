@@ -3,15 +3,20 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 type NickNameContextType = {
   isNickNameValid: boolean | null;
   setIsNickNameValid: React.Dispatch<React.SetStateAction<boolean | null>>;
+  nickname: string;
+  setNickname: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const NickNameContext = createContext<NickNameContextType | undefined>(undefined);
 
 export function NickNameProvider({ children }: { children: ReactNode }) {
   const [isNickNameValid, setIsNickNameValid] = useState<boolean | null>(null);
+  const [nickname, setNickname] = useState<string>('');
 
   return (
-    <NickNameContext.Provider value={{ isNickNameValid, setIsNickNameValid }}>{children}</NickNameContext.Provider>
+    <NickNameContext.Provider value={{ isNickNameValid, setIsNickNameValid, nickname, setNickname }}>
+      {children}
+    </NickNameContext.Provider>
   );
 }
 

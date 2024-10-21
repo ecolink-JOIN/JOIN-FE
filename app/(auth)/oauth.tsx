@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
 import WebView from 'react-native-webview';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 // import CookieManager from '@react-native-cookies/cookies';
 import Typography from '@/components/atoms/Typography';
+import { AuthStorage } from '@/agent/auth';
 
 const WebViewOauthScreen = () => {
   const { provider } = useLocalSearchParams();
   const router = useRouter();
 
   // NOTE: https 여야 정상 동작합니다.
-  const url = `http://3.38.27.246/api/v1/oauth2/authorization/${provider}`;
+  const url = `http://3.38.27.246/api/v1/oauth2/authorization/kakao`;
 
   const handleWebViewMessage = async (event: any) => {
     try {
@@ -30,7 +30,7 @@ const WebViewOauthScreen = () => {
       const sessionId = parsedData.data.session_id;
 
       if (sessionId) {
-        await AsyncStorage.setItem('sessionId', sessionId);
+        await AuthStorage.setToken(sessionId);
         console.log('Session ID saved:', sessionId);
 
         router.replace('/(auth)/terms');
@@ -46,29 +46,52 @@ const WebViewOauthScreen = () => {
 
   return (
     <View style={styles.container}>
-      <WebView
-        source={{
-          uri: url,
-        }}
-        userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        javaScriptEnabled={true}
-        onMessage={handleWebViewMessage}
-        injectedJavaScript={`
-          (function() {
-            window.onload = function() {
-              const bodyText = document.body.innerText || '';
-              window.ReactNativeWebView.postMessage(bodyText);
-            };
-          })();
-          true;
-        `}
-        startInLoadingState={true}
-        renderLoading={() => (
-          <View>
-            <Typography variant="button">Loading...</Typography>
-          </View>
-        )}
-      />
+      {Platform.select({
+        ios: (
+          <WebView
+            source={{
+              uri: url,
+            }}
+            javaScriptEnabled={true}
+            onMessage={handleWebViewMessage}
+            mixedContentMode="compatibility"
+            injectedJavaScript={`
+        (function() {
+          window.onload = function() {
+            const bodyText = document.body.innerText || '';
+            window.ReactNativeWebView.postMessage(bodyText);
+          };
+        })();
+        true;
+      `}
+            startInLoadingState={true}
+            renderLoading={() => (
+              <View>
+                <Typography variant="button">Loading...</Typography>
+              </View>
+            )}
+          />
+        ),
+        android: (
+          <WebView
+            source={{
+              uri: 'https://m.naver.com',
+            }}
+            javaScriptEnabled={true}
+            onMessage={handleWebViewMessage}
+            mixedContentMode="compatibility"
+            injectedJavaScript={`
+              true;
+            `}
+            startInLoadingState={true}
+            renderLoading={() => (
+              <View>
+                <Typography variant="button">Loading...</Typography>
+              </View>
+            )}
+          />
+        ),
+      })}
     </View>
   );
 };
