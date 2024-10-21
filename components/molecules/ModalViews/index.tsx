@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react';
 import { Modal } from 'react-native';
 import styled from 'styled-components/native';
 
-export const ModalContainer = styled.View`
+export const ModalContainer = styled.Pressable`
   flex: 1;
   justify-content: center;
   align-items: center;
@@ -10,7 +10,7 @@ export const ModalContainer = styled.View`
   padding: 0 20px;
 `;
 
-export const ModalBox = styled.View`
+export const ModalBox = styled.Pressable`
   gap: 16px;
   justify-content: center;
   align-items: center;
@@ -27,7 +27,7 @@ export const ModalWrapper = ({
 }: PropsWithChildren<{ isModalVisible: boolean; toggleModal: () => void }>) => {
   return (
     <Modal visible={isModalVisible} transparent animationType="fade" onRequestClose={toggleModal}>
-      <ModalContainer>
+      <ModalContainer onPress={toggleModal}>
         <ModalBox>{children}</ModalBox>
       </ModalContainer>
     </Modal>
