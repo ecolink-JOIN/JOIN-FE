@@ -1,14 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { useLocalSearchParams } from 'expo-router';
-import {
-  ManageView,
-  ManageBox,
-  ListComponent,
-  ManageBoxView,
-  shadowStyles,
-} from '@/components/molecules/MyMolecules/ManageView';
+import { useLocalSearchParams, router, Href } from 'expo-router';
+import { ManageView, ManageBoxView, shadowStyles } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
-import { Status, Attendance, Approval, KakaoLink } from '@/components/organisms/MyPage/Manage';
 import { FlatList, View } from 'react-native';
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
@@ -41,7 +34,7 @@ const Rule = ({
     <ManageView>
       <Typography variant="heading3">운영 규칙 관리</Typography>
       <ManageBoxView style={[shadowStyles.shadow]}>
-        <BoxTitle>
+        <BoxTitle onPress={() => router.push(`manage/${id}/study-schedule` as Href)}>
           <Typography
             variant="body3"
             style={{
@@ -118,10 +111,25 @@ const Rule = ({
             스터디 시작 시간 전후 10분 (총 20분간) 출석 가능
           </Typography>
         </View>
-        <BoxTitle>
+        <BoxContents>
           <Typography variant="body3">벌금</Typography>
           <Switch value={true} />
-        </BoxTitle>
+        </BoxContents>
+        {FineList.map((item, index) => (
+          <BoxContents key={index}>
+            <Typography variant="body3" style={{ color: colors.gray[9] }}>
+              {item.title}
+            </Typography>
+            <Typography variant="body3" style={{ marginLeft: 'auto' }}>
+              {item.price}
+            </Typography>
+            <Icon name="arrow-right-outline" stroke={colors.gray[7]} />
+          </BoxContents>
+        ))}
+        <BoxBottom>
+          <Typography variant="button">규칙 안내 메세지 수정</Typography>
+          <Icon name="arrow-right" />
+        </BoxBottom>
       </ManageBoxView>
       <BottomSheetComp
         bottomSheetModalRef={bottomSheetModalRef}
@@ -139,6 +147,13 @@ const Rule = ({
           </View>
         }
       />
+      <Button
+        onPress={() => bottomSheetModalRef.current?.present()}
+        variant="contained"
+        style={{ marginHorizontal: 'auto' }}
+      >
+        저장하기
+      </Button>
       <ModalWrapper isModalVisible={isModalVisible} toggleModal={toggleModal}>
         <ModalContents>
           <Typography variant="subtitle1">스터디 종료하기</Typography>
@@ -172,7 +187,7 @@ const ModalContents = styled.View`
   padding: 32px;
 `;
 
-const BoxTitle = styled.View`
+const BoxTitle = styled.Pressable`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -181,10 +196,26 @@ const BoxTitle = styled.View`
   border-bottom-width: 2px;
 `;
 
+const BoxBottom = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 12px 20px;
+  border-top-color: ${colors.gray[2]};
+  border-top-width: 2px;
+`;
+const BoxContents = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+`;
+
 const Contents = styled.View`
   padding: 16px 20px;
   gap: 20px;
 `;
+
 const Content = styled.View`
   flex-direction: row;
   justify-content: space-between;
@@ -207,3 +238,18 @@ const RadioBox = styled.Pressable`
   align-items: center;
   gap: 8px;
 `;
+
+const FineList = [
+  {
+    title: '지각',
+    price: '1,000원',
+  },
+  {
+    title: '결석',
+    price: '2,000원',
+  },
+  {
+    title: '미인증',
+    price: '500원',
+  },
+];
