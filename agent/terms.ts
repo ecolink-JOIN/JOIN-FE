@@ -9,11 +9,13 @@ interface TermResponse {
 }
 
 export type TermInfo = {
-  id: number;
-  title: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
+  data: {
+    id: number;
+    title: string;
+    content: string;
+    version: string;
+    type: string;
+  }[];
 };
 
 /**

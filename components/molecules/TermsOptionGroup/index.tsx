@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components/native';
 import TermsOption from '@/components/molecules/TermsOption';
 import Typography from '@/components/atoms/Typography';
@@ -7,7 +7,6 @@ import { CircleCheckbox } from '@/components/atoms/Checkbox';
 import Divider from '@/components/atoms/Divider';
 import { View } from 'react-native';
 import { Terms } from '@/agent/terms';
-import requests from '@/agent/api';
 
 const GroupContainer = styled.View`
   padding-vertical: 12px;
@@ -40,8 +39,6 @@ const TermsOptionGroup: React.FC = () => {
 
   const handleViewPress = async (index: number) => {
     try {
-      const response = await Terms.getAll();
-      console.log(`보기 클릭 ${index}, ${JSON.stringify(response.data)}`);
     } catch (error) {
       console.error('API 호출 중 오류 발생:', error);
     }
@@ -55,6 +52,22 @@ const TermsOptionGroup: React.FC = () => {
       })),
     );
   };
+
+  useEffect(() => {
+    try {
+      Terms.getAll().then((res) => {
+        // 응답값이 res.data.data로 떨어짐
+        const _terms = res.data.data.map((term) => ({
+          ...term,
+          required: term.type === 'REQUIRED',
+          checked: false,
+        }));
+        setTerms(_terms);
+      });
+    } catch (error) {
+      console.error('API 호출 중 오류 발생:', error);
+    }
+  }, [setTerms]);
 
   return (
     <GroupContainer>
@@ -76,8 +89,8 @@ const TermsOptionGroup: React.FC = () => {
 
       {terms.map((option, index) => (
         <TermsOption
-          key={index}
-          text={option.text}
+          key={option.id}
+          text={option.title + ` ${option.required ? '(필수)' : '(선택)'}`}
           checked={option.checked}
           onCheckChange={() => handleCheckChange(index)}
           onViewPress={() => handleViewPress(index)}

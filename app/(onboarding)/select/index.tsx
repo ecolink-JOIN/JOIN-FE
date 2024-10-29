@@ -22,7 +22,6 @@ function OnboardingSelectPage() {
               if (step !== undefined && step < 4) {
                 setStudyPreferences({ ...studyPreferences, step: step + 1 });
               } else if (step === 4) {
-                console.log(step);
                 router.replace('/(onboarding)/select/complete');
               }
             },
