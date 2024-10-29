@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Typography from '@/components/atoms/Typography';
 import Icon from '@/components/atoms/Icon';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
@@ -7,6 +6,7 @@ import RowView from '@/components/atoms/View/RowView';
 import IconButton from '@/components/molecules/IconButton';
 import SearchModal from '../../SearchModal';
 import SafeAreaView from '@/components/atoms/View/SafeAreaView';
+import { Image } from 'react-native';
 
 const HeaderContainer = styled(RowView)`
   justify-content: space-between;
@@ -34,7 +34,7 @@ const HomeHeader: React.FC = () => {
   return (
     <SafeAreaView>
       <HeaderContainer>
-        <Typography variant="heading3">로고</Typography>
+        <Image source={require('@/assets/images/logo.png')} style={{ alignSelf: 'center', width: 80, height: 26.78 }} />
         <IconContainer>
           <Icon name="write" />
           <Icon name="alarm" />
