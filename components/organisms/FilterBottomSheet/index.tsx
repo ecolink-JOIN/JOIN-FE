@@ -10,13 +10,14 @@ import CloseHeader from '@/components/molecules/BottomSheet/CloseHeader';
 import SliderSection from '@/components/molecules/SliderSection';
 import { CustomDropdown } from '@/components/atoms/Dropdown';
 import { sgis } from '@/assets/data/sgis';
+import { Range } from '@/components/molecules/SliderSection';
 
 const FilterBottomSheet = () => {
   const [province, setProvince] = useState<string | null>(null);
   const [state, setState] = useState<string | null>(null);
   const [provinceitems] = useState(Object.keys(sgis).map((key) => ({ label: key, value: key })));
   const [stateitems, setStateitems] = useState([{ label: '', value: '' }]);
-  const [value, setValue] = useState<number>(1);
+  const [value, setValue] = useState<Range>([1, 2]);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   const handlePresentModalPress = useCallback(() => {
