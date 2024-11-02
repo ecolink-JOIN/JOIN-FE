@@ -14,6 +14,8 @@ import { colors } from '@/theme';
 import Icon from '@/components/atoms/Icon';
 import { Radio } from '@/components/atoms/Radio';
 import { Switch } from '@/components/atoms/Switch';
+import Toast from 'react-native-toast-message';
+import { MeetingLocation } from '@/components/molecules/FormControl/RecruitBase';
 
 const Rule = ({
   id,
@@ -22,12 +24,25 @@ const Rule = ({
   id: string | string[] | undefined;
   bottomSheetModalRef: React.RefObject<BottomSheetModalMethods>;
 }) => {
-  const [kakaolink, setKakaoLink] = React.useState('https://open.kakao.com/o/joinjoinjoi');
+  const [value, setvalue] = React.useState('');
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [online, setOnline] = useState(true);
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
+  };
+
+  const toggleBottomSheet = () => {
+    bottomSheetModalRef.current?.present();
+  };
+
+  const showToastNobutton = ({ text1 }: { text1: string }) => {
+    Toast.show({
+      type: 'formNoButton',
+      text1,
+      position: 'bottom',
+      visibilityTime: 2000,
+    });
   };
 
   return (
@@ -91,6 +106,7 @@ const Rule = ({
             </Typography>
           </RadioBox>
         </RadioGroup>
+        {!online && <MeetingLocation />}
       </Box>
       <ManageBoxView style={[shadowStyles.shadow]}>
         <View style={{ borderBottomColor: colors.gray[2], borderBottomWidth: 2, padding: 20, gap: 10 }}>
@@ -116,7 +132,7 @@ const Rule = ({
           <Switch value={true} />
         </BoxContents>
         {FineList.map((item, index) => (
-          <BoxContents key={index}>
+          <BoxContents key={index} onPress={toggleBottomSheet}>
             <Typography variant="body3" style={{ color: colors.gray[9] }}>
               {item.title}
             </Typography>
@@ -134,37 +150,52 @@ const Rule = ({
       <BottomSheetComp
         bottomSheetModalRef={bottomSheetModalRef}
         component={
-          <View style={{ padding: 20, gap: 12 }}>
-            <Typography variant="subtitle1">스터디 카카오톡 링크 수정</Typography>
-            <TextField placeholder="카카오톡 링크를 입력해주세요." value={kakaolink} onChangeText={setKakaoLink} />
-            <Button
-              variant="contained"
-              style={{ marginHorizontal: 'auto' }}
-              onPress={() => bottomSheetModalRef.current?.dismiss()}
+          <View style={{ padding: 40, gap: 12 }}>
+            <Typography variant="button">미인증</Typography>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 12 }}>
+              <TextField
+                placeholder="벌금 가격을 입력해주세요."
+                value={value}
+                onChangeText={setvalue}
+                style={{ width: '90%' }}
+              />
+              <Typography variant="body2">원</Typography>
+            </View>
+            <View
+              style={{ flexDirection: 'row', gap: 10, alignItems: 'center', marginTop: 40, justifyContent: 'center' }}
             >
-              완료
-            </Button>
+              <Button variant="outlined" onPress={() => bottomSheetModalRef.current?.dismiss()}>
+                취소
+              </Button>
+              <Button variant="contained" onPress={() => bottomSheetModalRef.current?.dismiss()}>
+                수정하기
+              </Button>
+            </View>
           </View>
         }
       />
-      <Button
-        onPress={() => bottomSheetModalRef.current?.present()}
-        variant="contained"
-        style={{ marginHorizontal: 'auto' }}
-      >
+      <Button onPress={toggleModal} variant="contained" style={{ marginHorizontal: 'auto' }}>
         저장하기
       </Button>
       <ModalWrapper isModalVisible={isModalVisible} toggleModal={toggleModal}>
         <ModalContents>
-          <Typography variant="subtitle1">스터디 종료하기</Typography>
-          <Typography variant="body3" style={{ color: colors.primary }}>
-            2024.06.04 - 2024.10.31
+          <Typography variant="subtitle1">스터디 스케쥴 수정하기</Typography>
+          <Typography variant="body4" style={{ color: colors.black, textAlign: 'center' }}>
+            스터디 기간 및 요일, 시간을 수정하면{'\n'}더 이상 회차 자동 생성 기능을 사용할 수 없습니다.{'\n'}
+            <Typography variant="body4" style={{ fontFamily: 'Pretendard-Bold' }}>
+              이후 회차는 수동으로 직접 생성해야합니다.
+            </Typography>
+            {'\n'} {'\n'}변경된 스터디 스케줄을 적용하고{'\n'}회차를 ‘수동 생성’으로 바꾸겠습니까?
           </Typography>
-          <Typography variant="body4" style={{ textAlign: 'center' }}>
-            설정된 스터디 기간이 남아있습니다.{'\n'}정말 종료하시겠습니까?
-          </Typography>
-          <Button variant="contained" onPress={toggleModal} style={{ marginHorizontal: 'auto' }}>
-            종료하기
+          <Button
+            variant="contained"
+            onPress={() => {
+              toggleModal();
+              showToastNobutton({ text1: '운영 규칙 변경 사항이 성공적으로 반영되었습니다.' });
+            }}
+            style={{ marginHorizontal: 'auto' }}
+          >
+            확인
           </Button>
         </ModalContents>
       </ModalWrapper>
@@ -184,7 +215,7 @@ const ModalContents = styled.View`
   gap: 12px;
   justify-content: center;
   align-items: center;
-  padding: 32px;
+  padding: 20px;
 `;
 
 const BoxTitle = styled.Pressable`
@@ -204,7 +235,7 @@ const BoxBottom = styled.View`
   border-top-color: ${colors.gray[2]};
   border-top-width: 2px;
 `;
-const BoxContents = styled.View`
+const BoxContents = styled.Pressable`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;

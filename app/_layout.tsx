@@ -52,9 +52,9 @@ export default function RootLayout() {
             <Stack.Screen name="(report)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
-          <Toast config={toastConfig} />
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
+      <Toast config={toastConfig} />
     </RecoilRoot>
     // </ThemeProvider>
   );
