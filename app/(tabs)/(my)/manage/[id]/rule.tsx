@@ -142,7 +142,7 @@ const Rule = ({
             <Icon name="arrow-right-outline" stroke={colors.gray[7]} />
           </BoxContents>
         ))}
-        <BoxBottom>
+        <BoxBottom onPress={() => router.push(`manage/${id}/rule-edit` as Href)}>
           <Typography variant="button">규칙 안내 메세지 수정</Typography>
           <Icon name="arrow-right" />
         </BoxBottom>
@@ -227,7 +227,7 @@ const BoxTitle = styled.Pressable`
   border-bottom-width: 2px;
 `;
 
-const BoxBottom = styled.View`
+const BoxBottom = styled.Pressable`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
