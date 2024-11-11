@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
-import { Keyboard, View, TouchableWithoutFeedback, TextInput } from 'react-native';
+import { Keyboard, View, TouchableWithoutFeedback, TextInput, Pressable } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import Typography from '@/components/atoms/Typography';
 import ContentView from '@/components/atoms/View/ContentView';
@@ -8,7 +8,7 @@ import RowView from '@/components/atoms/View/RowView';
 import { useNickNameContext } from '@/context/NickNameContext';
 import { colors } from '@/theme';
 import DuplicateCheckButton from '@/components/atoms/DuplicateCheckButton';
-import { Avatars } from '@/agent/avatars';
+import ImageSettingsButton from '@/components/molecules/ImageSettingsButton';
 
 type FormValues = {
   nickname: string;
@@ -31,9 +31,6 @@ function NickNameGuide() {
   }, [nickname, setIsNickNameValid]);
 
   const onSubmit = async (data: FormValues) => {
-    // const res = await Avatars.checkNickname({ nickname });
-    // console.log(nickname, res);
-
     if (data.nickname.length < 2 || data.nickname.length > 7) {
       setValidationMessage('2~7자리 한글 및 영문으로 입력해주세요.');
       setNickname('');
@@ -50,10 +47,7 @@ function NickNameGuide() {
   };
 
   const getMessageColor = () => {
-    if (validationMessage === '사용 가능한 닉네임이에요.') {
-      return 'blue';
-    }
-    return 'red';
+    return validationMessage === '사용 가능한 닉네임이에요.' ? 'blue' : 'red';
   };
 
   return (
@@ -61,7 +55,7 @@ function NickNameGuide() {
       <ContentView style={{ gap: 20 }}>
         <ProfileContainer>
           <ProfileImage source={require('@/assets/images/profile.png')} />
-          <CameraIcon source={require('@/assets/images/camera.png')} />
+          <ImageSettingsButton />
         </ProfileContainer>
         <View style={{ width: '100%', gap: 12 }}>
           <TextFieldContainer>
@@ -96,15 +90,6 @@ const ProfileContainer = styled.View`
 const ProfileImage = styled.Image`
   width: 100%;
   height: 100%;
-`;
-
-const CameraIcon = styled.Image`
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
 `;
 
 const TextFieldContainer = styled.View`

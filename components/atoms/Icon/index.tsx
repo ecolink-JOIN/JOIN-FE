@@ -28,6 +28,9 @@ import ClockIcon from '@/assets/images/clock.svg';
 import DoubleDownIcon from '@/assets/images/double-down.svg';
 import ResetOutlineIcon from '@/assets/images/reset-outline.svg';
 import PlusCircleOutlined from '@/assets/images/plus-circle-style-outline.svg';
+import LibraryOutlined from '@/assets/images/picture/library.svg';
+import CameraOutlined from '@/assets/images/picture/camera.svg';
+import DeleteOutlined from '@/assets/images/picture/delete.svg';
 
 export type IconTypes =
   | 'home'
@@ -64,7 +67,10 @@ export type IconTypes =
   | 'clock'
   | 'double-down'
   | 'reset-outline'
-  | 'plus-circle-outline';
+  | 'plus-circle-outline'
+  | 'library-outline'
+  | 'camera-outline'
+  | 'delete-outline';
 interface IconProps extends SvgProps {
   name?: IconTypes;
   unread?: boolean;
@@ -139,6 +145,12 @@ function Icon({ name, unread, ...rest }: IconProps) {
       return <ResetOutlineIcon {...rest} />;
     case 'plus-circle-outline':
       return <PlusCircleOutlined {...rest} />;
+    case 'library-outline':
+      return <LibraryOutlined {...rest} />;
+    case 'camera-outline':
+      return <CameraOutlined {...rest} />;
+    case 'delete-outline':
+      return <DeleteOutlined {...rest} />;
     default:
       return null;
   }
