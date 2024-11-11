@@ -6,6 +6,8 @@ import { TermsContext } from '@/context/TermsContext';
 import { CircleCheckbox } from '@/components/atoms/Checkbox';
 import Divider from '@/components/atoms/Divider';
 import { View } from 'react-native';
+import { Terms } from '@/agent/terms';
+import requests from '@/agent/api';
 
 const GroupContainer = styled.View`
   padding-vertical: 12px;
@@ -30,14 +32,19 @@ const TermsOptionGroup: React.FC = () => {
   const allChecked = terms.every((option) => option.checked);
   const allRequiredChecked = terms.filter((option) => option.required).every((option) => option.checked);
 
-  const handleCheckChange = (index: number) => {
+  const handleCheckChange = async (index: number) => {
     setTerms((prevTerms) =>
       prevTerms.map((option, i) => (i === index ? { ...option, checked: !option.checked } : option)),
     );
   };
 
-  const handleViewPress = (index: number) => {
-    console.log(`보기 클릭 ${index}`);
+  const handleViewPress = async (index: number) => {
+    try {
+      const response = await Terms.getAll();
+      console.log(`보기 클릭 ${index}, ${JSON.stringify(response.data)}`);
+    } catch (error) {
+      console.error('API 호출 중 오류 발생:', error);
+    }
   };
 
   const handleSelectAll = () => {
