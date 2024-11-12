@@ -9,6 +9,7 @@ import { useNickNameContext } from '@/context/NickNameContext';
 import { colors } from '@/theme';
 import DuplicateCheckButton from '@/components/atoms/DuplicateCheckButton';
 import ImageSettingsButton from '@/components/molecules/ImageSettingsButton';
+import { usePhotoContext } from '@/context/PhotoContext';
 
 type FormValues = {
   nickname: string;
@@ -22,6 +23,7 @@ function NickNameGuide() {
       nickname: '',
     },
   });
+  const { photoUri } = usePhotoContext();
 
   const nickname = watch('nickname');
 
@@ -54,7 +56,10 @@ function NickNameGuide() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ContentView style={{ gap: 20 }}>
         <ProfileContainer>
-          <ProfileImage source={require('@/assets/images/profile.png')} />
+          <ProfileImage
+            source={photoUri ? { uri: photoUri } : require('@/assets/images/profile.png')}
+            resizeMode="cover"
+          />
           <ImageSettingsButton />
         </ProfileContainer>
         <View style={{ width: '100%', gap: 12 }}>
@@ -90,6 +95,8 @@ const ProfileContainer = styled.View`
 const ProfileImage = styled.Image`
   width: 100%;
   height: 100%;
+  border-radius: 70px;
+  overflow: hidden;
 `;
 
 const TextFieldContainer = styled.View`
