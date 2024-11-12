@@ -5,7 +5,7 @@ import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import styled from 'styled-components/native';
 import Icon from '@/components/atoms/Icon';
-import { useLocalSearchParams, router } from 'expo-router';
+import { useLocalSearchParams, router, Href } from 'expo-router';
 
 const AlarmList = [
   {
@@ -41,7 +41,7 @@ const Alarm = (id: string | string[] | undefined) => {
           </AlarmMessage>
         </ManageBox>
       ))}
-      <AddAlarm onPress={() => router.push(`/manage/${id}/alarm-add`)}>
+      <AddAlarm onPress={() => router.push(`/manage/${id}/alarm-add` as Href)}>
         <Icon name="plus-circle-outline" />
         <Typography variant="body2" style={{ color: colors.gray[7] }}>
           추가하기

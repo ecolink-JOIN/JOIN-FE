@@ -1,6 +1,6 @@
 import { ScrollView } from 'react-native';
 import React from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
+import { Href, router, useLocalSearchParams } from 'expo-router';
 import { ManageView, shadowStyles, ManageBoxView, ListComponent } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
@@ -88,7 +88,7 @@ const Member = () => {
             return (
               <ContentsWrapper
                 key={index}
-                onPress={() => router.push(`/manage/${id}/member-detail?userid=${member.id}`)}
+                onPress={() => router.push(`/manage/${id}/member-detail?userid=${member.id}` as Href)}
               >
                 <ContentViewTop>
                   <ProfileImage source={member.profile} style={{ width: 28, height: 28, borderRadius: 100 }} />
