@@ -16,10 +16,9 @@ const ImageSettingsButton = () => {
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
   const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
-  const { photoUri, setPhotoUri } = usePhotoContext();
+  const { setPhotoUri } = usePhotoContext();
   const [isCameraVisible, setIsCameraVisible] = useState<boolean>(false);
 
-  // 권한 요청
   React.useEffect(() => {
     (async () => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
@@ -30,12 +29,10 @@ const ImageSettingsButton = () => {
     })();
   }, []);
 
-  // 모달 열기
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
 
-  // 사진 촬영
   const handleTakePicture = async () => {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
@@ -45,7 +42,6 @@ const ImageSettingsButton = () => {
     }
   };
 
-  // 갤러리에서 사진 선택
   const pickImageFromGallery = async () => {
     if (!hasGalleryPermission) {
       Alert.alert('권한 필요', '갤러리 접근 권한이 없습니다.');
@@ -64,12 +60,10 @@ const ImageSettingsButton = () => {
     }
   };
 
-  // 카메라 전환
   const toggleCameraType = () => {
     setCameraType((prevType) => (prevType === CameraType.back ? CameraType.front : CameraType.back));
   };
 
-  // 카메라 화면 열기
   const openCamera = () => {
     if (!hasCameraPermission) {
       Alert.alert('권한 필요', '카메라 접근 권한이 없습니다.');
