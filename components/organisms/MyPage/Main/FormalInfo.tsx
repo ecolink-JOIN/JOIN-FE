@@ -5,6 +5,7 @@ import Typography from '@/components/atoms/Typography';
 import Chip from '@/components/atoms/Badge';
 import { colors } from '@/theme';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
+import { Href, router } from 'expo-router';
 
 const FormalInfo = () => {
   const InfoList = [
@@ -23,6 +24,9 @@ const FormalInfo = () => {
             size="large"
             value="내 정보"
             style={{ backgroundColor: colors.gray[2], width: 75, height: 36 }}
+            onPress={() => {
+              router.push(`myinfo` as Href);
+            }}
           />
         </View>
       </NicknameView>
