@@ -39,7 +39,7 @@ const Index = () => {
             key={index}
             last={index === list.length - 1}
             onPress={() => {
-              index === list.length - 1 ? router.push(item.href as unknown as Href) : null;
+              index === list.length - 1 ? null : router.push(item.href as unknown as Href);
             }}
           >
             <Typography variant="button">{item.title}</Typography>

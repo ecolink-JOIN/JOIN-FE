@@ -1,51 +1,87 @@
 import { ManageView, shadowStyles, ManageBoxView } from '@/components/molecules/MyMolecules/ManageView';
-import React from 'react';
 import Typography from '@/components/atoms/Typography';
 import { styled } from 'styled-components/native';
 import { colors } from '@/theme';
-import Icon from '@/components/atoms/Icon';
+import { Image } from 'react-native';
+import { Href, router } from 'expo-router';
 
 const list = [
   {
-    title: '계정 정보',
-    href: '/tabs/my/myinfo/account',
+    name: '닉네임1',
+    img: require('@/assets/images/profile.png'),
   },
   {
-    title: '앱 설정',
-    href: '/tabs/my/myinfo/notification',
+    name: '닉네임2',
+    img: require('@/assets/images/profile.png'),
   },
   {
-    title: '차단 관리',
-    href: '/tabs/my/myinfo/policy',
+    name: '닉네임3',
+    img: require('@/assets/images/profile.png'),
   },
   {
-    title: '로그아웃',
-    href: '/tabs/my/myinfo/version',
+    name: '닉네임4',
+    img: require('@/assets/images/profile.png'),
   },
 ];
 const Index = () => {
   return (
     <ManageView>
-      <Typography variant="heading3">차단 관리</Typography>
-      {/* <ManageBoxView style={shadowStyles.shadow}>
+      <TitleView>
+        <Typography variant="heading3">차단 관리</Typography>
+        <Typography variant="heading3" onPress={() => router.push('/myinfo/block-account' as Href)}>
+          +
+        </Typography>
+      </TitleView>
+      <ManageBoxView style={shadowStyles.shadow}>
+        <LinkView>
+          <Typography variant="button">차단된 계정</Typography>
+        </LinkView>
         {list.map((item, index) => (
-          <LinkView key={index} last={index === list.length - 1}>
-            <Typography variant="button">{item.title}</Typography>
-            <Icon name="arrow-right" />
-          </LinkView>
+          <Profiles key={index}>
+            <Image source={item.img} style={{ width: 24, height: 24, borderRadius: 100 }} />
+            <Typography variant="body3" style={{ marginLeft: 10 }}>
+              {item.name}
+            </Typography>
+            <ButtonView>
+              <Typography variant="body3" style={{ color: colors.primary }}>
+                차단 해제
+              </Typography>
+            </ButtonView>
+          </Profiles>
         ))}
-      </ManageBoxView> */}
+      </ManageBoxView>
     </ManageView>
   );
 };
 
 export default Index;
 
-const LinkView = styled.Pressable<{ last: boolean }>`
-  flex-direction: row;
+const TitleView = styled.View`
   justify-content: space-between;
-  padding: 20px;
+  flex-direction: row;
+  padding: 0 10px 0 0;
+`;
+
+const LinkView = styled.Pressable`
+  flex-direction: row;
+  padding: 10px 20px;
   border-bottom-color: ${colors.gray[2]};
-  border-bottom-width: ${({ last }) => (last ? 0 : 2)}px;
+  border-bottom-width: 2px;
   align-items: center;
+`;
+
+const Profiles = styled.View`
+  padding: 10px 20px;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const ButtonView = styled.Pressable`
+  padding: 6px 12px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  background-color: ${colors.sub2};
+  border-radius: 6px;
 `;
