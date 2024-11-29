@@ -3,7 +3,7 @@ import { Href, router, Stack } from 'expo-router';
 import { View } from 'react-native';
 import Icon from '@/components/atoms/Icon';
 
-function MemberLayout() {
+function MyInfo() {
   return (
     <Stack
       screenOptions={{
@@ -26,4 +26,4 @@ function MemberLayout() {
   );
 }
 
-export default MemberLayout;
+export default MyInfo;
