@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { View, ScrollView, StyleSheet, Pressable, Image, Alert, Modal } from 'react-native';
+import { View, ScrollView, StyleSheet, Pressable, Image, Alert, Modal, SafeAreaView } from 'react-native';
 import { BottomSheetHandle, BottomSheetModal } from '@gorhom/bottom-sheet';
 import BottomSheet from '@/components/molecules/BottomSheet';
 import Typography from '@/components/atoms/Typography';
@@ -120,15 +120,35 @@ const ImageSettingsButton = () => {
 
       <Modal visible={isCameraVisible} onRequestClose={() => setIsCameraVisible(false)}>
         <Camera ref={cameraRef} style={{ flex: 1, backgroundColor: 'black' }} type={cameraType} />
+        <CameraHeaders>
+          <SafeAreaView>
+            <CameraHeaderControls>
+              <Pressable onPress={() => {}}>
+                <Icon name="flash-outline" />
+              </Pressable>
+              <Typography
+                variant="body1"
+                style={{
+                  color: 'white',
+                }}
+              >
+                사진
+              </Typography>
+              <View style={{ width: 24 }} />
+            </CameraHeaderControls>
+          </SafeAreaView>
+        </CameraHeaders>
         <CameraControls>
-          <Pressable onPress={toggleCameraType}>
-            <Icon name="camera-outline" />
-          </Pressable>
-          <Pressable onPress={handleTakePicture}>
-            <Icon name="camera-outline" />
-          </Pressable>
           <Pressable onPress={() => setIsCameraVisible(false)}>
-            <Icon name="close-outline" />
+            <Typography variant="body1" style={{ color: 'white' }}>
+              취소
+            </Typography>
+          </Pressable>
+          <CameraShutter onPress={handleTakePicture}>
+            <CameraShutterCircle />
+          </CameraShutter>
+          <Pressable onPress={toggleCameraType}>
+            <Icon name="swap-outline" />
           </Pressable>
         </CameraControls>
       </Modal>
@@ -159,12 +179,48 @@ const CameraIcon = styled.Image`
   border-radius: 20px;
 `;
 
-const CameraControls = styled.View`
+const CameraHeaders = styled.View`
   position: absolute;
-  bottom: 20px;
   left: 0;
   right: 0;
+  top: 0;
+  background: black;
+`;
+
+const CameraShutter = styled(Pressable)`
+  width: 72px;
+  height: 72px;
+  background-color: transparent;
+  border-width: 5px;
+  border-color: white;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+`;
+
+const CameraShutterCircle = styled.View`
+  width: 53.3px;
+  height: 53.3px;
+  background-color: white;
+  border-radius: 50%;
+`;
+
+const CameraHeaderControls = styled.View`
   flex-direction: row;
-  justify-content: space-around;
-  padding: 10px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+`;
+
+const CameraControls = styled.View`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  flex-direction: row;
+  justify-content: space-between;
+  background: black;
+  padding: 12px 20px;
 `;

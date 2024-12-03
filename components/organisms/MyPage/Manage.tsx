@@ -394,7 +394,7 @@ export const Approval = () => {
         <Pressable
           key={index}
           style={{ flexDirection: 'row', paddingVertical: 8, alignItems: 'center', justifyContent: 'space-between' }}
-          onPress={() => router.push(`/manage/${id}/certify?user=${member.user_id}`)}
+          onPress={() => router.push(`/manage/${id}/certify?user=${member.user_id}` as Href)}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Image source={member.profile} style={{ width: 24, height: 24 }} />

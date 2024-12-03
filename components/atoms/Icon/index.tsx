@@ -31,6 +31,8 @@ import PlusCircleOutlined from '@/assets/images/plus-circle-style-outline.svg';
 import LibraryOutlined from '@/assets/images/picture/library.svg';
 import CameraOutlined from '@/assets/images/picture/camera.svg';
 import DeleteOutlined from '@/assets/images/picture/delete.svg';
+import SwapOutlined from '@/assets/images/picture/swap.svg';
+import FlashOutlined from '@/assets/images/picture/flash.svg';
 
 export type IconTypes =
   | 'home'
@@ -70,7 +72,9 @@ export type IconTypes =
   | 'plus-circle-outline'
   | 'library-outline'
   | 'camera-outline'
-  | 'delete-outline';
+  | 'delete-outline'
+  | 'swap-outline'
+  | 'flash-outline';
 interface IconProps extends SvgProps {
   name?: IconTypes;
   unread?: boolean;
@@ -151,6 +155,10 @@ function Icon({ name, unread, ...rest }: IconProps) {
       return <CameraOutlined {...rest} />;
     case 'delete-outline':
       return <DeleteOutlined {...rest} />;
+    case 'swap-outline':
+      return <SwapOutlined {...rest} />;
+    case 'flash-outline':
+      return <FlashOutlined {...rest} />;
     default:
       return null;
   }
