@@ -45,10 +45,10 @@ export default function RootLayout() {
     <RecoilRoot>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
-          <Stack initialRouteName="(tabs)">
+          <Stack initialRouteName="(onboarding)/">
+            <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
             <Stack.Screen name="(form)" options={{ headerShown: false }} />
             <Stack.Screen name="(report)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />

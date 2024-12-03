@@ -3,9 +3,9 @@ import React, { createContext, useState, ReactNode, FC, useContext } from 'react
 /**
  * TODO: 임시 컨텍스트. 선택 항목이 id로 변경된다면, 수정 필요할듯.
  */
-interface StudyPreferences {
+export interface StudyPreferences {
   step: number;
-  meetingType: '온라인' | '오프라인';
+  meetingType: 'online' | 'offline';
   interestArea: '입시' | '고시' | '취업' | '자격증' | '사이드프로젝트' | '기타';
   location?: string;
   availableDays: string[];

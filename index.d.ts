@@ -8,3 +8,5 @@ interface StudyList {
   id: number;
   active: boolean;
 }
+
+type ElementType<T> = T extends (infer U)[] ? U : never;

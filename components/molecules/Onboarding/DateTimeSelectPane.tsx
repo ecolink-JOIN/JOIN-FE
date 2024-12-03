@@ -4,14 +4,19 @@ import { Pressable, View } from 'react-native';
 
 import useOnboardingButtonSize from '@/hooks/useResponsiveOnboardingButtonSize';
 import { colors } from '@/theme';
+import { StudyPreferences, useOnboardingContext } from '@/context/OnboardingContext';
 
 const DateTimeSelectPane: React.FC = () => {
   const daysGap = 7;
   const timeGap = 10;
   const daysButtonSize = useOnboardingButtonSize({ buttonCountByRow: 7, gap: daysGap });
   const timeButtonSize = useOnboardingButtonSize({ buttonCountByRow: 3, gap: timeGap });
+  const { studyPreferences, setStudyPreferences } = useOnboardingContext();
 
-  const daysOptions = [
+  const daysOptions: {
+    id: ElementType<StudyPreferences['availableDays']>;
+    value: string;
+  }[] = [
     { id: 'sun', value: '일' },
     { id: 'mon', value: '월' },
     { id: 'tue', value: '화' },
@@ -21,7 +26,10 @@ const DateTimeSelectPane: React.FC = () => {
     { id: 'sat', value: '토' },
   ];
 
-  const timeOptions = [
+  const timeOptions: {
+    id: StudyPreferences['availableTime'];
+    value: string;
+  }[] = [
     { id: '11', value: '오전시간대' },
     { id: '22', value: '낮시간대' },
     { id: '333', value: '저녁시간대' },
@@ -48,12 +56,23 @@ const DateTimeSelectPane: React.FC = () => {
               style={{
                 width: daysButtonSize,
                 height: daysButtonSize,
-                backgroundColor: colors.sub2,
+                backgroundColor: studyPreferences.availableDays?.includes(option.id) ? colors.sub1 : colors.white,
+                borderWidth: 1,
+                borderColor: colors.sub1,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 8,
               }}
               onPress={() => {
+                const newAvailableDays = studyPreferences.availableDays?.includes(option.id)
+                  ? studyPreferences.availableDays.filter((id) => id !== option.id)
+                  : [...(studyPreferences.availableDays || []), option.id];
+
+                setStudyPreferences((prev) => ({
+                  ...prev,
+                  availableDays: newAvailableDays,
+                }));
+
                 console.log(`Pressed: ${option.value}`);
               }}
             >
@@ -78,13 +97,18 @@ const DateTimeSelectPane: React.FC = () => {
               style={{
                 width: timeButtonSize,
                 height: 40,
-                backgroundColor: colors.sub2,
+                backgroundColor: studyPreferences.availableTime === option.id ? colors.sub1 : colors.white,
+                borderWidth: 1,
+                borderColor: colors.sub1,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 8,
               }}
               onPress={() => {
-                console.log(`Pressed: ${option.value}`);
+                setStudyPreferences({
+                  ...studyPreferences,
+                  availableTime: option.id,
+                });
               }}
             >
               <Typography variant="button">{option.value}</Typography>
