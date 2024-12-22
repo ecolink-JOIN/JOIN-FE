@@ -1,5 +1,5 @@
 import { ScrollView, View } from 'react-native';
-import { ManageBox, ManageBoxView, ManageView, shadowStyles } from '@/components/molecules/MyMolecules/ManageView';
+import { ManageBoxView, ManageView, shadowStyles } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import Button from '@/components/atoms/Button';
