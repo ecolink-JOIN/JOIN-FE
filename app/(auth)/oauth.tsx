@@ -75,7 +75,7 @@ const WebViewOauthScreen = () => {
         android: (
           <WebView
             source={{
-              uri: 'https://m.naver.com',
+              uri: url,
             }}
             javaScriptEnabled={true}
             onMessage={handleWebViewMessage}

@@ -3,7 +3,7 @@ import { insertTokenInRequest, handleResponseError, handleRequestError } from '.
 import { HttpRequestConfig } from './agent';
 
 const API = axios.create({
-  baseURL: `http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/api/v1`,
+  baseURL: process.env.EXPO_PUBLIC_API_URL + `api/v1`,
   headers: {
     'Content-Type': 'application/json',
   },
