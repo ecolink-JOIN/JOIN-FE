@@ -11,7 +11,7 @@ const WebViewOauthScreen = () => {
   const router = useRouter();
 
   // NOTE: https 여야 정상 동작합니다.
-  const url = `http://3.38.27.246/api/v1/oauth2/authorization/kakao`;
+  const url = `http://3.38.27.246/api/v1/oauth2/authorization/${provider}`;
 
   const handleWebViewMessage = async (event: any) => {
     try {
@@ -24,6 +24,7 @@ const WebViewOauthScreen = () => {
         parsedData = JSON.parse(data);
         console.log('Data is in JSON format:', parsedData);
       } catch (jsonError) {
+        console.error('Failed to parse JSON:', jsonError);
         return;
       }
 
@@ -56,14 +57,14 @@ const WebViewOauthScreen = () => {
             onMessage={handleWebViewMessage}
             mixedContentMode="compatibility"
             injectedJavaScript={`
-        (function() {
-          window.onload = function() {
-            const bodyText = document.body.innerText || '';
-            window.ReactNativeWebView.postMessage(bodyText);
-          };
-        })();
-        true;
-      `}
+          (function() {
+            window.onload = function() {
+              const bodyText = document.body.innerText || '';
+              window.ReactNativeWebView.postMessage(bodyText);
+            };
+          })();
+          true;
+        `}
             startInLoadingState={true}
             renderLoading={() => (
               <View>
@@ -81,8 +82,8 @@ const WebViewOauthScreen = () => {
             onMessage={handleWebViewMessage}
             mixedContentMode="compatibility"
             injectedJavaScript={`
-              true;
-            `}
+                true;
+              `}
             startInLoadingState={true}
             renderLoading={() => (
               <View>
