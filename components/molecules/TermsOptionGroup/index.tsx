@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import TermsOption from '@/components/molecules/TermsOption';
 import Typography from '@/components/atoms/Typography';
@@ -6,8 +6,7 @@ import { TermsContext } from '@/context/TermsContext';
 import { CircleCheckbox } from '@/components/atoms/Checkbox';
 import Divider from '@/components/atoms/Divider';
 import { View } from 'react-native';
-import { Terms } from '@/agent/terms';
-import requests from '@/agent/api';
+import { TermsService } from '@/apis';
 
 const GroupContainer = styled.View`
   padding-vertical: 12px;
@@ -21,7 +20,28 @@ const SelectAllContainer = styled.Pressable`
 `;
 
 const TermsOptionGroup: React.FC = () => {
+  const [data, setData] = useState<Terms.BaseDto[]>([]);
   const context = useContext(TermsContext);
+
+  const fetchTerms = async () => {
+    TermsService()
+      .Base()
+      .then((res) => {
+        console.log('🚀 ~ fetchTerms ~ res:', res);
+      })
+      .catch((err) => {
+        console.log('🚀 ~ fetchTerms ~ err:', err);
+      })
+      .finally(() => {
+        console.log('🚀 ~ fetchTerms ~ finally:');
+      });
+  };
+
+  useEffect(() => {}, []);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   if (!context) {
     throw new Error('TermsContext must be used within a TermsProvider');
@@ -39,12 +59,7 @@ const TermsOptionGroup: React.FC = () => {
   };
 
   const handleViewPress = async (index: number) => {
-    try {
-      const response = await Terms.getAll();
-      console.log(`보기 클릭 ${index}, ${JSON.stringify(response.data)}`);
-    } catch (error) {
-      console.error('API 호출 중 오류 발생:', error);
-    }
+    await fetchTerms();
   };
 
   const handleSelectAll = () => {

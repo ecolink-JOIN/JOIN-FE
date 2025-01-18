@@ -1,6 +1,30 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+
+export const AuthStorage = {
+  async setToken(token: string) {
+    await AsyncStorage.setItem('sessionId', token);
+  },
+  async getToken(): Promise<string | null> {
+    return AsyncStorage.getItem('sessionId');
+  },
+  async clear() {
+    await AsyncStorage.removeItem('sessionId');
+  },
+};
+
+export const TokenStorage = {
+  async setToken(token: string) {
+    await AsyncStorage.setItem('accessToken', token);
+  },
+  async getToken(): Promise<string | null> {
+    return AsyncStorage.getItem('accessToken');
+  },
+  async clear() {
+    await AsyncStorage.removeItem('accessToken');
+  },
+};
 
 export const API = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
@@ -9,47 +33,35 @@ export const API = axios.create({
   },
 });
 
-const storageAccessKey = 'access_token';
-
-export const storeAccess = async (token: string) => {
-  try {
-    await AsyncStorage.setItem(storageAccessKey, token);
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-export const setAccess = (token: string) => {
-  API.defaults.headers['Authorization'] = `Bearer ${token}`;
-};
-
-export const resetAccess = async () => {
-  delete API.defaults.headers['Authorization'];
-  await AsyncStorage.removeItem(storageAccessKey);
-};
-
-export const getAccess = async (): Promise<string | null> => {
-  try {
-    return await AsyncStorage.getItem(storageAccessKey);
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-};
+export const OauthAPI = axios.create({
+  baseURL: process.env.EXPO_PUBLIC_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 API.interceptors.request.use(async (config) => {
-  const token = await getAccess();
-  if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`;
-  }
+  await TokenStorage.getToken().then(
+    (token) => {
+      console.log('Token:', token);
+      config.headers['Authorization'] = `${token}`;
+    },
+    (error) => {
+      console.error('Failed to get token:', error);
+      return null;
+    },
+  );
+  console.log({ config: config.headers });
   return config;
 });
 
-API.interceptors.response.use((response) => {
-  console.log(response);
-  if (response.status === 401) {
-    resetAccess();
-    router.push('/login');
-  }
-  return response;
-});
+API.interceptors.response.use(
+  (response) => {
+    console.log({ response });
+    return response;
+  },
+  (error) => {
+    console.log({ error: error.response });
+    return Promise.reject(error);
+  },
+);

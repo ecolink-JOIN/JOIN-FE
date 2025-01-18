@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios';
 import { API } from '@/apis/axios';
 
-export const AvatarsService = async () => {
+export const AvatarsService = () => {
   const url = '/avatars';
 
   /**
@@ -54,15 +54,17 @@ export const AvatarsService = async () => {
   return { base, photos, nickname, nicknameValid };
 };
 
-export const TermsService = async () => {
+export const TermsService = () => {
   const url = '/terms';
-
   /**
    * 약관 조회 API - 현재 유저의 동의가 필요한 약관을 조회하는 API입니다.
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/02.%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85/getRequiredConsentTerms
    */
-  const base = async () => {
-    return (await API.get(url)) as AxiosResponse<{ result: Terms.BaseDto[] }>;
+  const Base = async () => {
+    const {
+      data: { result },
+    } = (await API.get(url)) as AxiosResponse<{ result: Terms.BaseDto[] }>;
+    return result;
   };
 
   /**
@@ -73,5 +75,5 @@ export const TermsService = async () => {
     return (await API.post(`${url}/agree`, data)) as AxiosResponse<{ result: null }>;
   };
 
-  return { base, agree };
+  return { Base, agree };
 };
