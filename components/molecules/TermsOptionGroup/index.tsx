@@ -59,7 +59,7 @@ const TermsOptionGroup: React.FC = () => {
   return (
     <GroupContainer>
       <SelectAllContainer onPress={handleSelectAll}>
-        <CircleCheckbox selected={allChecked} />
+        <CircleCheckbox onSelect={handleSelectAll} selected={allChecked} />
         <Typography variant="body2" style={{ marginLeft: 4 }}>
           모두 동의 (선택 정보 포함)
         </Typography>
