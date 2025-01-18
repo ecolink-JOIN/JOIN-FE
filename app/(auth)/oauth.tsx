@@ -55,17 +55,14 @@ const WebViewOauthScreen = () => {
             }}
             javaScriptEnabled={true}
             onMessage={handleWebViewMessage}
-            mixedContentMode="compatibility"
+            // mixedContentMode="compatibility"
             injectedJavaScript={`
-          (function() {
-            window.onload = function() {
-              const bodyText = document.body.innerText || '';
-              window.ReactNativeWebView.postMessage(bodyText);
-            };
-          })();
+          console.log('WebView loaded');  
+          const bodyText = document.body.innerText || '';
+          window.ReactNativeWebView.postMessage(bodyText);
           true;
         `}
-            startInLoadingState={true}
+            // startInLoadingState={true}
             renderLoading={() => (
               <View>
                 <Typography variant="button">Loading...</Typography>
@@ -76,14 +73,20 @@ const WebViewOauthScreen = () => {
         android: (
           <WebView
             source={{
-              uri: 'https://m.naver.com',
+              uri: url,
             }}
             javaScriptEnabled={true}
             onMessage={handleWebViewMessage}
             mixedContentMode="compatibility"
             injectedJavaScript={`
-                true;
-              `}
+          (function() {
+            window.onload = function() {
+              const bodyText = document.body.innerText || '';
+              window.ReactNativeWebView.postMessage(bodyText);
+            };
+          })();
+          true;
+        `}
             startInLoadingState={true}
             renderLoading={() => (
               <View>
