@@ -20,24 +20,18 @@ const SelectAllContainer = styled.Pressable`
 `;
 
 const TermsOptionGroup: React.FC = () => {
-  const [data, setData] = useState<Terms.BaseDto[]>([]);
+  const [data, setData] = useState<Terms.BaseDto>();
   const context = useContext(TermsContext);
 
   const fetchTerms = async () => {
     TermsService()
       .Base()
-      .then((res) => {
-        console.log('🚀 ~ fetchTerms ~ res:', res);
-      })
-      .catch((err) => {
-        console.log('🚀 ~ fetchTerms ~ err:', err);
-      })
-      .finally(() => {
-        console.log('🚀 ~ fetchTerms ~ finally:');
-      });
+      .then((data) => setData(data));
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    fetchTerms();
+  }, []);
 
   useEffect(() => {
     console.log(data);
@@ -59,7 +53,10 @@ const TermsOptionGroup: React.FC = () => {
   };
 
   const handleViewPress = async (index: number) => {
-    await fetchTerms();
+    const term = data?.data[index];
+    if (!term) {
+      return;
+    }
   };
 
   const handleSelectAll = () => {
@@ -89,15 +86,19 @@ const TermsOptionGroup: React.FC = () => {
         <Divider style={{ height: 2 }} />
       </View>
 
-      {terms.map((option, index) => (
-        <TermsOption
-          key={index}
-          text={option.text}
-          checked={option.checked}
-          onCheckChange={() => handleCheckChange(index)}
-          onViewPress={() => handleViewPress(index)}
-        />
-      ))}
+      {data?.data === undefined ? (
+        <Typography variant="body2">약관을 불러오는 중입니다.</Typography>
+      ) : (
+        data.data.map((option, index) => (
+          <TermsOption
+            key={option.id}
+            text={option.title}
+            checked={terms[index].checked}
+            onCheckChange={() => handleCheckChange(index)}
+            onViewPress={() => handleViewPress(index)}
+          />
+        ))
+      )}
     </GroupContainer>
   );
 };

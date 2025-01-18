@@ -1,7 +1,33 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { logger, consoleTransport } from 'react-native-logs';
 
+var log = logger.createLogger({
+  levels: {
+    debug: 0,
+    info: 1,
+    warn: 2,
+    error: 3,
+  },
+  severity: 'debug',
+  transport: consoleTransport,
+  transportOptions: {
+    colors: {
+      devNotice: 'blue',
+      info: 'blueBright',
+      warn: 'yellowBright',
+      error: 'redBright',
+      debug: 'white',
+    },
+  },
+  async: true,
+  dateFormat: 'time',
+  printLevel: true,
+  printDate: true,
+  fixedExtLvlLength: false,
+  enabled: true,
+});
 export const AuthStorage = {
   async setToken(token: string) {
     await AsyncStorage.setItem('sessionId', token);
@@ -40,28 +66,40 @@ export const OauthAPI = axios.create({
   },
 });
 
-API.interceptors.request.use(async (config) => {
-  await TokenStorage.getToken().then(
-    (token) => {
-      console.log('Token:', token);
-      config.headers['Authorization'] = `${token}`;
-    },
-    (error) => {
-      console.error('Failed to get token:', error);
-      return null;
-    },
-  );
-  console.log({ config: config.headers });
-  return config;
-});
+API.interceptors.request.use(
+  async (config: InternalAxiosRequestConfig) => {
+    const token = await TokenStorage.getToken();
+    if (token) {
+      config.headers.Authorization = `${token}`;
+    }
+    log.debug({
+      headers: config.headers,
+      method: config.method,
+      url: config.url,
+      baseUrl: config.baseURL,
+      data: config.data,
+      params: config.params,
+    });
+    return config;
+  },
+  (error: AxiosError) => {
+    log.error('API request error', error.config);
+    return Promise.reject(error);
+  },
+);
 
 API.interceptors.response.use(
-  (response) => {
-    console.log({ response });
-    return response;
+  (response: AxiosResponse) => {
+    log.info({
+      status: response.status,
+      statusText: response.statusText,
+      // headers: response.headers,
+      data: response.data,
+    });
+    return response.data;
   },
-  (error) => {
-    console.log({ error: error.response });
+  (error: AxiosError) => {
+    log.error('API response error', error.response);
     return Promise.reject(error);
   },
 );

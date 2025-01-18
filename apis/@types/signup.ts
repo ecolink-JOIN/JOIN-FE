@@ -24,11 +24,9 @@ interface Image {
 
 declare namespace Terms {
   export interface BaseDto {
-    id: number;
-    version: string;
-    title: string;
-    content: string;
-    type: string;
+    data: { id: number; version: string; title: string; content: string; type: string }[];
+    status: number;
+    message: string;
   }
 
   export interface AgreeRequest {
