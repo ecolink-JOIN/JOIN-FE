@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 declare namespace Avatars {
   export interface BaseDto {
     avatarToken: string;
@@ -24,9 +25,11 @@ interface Image {
 
 declare namespace Terms {
   export interface BaseDto {
-    data: { id: number; version: string; title: string; content: string; type: string }[];
-    status: number;
-    message: string;
+    id: number;
+    version: string;
+    title: string;
+    content: string;
+    type: 'OPTIONAL' | 'REQUIRED';
   }
 
   export interface AgreeRequest {

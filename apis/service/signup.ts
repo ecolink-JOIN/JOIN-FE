@@ -61,7 +61,8 @@ export const TermsService = () => {
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/02.%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85/getRequiredConsentTerms
    */
   const Base = async () => {
-    return (await API.get(url)) as Terms.BaseDto;
+    const data = (await API.get(url)) as { data: Terms.BaseDto[] };
+    return data.data;
   };
 
   /**

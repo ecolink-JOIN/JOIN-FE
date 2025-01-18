@@ -20,7 +20,7 @@ const SelectAllContainer = styled.Pressable`
 `;
 
 const TermsOptionGroup: React.FC = () => {
-  const [data, setData] = useState<Terms.BaseDto>();
+  const [data, setData] = useState<Terms.BaseDto[]>();
   const context = useContext(TermsContext);
 
   const fetchTerms = async () => {
@@ -34,7 +34,14 @@ const TermsOptionGroup: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log(data);
+    if (!data) return;
+    setTerms((prevTerms) =>
+      prevTerms.map((option, idx) => ({
+        ...option,
+        checked: data?.[idx]?.type === 'REQUIRED',
+      })),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   if (!context) {
@@ -52,12 +59,7 @@ const TermsOptionGroup: React.FC = () => {
     );
   };
 
-  const handleViewPress = async (index: number) => {
-    const term = data?.data[index];
-    if (!term) {
-      return;
-    }
-  };
+  const handleViewPress = async (index: number) => {};
 
   const handleSelectAll = () => {
     setTerms((prevTerms) =>
@@ -86,13 +88,14 @@ const TermsOptionGroup: React.FC = () => {
         <Divider style={{ height: 2 }} />
       </View>
 
-      {data?.data === undefined ? (
+      {data === undefined ? (
         <Typography variant="body2">약관을 불러오는 중입니다.</Typography>
       ) : (
-        data.data.map((option, index) => (
+        data.map((option, index) => (
           <TermsOption
             key={option.id}
             text={option.title}
+            type={option.type}
             checked={terms[index].checked}
             onCheckChange={() => handleCheckChange(index)}
             onViewPress={() => handleViewPress(index)}
