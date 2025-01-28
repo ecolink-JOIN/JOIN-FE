@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import CTAView from '@/components/atoms/View/CTAView';
 import Button from '@/components/atoms/Button';
 import { TermsContext } from '@/context/TermsContext';
+import { TermsService } from '@/apis';
 
 function TermsCTA() {
   const router = useRouter();
@@ -15,7 +16,15 @@ function TermsCTA() {
   const { terms } = context;
   const allRequiredChecked = terms.filter((option) => option.required).every((option) => option.checked);
 
-  const handleStartPress = () => {
+  const handleStartPress = async () => {
+    const body: Terms.AgreeRequest = {
+      terms: terms.map((term) => ({
+        id: term.id,
+        version: term.version,
+        status: term.checked ? 'Y' : 'N',
+      })),
+    };
+    // await TermsService().agree(body);
     router.push('/(auth)/nickname');
   };
 

@@ -3,18 +3,23 @@ import { useRouter } from 'expo-router';
 import Button from '@/components/atoms/Button';
 import CTAView from '@/components/atoms/View/CTAView';
 import { useNickNameContext } from '@/context/NickNameContext';
-import { Avatars } from '@/agent/avatars';
+import { AvatarsService } from '@/apis';
+import FormData from 'form-data';
+import axios from 'axios';
 
 function NickNameCTA() {
-  const { isNickNameValid, nickname } = useNickNameContext();
+  const { profileImage, isNickNameValid, nickname } = useNickNameContext();
   const router = useRouter();
-
   const handleButtonClick = async () => {
-    if (nickname) {
-      const res = await Avatars.changeNickname({ nickname });
-      console.log(res);
-      router.replace('/(tabs)');
-    }
+    // if (nickname) {
+    var body = new FormData();
+    // body.append('file', null);
+    var request = new Blob([JSON.stringify({ defaultPhoto: true })], { type: 'application/json' });
+    body.append('request', request);
+    const res = await AvatarsService().photos(body);
+    console.log(res);
+    // router.replace('/(tabs)');
+    // }
   };
 
   return (
@@ -24,7 +29,7 @@ function NickNameCTA() {
         size="large"
         fullWidth
         onPress={handleButtonClick}
-        disabled={isNickNameValid !== true}
+        // disabled={isNickNameValid !== true}
       >
         스터디 둘러보기
       </Button>

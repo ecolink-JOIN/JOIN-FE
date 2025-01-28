@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import TermsOption from '@/components/molecules/TermsOption';
 import Typography from '@/components/atoms/Typography';
-import { TermsContext } from '@/context/TermsContext';
+import { Term, TermsContext } from '@/context/TermsContext';
 import { CircleCheckbox } from '@/components/atoms/Checkbox';
 import Divider from '@/components/atoms/Divider';
 import { View } from 'react-native';
@@ -35,12 +35,14 @@ const TermsOptionGroup: React.FC = () => {
 
   useEffect(() => {
     if (!data) return;
-    setTerms((prevTerms) =>
-      prevTerms.map((option, idx) => ({
-        ...option,
-        checked: data?.[idx]?.type === 'REQUIRED',
-      })),
-    );
+    const termList: Term[] = data.map((option) => ({
+      id: option.id,
+      version: option.version,
+      text: option.title,
+      checked: false,
+      required: option.type === 'REQUIRED',
+    }));
+    setTerms(termList);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
@@ -88,7 +90,7 @@ const TermsOptionGroup: React.FC = () => {
         <Divider style={{ height: 2 }} />
       </View>
 
-      {data === undefined ? (
+      {data === undefined || data.length !== terms.length ? (
         <Typography variant="body2">약관을 불러오는 중입니다.</Typography>
       ) : (
         data.map((option, index) => (

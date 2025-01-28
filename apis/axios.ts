@@ -99,7 +99,18 @@ API.interceptors.response.use(
     return response.data;
   },
   (error: AxiosError) => {
-    log.error('API response error', error.response);
+    log.error({
+      response_data: error.response?.data,
+      status: error.response?.status,
+      request_info: {
+        method: error.config?.method,
+        url: error.config?.url,
+        baseUrl: error.config?.baseURL,
+        headers: error.config?.headers,
+        data: error.config?.data,
+        params: error.config?.params,
+      },
+    });
     return Promise.reject(error);
   },
 );
