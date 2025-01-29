@@ -59,7 +59,14 @@ const Tabs = ({ selectedIndex, onSelectHandler, menus }: Props) => {
 
   return (
     <View style={{ backgroundColor: 'white' }}>
-      <View style={{ flexDirection: 'row', marginHorizontal: gap, justifyContent: 'space-around', gap: gap }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginHorizontal: gap,
+          justifyContent: 'space-around',
+          gap: gap,
+        }}
+      >
         {menus.map(renderTab)}
         {renderTabIndicator()}
       </View>

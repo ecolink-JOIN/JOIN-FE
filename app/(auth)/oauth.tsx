@@ -11,7 +11,7 @@ const WebViewOauthScreen = () => {
   const router = useRouter();
 
   // NOTE: https 여야 정상 동작합니다.
-  const url = `http://3.38.27.246/api/v1/oauth2/authorization/kakao`;
+  const url = process.env.EXPO_PUBLIC_API_URL + `/oauth2/authorization/kakao`;
 
   const handleWebViewMessage = async (event: any) => {
     try {
@@ -75,7 +75,7 @@ const WebViewOauthScreen = () => {
         android: (
           <WebView
             source={{
-              uri: 'https://m.naver.com',
+              uri: url,
             }}
             javaScriptEnabled={true}
             onMessage={handleWebViewMessage}
