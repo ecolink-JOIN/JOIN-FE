@@ -1,6 +1,5 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
 import { logger, consoleTransport } from 'react-native-logs';
 
 var log = logger.createLogger({

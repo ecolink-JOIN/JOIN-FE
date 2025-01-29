@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 declare namespace Avatars {
-  export interface BaseDto extends Shared.HttpRequest {
+  export interface BaseDto extends Shared.HttpResponse {
     data: {
       avatarToken: string;
       nickname: string;
@@ -13,7 +13,7 @@ declare namespace Avatars {
       image: Image;
     };
   }
-  export interface NicknameDto extends Shared.HttpRequest {
+  export interface NicknameDto extends Shared.HttpResponse {
     data: { message: string; valid: boolean };
   }
 }
@@ -25,7 +25,7 @@ interface Image {
 }
 
 declare namespace Terms {
-  export interface BaseDto extends Shared.HttpRequest {
+  export interface BaseDto extends Shared.HttpResponse {
     data: { id: number; version: string; title: string; content: string; type: 'OPTIONAL' | 'REQUIRED' }[];
   }
 

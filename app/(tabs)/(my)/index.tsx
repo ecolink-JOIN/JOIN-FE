@@ -1,6 +1,7 @@
 import TabScreen from '@/components/molecules/CustomTab/TabScreen';
 import { ManageStudy, JoinedStudy, InterestStudy } from '@/components/organisms/MyPage/Main/StudyTabs';
 import FormalInfo from '@/components/organisms/MyPage/Main/FormalInfo';
+import React from 'react';
 
 const Screen = () => {
   return (

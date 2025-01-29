@@ -2,6 +2,7 @@ import styled from 'styled-components/native';
 import { colors } from '@/theme';
 import { View } from 'react-native';
 import Typography from '../../atoms/Typography';
+import { InfoProps } from '@/components/organisms/MyPage/Main/FormalInfo';
 
 interface InfoViewProps {
   center?: boolean;
@@ -16,11 +17,6 @@ const InfoView = styled.View<InfoViewProps>`
   background-color: ${colors.primary + '30'};
   border-radius: 16px;
 `;
-
-interface InfoProps {
-  title: string;
-  value: string;
-}
 
 interface InfoViewBoxProps {
   InfoList: InfoProps[];
@@ -44,6 +40,7 @@ export const InfoViewBox = ({ InfoList, center = false }: InfoViewBoxProps) => {
           </Typography>
           <Typography variant="heading3" style={{ paddingHorizontal: 5 }}>
             {info.value}
+            {info.extraString}
           </Typography>
         </View>
       ))}

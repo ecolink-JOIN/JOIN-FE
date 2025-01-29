@@ -2,12 +2,28 @@ import { ManageView, shadowStyles, ManageBoxView } from '@/components/molecules/
 import Typography from '@/components/atoms/Typography';
 import { styled } from 'styled-components/native';
 import { colors } from '@/theme';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
 import Button from '@/components/atoms/Button';
+import { UserService } from '@/apis';
 
 const Index = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [profileImage, setProfileImage] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    fetchInfo();
+  }, []);
+
+  const fetchInfo = async () => {
+    const data = await UserService().avatars();
+    setProfileImage(data.image.url);
+    setNickname(data.nickname);
+    setEmail(data.email);
+  };
+
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
@@ -15,20 +31,20 @@ const Index = () => {
     <ManageView>
       <Typography variant="heading3">계정 정보</Typography>
       <ImageWrapper>
-        <ProfileImage source={require('@/assets/images/profile.png')} />
+        <ProfileImage source={profileImage !== '' ? { uri: profileImage } : require('@/assets/images/profile.png')} />
         <CameraIcon source={require('@/assets/images/camera.png')} />
       </ImageWrapper>
       <ManageBoxView style={shadowStyles.shadow}>
         <LinkView>
           <Typography variant="body3">닉네임</Typography>
           <Typography variant="body3" style={{ color: colors.gray[9] }}>
-            조인미현
+            {nickname}
           </Typography>
         </LinkView>
         <LinkView last>
           <Typography variant="body3">이메일</Typography>
           <Typography variant="body3" style={{ color: colors.gray[9] }}>
-            email_join@gmail.com
+            {email}
           </Typography>
         </LinkView>
       </ManageBoxView>
@@ -115,6 +131,7 @@ const CameraIcon = styled.Image`
 const ProfileImage = styled.Image`
   width: 120px;
   height: 120px;
+  border-radius: 999px;
 `;
 
 const Withdrawal = styled.Pressable`
