@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios';
 import { API } from '@/apis/axios';
 import FormData from 'form-data';
 
@@ -10,7 +9,7 @@ export const AvatarsService = () => {
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/02.%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85/getAvatarInfo
    */
   const base = async () => {
-    return (await API.get(url)) as AxiosResponse<{ result: Avatars.BaseDto }>;
+    return (await API.get(url)) as Avatars.BaseDto;
   };
 
   /**
@@ -23,7 +22,7 @@ export const AvatarsService = () => {
         'Content-Type': 'multipart/form-data',
       },
       transformRequest: (formData) => formData,
-    })) as { data: null };
+    })) as Shared.HttpRequest;
     return req.data;
   };
 
@@ -32,7 +31,7 @@ export const AvatarsService = () => {
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/02.%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85/changeNickname
    */
   const nickname = async (nickname: string) => {
-    const req = (await API.post(`${url}/nickname`, { nickname })) as { data: Avatars.NicknameDto };
+    const req = (await API.post(`${url}/nickname`, { nickname })) as Avatars.NicknameDto;
     return req.data;
   };
 
@@ -41,7 +40,7 @@ export const AvatarsService = () => {
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/02.%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85/isValidNickname
    */
   const nicknameValid = async (nickname: string) => {
-    const req = (await API.get(`${url}/nickname/valid`, { params: { nickname } })) as { data: Avatars.NicknameDto };
+    const req = (await API.get(`${url}/nickname/valid`, { params: { nickname } })) as Avatars.NicknameDto;
     return req.data;
   };
 
@@ -55,7 +54,7 @@ export const TermsService = () => {
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/02.%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85/getRequiredConsentTerms
    */
   const Base = async () => {
-    const req = (await API.get(url)) as { data: Terms.BaseDto[] };
+    const req = (await API.get(url)) as Terms.BaseDto;
     return req.data;
   };
 
@@ -65,7 +64,7 @@ export const TermsService = () => {
    */
   const agree = async (body: Terms.AgreeRequest) => {
     // return (await API.post(`${url}/agree`, data)) as AxiosResponse<{ result: null }>;
-    const req = (await API.post(`${url}/agree`, body)) as AxiosResponse<{ result: null }>;
+    const req = (await API.post(`${url}/agree`, body)) as Shared.HttpRequest;
     return req.data;
   };
 

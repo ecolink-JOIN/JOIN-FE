@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 declare namespace Avatars {
-  export interface BaseDto {
-    avatarToken: string;
-    nickname: string;
-    totalRating: number;
-    ratingCnt: number;
-    email: string;
-    singUpDate: Date;
-    status: string;
-    platform: string;
-    image: Image;
+  export interface BaseDto extends Shared.HttpRequest {
+    data: {
+      avatarToken: string;
+      nickname: string;
+      totalRating: number;
+      ratingCnt: number;
+      email: string;
+      singUpDate: Date;
+      status: string;
+      platform: string;
+      image: Image;
+    };
   }
-  export interface NicknameDto {
-    message: string;
-    valid: boolean;
+  export interface NicknameDto extends Shared.HttpRequest {
+    data: { message: string; valid: boolean };
   }
 }
 
@@ -24,12 +25,8 @@ interface Image {
 }
 
 declare namespace Terms {
-  export interface BaseDto {
-    id: number;
-    version: string;
-    title: string;
-    content: string;
-    type: 'OPTIONAL' | 'REQUIRED';
+  export interface BaseDto extends Shared.HttpRequest {
+    data: { id: number; version: string; title: string; content: string; type: 'OPTIONAL' | 'REQUIRED' }[];
   }
 
   export interface AgreeRequest {

@@ -34,8 +34,11 @@ const WebViewOauthScreen = () => {
       if (sessionId) {
         await TokenStorage.setToken(sessionId);
         console.log('Session ID saved:', sessionId);
-
-        router.replace('/(auth)/terms');
+        if (parsedData.data.new_user) {
+          router.replace('/(auth)/terms');
+        } else {
+          router.replace('/(tabs)');
+        }
       } else {
         console.log('Session ID not found in the message');
       }
