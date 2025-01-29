@@ -22,7 +22,7 @@ export const AvatarsService = () => {
         'Content-Type': 'multipart/form-data',
       },
       transformRequest: (formData) => formData,
-    })) as Shared.HttpRequest;
+    })) as Shared.HttpResponse;
     return req.data;
   };
 
@@ -64,7 +64,7 @@ export const TermsService = () => {
    */
   const agree = async (body: Terms.AgreeRequest) => {
     // return (await API.post(`${url}/agree`, data)) as AxiosResponse<{ result: null }>;
-    const req = (await API.post(`${url}/agree`, body)) as Shared.HttpRequest;
+    const req = (await API.post(`${url}/agree`, body)) as Shared.HttpResponse;
     return req.data;
   };
 

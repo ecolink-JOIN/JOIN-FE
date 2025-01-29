@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 namespace Shared {
-  export interface HttpRequest {
+  export interface HttpResponse {
     data: any;
     status: number;
     message: string;
@@ -34,4 +34,11 @@ namespace Shared {
     unsorted: boolean;
     empty: boolean;
   }
+}
+
+namespace SharedStudy {
+  export type Category = '입시' | '취업' | '자격증' | '어학' | '취미' | '기타';
+  export type PossibleDays = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN';
+  export type Form = 'ONLINE' | 'OFFLINE';
+  export type TimeZone = 'MORNING' | 'AFTERNOON' | 'EVENING';
 }

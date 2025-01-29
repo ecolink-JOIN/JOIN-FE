@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-declare namespace Study {
-  export interface DetailDto extends Shared.HttpRequest {
+declare namespace StudyResponse {
+  export interface Detail extends Shared.HttpResponse {
     data: {
       studyName: string;
       title: string;
@@ -20,14 +20,11 @@ declare namespace Study {
     };
   }
 
-  export interface SearchDto extends Shared.HttpRequest {
+  export interface Search extends Shared.HttpResponse {
     data: Search;
   }
 
-  export interface Search extends Shared.Pagenation {
-    content: StudyContent[];
-  }
-  export interface RecommendationDto extends Shared.HttpRequest {
+  export interface Recommendation extends Shared.HttpResponse {
     data: {
       studyToken: string;
       title: string;
@@ -38,26 +35,24 @@ declare namespace Study {
     };
   }
 
-  export interface PopularDto extends Shared.HttpRequest {
+  export interface Popular extends Shared.HttpResponse {
     data: Popular;
   }
+}
 
-  interface Popular extends Shared.Pagenation {
-    content: StudyContent[];
-  }
-
-  export interface CloseRequest {
+declare namespace StudyRequest {
+  export interface Close {
     actualEndDate: Date;
   }
 
-  export interface RecruitRequest {
+  export interface Recruit {
     capacity: number;
     recruit_end_date: Date;
     st_date: Date;
     end_date: Date;
     province: string;
     city: string;
-    category_name: string;
+    category_name: SharedStudy.Category;
     study_name: string;
     title: string;
     introduction: string;
@@ -67,12 +62,12 @@ declare namespace Study {
     schedules: Schedule[];
     regular: boolean;
   }
-  export interface ApplicationsRequest {
+  export interface Applications {
     introduction: string;
     appDate: Date;
     studyToken: string;
   }
-  export interface ReRecruitRequest {
+  export interface ReRecruit {
     capacity: number;
     recruit_end_date: Date;
     title: string;
@@ -80,47 +75,54 @@ declare namespace Study {
     content: string;
     qualification_exp: string;
   }
-  export interface RejectRequest {
+  export interface Reject {
     rejectReason: string;
     otherReason: string;
   }
 
-  export interface RecommendationRequest {
-    category: string;
-    form: string;
-    possibleDays: string[];
-    timeZone: string;
-    minParticipationCount: number;
-    maxParticipationCount: number;
-    province: string;
-    city: string;
+  export interface Recommendation {
+    category?: SharedStudy.Category;
+    form?: SharedStudy.Form;
+    possibleDays?: SharedStudy.PossibleDays[];
+    timeZone?: SharedStudy.TimeZone;
+    minParticipationCount?: number;
+    maxParticipationCount?: number;
+    province?: string;
+    city?: string;
   }
 
-  export interface PopularRequest {
+  export interface Popular {
     category: string;
     form: string;
     now: Date;
     pageNumber: number;
     pageSize: number;
   }
+}
+interface Popular extends Shared.Pagenation {
+  content: StudyContent[];
+}
 
-  interface StudyContent {
-    studyToken: string;
-    title: string;
-    isBookmark: boolean;
-    viewCount: number;
-    leader: Leader;
-    memberAverage: number;
-  }
+interface StudyContent {
+  studyToken: string;
+  title: string;
+  isBookmark: boolean;
+  viewCount: number;
+  leader: Leader;
+  memberAverage: number;
+}
 
-  interface Leader {
-    nickname: string;
-    totalRating: number;
-  }
+interface Leader {
+  nickname: string;
+  totalRating: number;
+}
 
-  interface Schedule {
-    weekOfDay: string;
-    stTime: string;
-    endTime: string;
-  }
+interface Schedule {
+  weekOfDay: SharedStudy.PossibleDays;
+  stTime: string;
+  endTime: string;
+}
+
+interface Search extends Shared.Pagenation {
+  content: StudyContent[];
 }

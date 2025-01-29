@@ -107,7 +107,7 @@ API.interceptors.response.use(
         url: error.config?.url,
         baseUrl: error.config?.baseURL,
         headers: error.config?.headers,
-        data: error.config?.data,
+        data: JSON.parse(error.config?.data.toString()),
         params: error.config?.params,
       },
     });
