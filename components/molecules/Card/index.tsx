@@ -7,40 +7,29 @@ import CardTitle from './CardTitle';
 import CardDescription from './CardDescription';
 import { useRouter } from 'expo-router';
 
-interface CardProps {
-  title: string;
-  leader: string;
-  leaderRating: number;
-  member: string;
-  memberRating: number;
-  views: number;
-  liked: boolean;
-  studyId: number;
-}
-
-function Card({ title, leader, leaderRating, member, memberRating, views, liked, studyId }: CardProps) {
+const Card: React.FC<StudyResponse.StudyInfo> = (props) => {
   const router = useRouter();
 
   const handleCardPress = () => {
-    router.push(`/(tabs)/(home)/(study)/${studyId}`);
+    router.push(`/(tabs)/(home)/(study)/${props.studyToken}`);
   };
 
   return (
     <Wrapper onPress={handleCardPress}>
       <View style={{ height: 72 }}>
-        <GradientBackground liked={liked} />
+        <GradientBackground liked={props.isBookmark} />
       </View>
-      <CardTitle>{title}</CardTitle>
+      <CardTitle>{props.title}</CardTitle>
       <CardDescription
-        leader={leader}
-        leaderRating={leaderRating}
-        member={member}
-        memberRating={memberRating}
-        views={views}
+        leader={props.leader.nickname}
+        leaderRating={props.leader.totalRating}
+        member={''}
+        memberRating={props.memberAverage}
+        views={props.viewCount}
       />
     </Wrapper>
   );
-}
+};
 
 export default Card;
 

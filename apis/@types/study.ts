@@ -25,14 +25,16 @@ declare namespace StudyResponse {
   }
 
   export interface Recommendation extends Shared.HttpResponse {
-    data: {
-      studyToken: string;
-      title: string;
-      isBookmark: boolean;
-      viewCount: number;
-      leader: Leader;
-      memberAverage: number;
-    };
+    data: StudyInfo[];
+  }
+
+  export interface StudyInfo {
+    studyToken: string;
+    title: string;
+    isBookmark: boolean;
+    viewCount: number;
+    leader: Leader;
+    memberAverage: number;
   }
 
   export interface Popular extends Shared.HttpResponse {
@@ -47,9 +49,9 @@ declare namespace StudyRequest {
 
   export interface Recruit {
     capacity: number;
-    recruit_end_date: Date;
-    st_date: Date;
-    end_date: Date;
+    recruit_end_date: string;
+    st_date: string;
+    end_date: string;
     province: string;
     city: string;
     category_name: SharedStudy.Category;

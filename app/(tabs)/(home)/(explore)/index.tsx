@@ -8,6 +8,7 @@ import { colors } from '@/theme';
 import studySections from '@/constants/StudySections';
 import RowView from '@/components/atoms/View/RowView';
 import FilterBottomSheet from '@/components/organisms/FilterBottomSheet';
+import { useEffect, useState } from 'react';
 
 const Container = styled(RowView)`
   justify-content: space-between;
@@ -16,16 +17,11 @@ const Container = styled(RowView)`
 `;
 
 function HomeScreen() {
-  const cardData = new Array(4).fill(0).map(() => ({
-    title: '원어민 선생님과 함께 공부하실 스터디원ㅁㅇㄹㅁㅇㄴㄹㅁㄴ',
-    leader: '스터디장 닉네임',
-    leaderRating: 4.5,
-    member: '스터디원',
-    memberRating: 3.8,
-    views: 100,
-    liked: true,
-    studyId: 0,
-  }));
+  const [searchData, setSearchData] = useState<StudyRequest.Recommendation>({});
+
+  useEffect(() => {
+    console.log('searchData', searchData);
+  }, [searchData]);
 
   return (
     <SafeAreaView>
@@ -34,13 +30,13 @@ function HomeScreen() {
 
         <Container style={{ paddingVertical: 16, paddingHorizontal: 20 }}>
           <Typography variant="subtitle1">(닉네임)님의 스터디 설정</Typography>
-          <FilterBottomSheet />
+          <FilterBottomSheet {...{ searchData, setSearchData }} />
         </Container>
 
-        <StudySection section={studySections.custom} data={cardData} />
-        <StudySection section={studySections.popular} data={cardData} />
-        <StudySection section={studySections.interest} data={cardData} />
-        <StudySection section={studySections.recent} data={cardData} />
+        <StudySection section={studySections.custom} searchParam={searchData} />
+        <StudySection section={studySections.popular} searchParam={searchData} />
+        <StudySection section={studySections.interest} searchParam={searchData} />
+        <StudySection section={studySections.recent} searchParam={searchData} />
       </ScrollView>
     </SafeAreaView>
   );

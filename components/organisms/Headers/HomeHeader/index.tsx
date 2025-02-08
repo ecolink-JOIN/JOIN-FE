@@ -12,8 +12,10 @@ import { StudyService } from '@/apis';
 const HeaderContainer = styled(RowView)`
   justify-content: space-between;
   align-items: center;
-  padding-vertical: 16px;
-  padding-horizontal: 20px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  padding-left: 20px;
+  padding-right: 20px;
   background-color: ${colors.white};
 `;
 
@@ -32,12 +34,13 @@ const HomeHeader: React.FC = () => {
     setModalVisible(false);
   };
 
+  // TODO: API 테스트용 코드입니다. 추후 삭제 예정
   const handleSearch = async () => {
     const req = await StudyService().recruit({
       capacity: 10,
-      recruit_end_date: new Date('2025-02-27'),
-      st_date: new Date('2025-03-01'),
-      end_date: new Date('2025-07-27'),
+      recruit_end_date: '2025-02-27',
+      st_date: '2025-02-10',
+      end_date: '2025-07-27',
       province: '서울특별시',
       city: '동작구',
       category_name: '입시',
