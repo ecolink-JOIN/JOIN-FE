@@ -1,14 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { useRouter } from 'expo-router';
 import CTAView from '@/components/atoms/View/CTAView';
 import Button from '@/components/atoms/Button';
 import { TermsContext } from '@/context/TermsContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TermsService } from '@/apis';
 
 function TermsCTA() {
   const router = useRouter();
   const context = useContext(TermsContext);
-  const [sessionId, setSessionId] = useState<string | null>(null);
 
   if (!context) {
     throw new Error('TermsContext must be used within a TermsProvider');
@@ -17,23 +16,15 @@ function TermsCTA() {
   const { terms } = context;
   const allRequiredChecked = terms.filter((option) => option.required).every((option) => option.checked);
 
-  useEffect(() => {
-    const loadSessionId = async () => {
-      try {
-        const storedSessionId = await AsyncStorage.getItem('sessionId');
-        if (storedSessionId) {
-          setSessionId(storedSessionId);
-          console.log('Loaded Session ID:', storedSessionId);
-        }
-      } catch (error) {
-        console.error('Failed to load sessionId from AsyncStorage', error);
-      }
+  const handleStartPress = async () => {
+    const body: Terms.AgreeRequest = {
+      terms: terms.map((term) => ({
+        id: term.id,
+        version: term.version,
+        status: term.checked ? 'Y' : 'N',
+      })),
     };
-
-    loadSessionId();
-  }, []);
-
-  const handleStartPress = () => {
+    await TermsService().agree(body);
     router.push('/(auth)/nickname');
   };
 

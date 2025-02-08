@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
-import { Keyboard, View, TouchableWithoutFeedback, TextInput } from 'react-native';
+import { Keyboard, View, TouchableWithoutFeedback, TextInput, Pressable } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import Typography from '@/components/atoms/Typography';
 import ContentView from '@/components/atoms/View/ContentView';
@@ -8,21 +8,38 @@ import RowView from '@/components/atoms/View/RowView';
 import { useNickNameContext } from '@/context/NickNameContext';
 import { colors } from '@/theme';
 import DuplicateCheckButton from '@/components/atoms/DuplicateCheckButton';
-import { Avatars } from '@/agent/avatars';
+import { AvatarsService } from '@/apis';
+import * as ImagePicker from 'expo-image-picker';
 
 type FormValues = {
   nickname: string;
 };
 
 function NickNameGuide() {
-  const { setIsNickNameValid, setNickname } = useNickNameContext();
+  const { setProfileImage, setIsNickNameValid, setNickname } = useNickNameContext();
+  const [image, setImage] = useState<string | null>(null);
   const [validationMessage, setValidationMessage] = useState<string>('');
   const { control, handleSubmit, watch } = useForm<FormValues>({
     defaultValues: {
       nickname: '',
     },
   });
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
 
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].file || null);
+    }
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
   const nickname = watch('nickname');
 
   useEffect(() => {
@@ -31,21 +48,30 @@ function NickNameGuide() {
   }, [nickname, setIsNickNameValid]);
 
   const onSubmit = async (data: FormValues) => {
-    // const res = await Avatars.checkNickname({ nickname });
-    // console.log(nickname, res);
+    const res = await AvatarsService().nicknameValid(nickname);
+    console.log(nickname, res);
 
     if (data.nickname.length < 2 || data.nickname.length > 7) {
       setValidationMessage('2~7자리 한글 및 영문으로 입력해주세요.');
       setNickname('');
       setIsNickNameValid(false);
-    } else if (data.nickname === 'existingNickname') {
-      setValidationMessage('이미 사용 중인 닉네임이에요.');
-      setNickname('');
-      setIsNickNameValid(false);
     } else {
-      setValidationMessage('사용 가능한 닉네임이에요.');
-      setIsNickNameValid(true);
-      setNickname(nickname);
+      await AvatarsService()
+        .nicknameValid(nickname)
+        .then((res) => {
+          if (res.valid) {
+            setValidationMessage('사용 가능한 닉네임이에요.');
+            setIsNickNameValid(true);
+            setNickname(nickname);
+          } else {
+            setValidationMessage('이미 사용 중인 닉네임이에요.');
+            setIsNickNameValid(false);
+          }
+        })
+        .catch(() => {
+          setValidationMessage('서버 에러입니다.');
+          setIsNickNameValid(false);
+        });
     }
   };
 
@@ -60,8 +86,10 @@ function NickNameGuide() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ContentView style={{ gap: 20 }}>
         <ProfileContainer>
-          <ProfileImage source={require('@/assets/images/profile.png')} />
-          <CameraIcon source={require('@/assets/images/camera.png')} />
+          <ProfileImage source={image ? { uri: image } : require('@/assets/images/profile.png')} />
+          <Pressable onPress={pickImage}>
+            <CameraIcon source={require('@/assets/images/camera.png')} />
+          </Pressable>
         </ProfileContainer>
         <View style={{ width: '100%', gap: 12 }}>
           <TextFieldContainer>

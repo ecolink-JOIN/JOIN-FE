@@ -30,8 +30,8 @@ function CustomStudiesScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ backgroundColor: colors.white }}>
         <Container style={{ paddingVertical: 16, paddingHorizontal: 20 }}>
-          <Typography variant="subtitle2">(닉네임)님의 스터디 설정</Typography>
-          <BottomSheet />
+          {/* <Typography variant="subtitle2">(닉네임)님의 스터디 설정</Typography>
+          <BottomSheet /> */}
         </Container>
 
         <Typography variant="body2" style={{ paddingHorizontal: 20 }}>

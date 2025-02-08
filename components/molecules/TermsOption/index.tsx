@@ -8,6 +8,7 @@ import { Pressable } from 'react-native';
 interface TermsOptionProps {
   text: string;
   checked: boolean;
+  type: Terms.Term['type'];
   onCheckChange: () => void;
   onViewPress: () => void;
 }
@@ -29,13 +30,16 @@ const IconRow = styled.View`
   gap: 16px;
 `;
 
-const TermsOption: React.FC<TermsOptionProps> = ({ text, checked, onCheckChange, onViewPress }) => {
+const TermsOption: React.FC<TermsOptionProps> = ({ text, checked, type, onCheckChange, onViewPress }) => {
   return (
     <Container onPress={onCheckChange}>
       <Row>
         <IconRow>
           <Icon name="thin-check" stroke={checked ? colors.primary : colors.gray[6]} />
-          <Typography variant="body2">{text}</Typography>
+          <Typography variant="body2">
+            {text}
+            {type === 'REQUIRED' ? ' (필수)' : ' (선택)'}
+          </Typography>
         </IconRow>
         <Pressable onPress={onViewPress}>
           <Typography variant="body1" style={{ color: colors.gray[8] }}>

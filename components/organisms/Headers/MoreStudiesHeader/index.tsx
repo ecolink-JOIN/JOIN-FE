@@ -14,8 +14,10 @@ const HeaderContainer = styled(RowView)`
   align-items: center;
   height: 60px;
   background-color: ${colors.white};
-  padding-vertical: 8px;
-  padding-horizontal: 20px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 20px;
+  padding-right: 20px;
 `;
 
 const IconContainer = styled.View`

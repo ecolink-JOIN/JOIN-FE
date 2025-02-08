@@ -27,7 +27,7 @@ const CloseHeader: React.FC<CloseHeaderProps> = ({ onPress }) => (
     >
       <Icon name="double-down" />
       <Typography variant="body3" style={{ color: colors.primary }}>
-        상세 검색창 닫기
+        저장 및 상세 검색창 닫기
       </Typography>
     </Pressable>
   </View>

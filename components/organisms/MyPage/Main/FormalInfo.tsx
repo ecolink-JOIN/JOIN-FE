@@ -1,24 +1,44 @@
 import { View } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import Typography from '@/components/atoms/Typography';
 import Chip from '@/components/atoms/Badge';
 import { colors } from '@/theme';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
 import { Href, router } from 'expo-router';
-
+import { UserService } from '@/apis';
+export interface InfoProps {
+  title: string;
+  value: number;
+  extraString: string;
+}
 const FormalInfo = () => {
-  const InfoList = [
-    { title: '평균 출석률', value: '100%' },
-    { title: '평균 인증률', value: '97%' },
-    { title: '평점', value: '5.0' },
-  ];
+  const [infoList, setInfoList] = useState<InfoProps[]>([]);
+  const [nickname, setNickname] = useState<string>('');
+  const [profileImage, setProfileImage] = useState<string>('');
+
+  const fetchInfo = async () => {
+    const data = await UserService().myPage();
+    const { averageAttendanceRate, averageProofRate, averageRating } = data;
+    setInfoList([
+      { title: '평균 출석률', value: averageAttendanceRate, extraString: '%' },
+      { title: '평균 인증률', value: averageProofRate, extraString: '%' },
+      { title: '평점', value: averageRating, extraString: '점' },
+    ]);
+    setNickname(data.nickname);
+    setProfileImage(data.image.url);
+  };
+
+  useEffect(() => {
+    fetchInfo();
+  }, []);
+
   return (
     <StyledView>
       <NicknameView>
-        <ProfileImage source={require('@/assets/images/profile.png')} />
+        <ProfileImage source={profileImage !== '' ? { uri: profileImage } : require('@/assets/images/profile.png')} />
         <View style={{ gap: 12, alignItems: 'flex-start', justifyContent: 'space-between' }}>
-          <Typography variant="heading4">닉네임닉네임</Typography>
+          <Typography variant="heading4">{nickname}</Typography>
           <Chip
             variant="simple"
             size="large"
@@ -30,7 +50,7 @@ const FormalInfo = () => {
           />
         </View>
       </NicknameView>
-      <InfoViewBox InfoList={InfoList} center />
+      <InfoViewBox InfoList={infoList} center />
     </StyledView>
   );
 };
@@ -54,4 +74,5 @@ const NicknameView = styled.View`
 const ProfileImage = styled.Image`
   width: 80px;
   height: 80px;
+  border-radius: 999px;
 `;

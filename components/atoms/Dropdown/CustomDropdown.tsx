@@ -9,11 +9,20 @@ interface CustomStepperProps {
   showArrow?: boolean;
   onChangeValue: (value: string | null, idx?: number) => void;
   idx?: number;
+  defaultValue?: string | null;
 }
 
-const CustomDropdown: React.FC<CustomStepperProps> = ({ items, placeholder, showArrow = true, onChangeValue, idx }) => {
-  const [value, setValue] = useState<string | null>(null);
+const CustomDropdown: React.FC<CustomStepperProps> = ({
+  items,
+  placeholder,
+  showArrow = true,
+  onChangeValue,
+  idx,
+  defaultValue,
+}) => {
+  const [value, setValue] = useState<string | null>(defaultValue || null);
   const [open, setOpen] = useState(false);
+
   useEffect(() => {
     onChangeValue(value, idx);
     // eslint-disable-next-line react-hooks/exhaustive-deps

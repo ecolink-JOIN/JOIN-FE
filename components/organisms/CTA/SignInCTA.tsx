@@ -10,8 +10,7 @@ function SignInCTA() {
 
   const providers: IconTypes[] = ['naver', 'kakao', 'google', 'apple'];
   const signIn = (provider: (typeof providers)[number]) => {
-    // const path: Href<string> = `/(auth)/oauth?provider=${provider}`;
-    const path: Href = `/(tabs)/(home)`;
+    const path: Href = `/(auth)/oauth?provider=${provider}`;
     router.push(path);
   };
 
