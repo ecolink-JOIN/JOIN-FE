@@ -11,6 +11,7 @@ const WebViewOauthScreen = () => {
   const router = useRouter();
 
   // NOTE: https 여야 정상 동작합니다.
+
   const url = `http://3.38.27.246/api/v1/oauth2/authorization/${provider}`;
 
   const handleWebViewMessage = async (event: any) => {

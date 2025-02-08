@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Dimensions, View, ScrollView } from 'react-native';
 import Tabs from './Tabs';
 import { colors } from '@/theme';
+import Colors from '@/constants/Colors';
 
 interface Props {
   menus: string[];
@@ -42,7 +43,7 @@ const TabScreen = ({ menus, initTabIndex = 0, contents }: Props) => {
             style={{
               width: windowWidth,
               padding: 20,
-              backgroundColor: colors.gray[2],
+              backgroundColor: colors.white,
             }}
           >
             <View style={{ paddingBottom: 50 }}>{content}</View>
