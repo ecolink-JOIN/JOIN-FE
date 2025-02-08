@@ -5,6 +5,8 @@ import { styled } from 'styled-components/native';
 import { colors } from '@/theme';
 import Icon from '@/components/atoms/Icon';
 import { Href, router } from 'expo-router';
+import { AvatarsService } from '@/apis';
+import { TokenStorage } from '@/apis/axios';
 type List = {
   title: string;
   href: string;
@@ -39,7 +41,16 @@ const Index = () => {
             key={index}
             last={index === list.length - 1}
             onPress={() => {
-              index === list.length - 1 ? null : router.push(item.href as unknown as Href);
+              if (index !== list.length - 1) {
+                router.push(item.href as unknown as Href);
+              } else {
+                AvatarsService()
+                  .logout()
+                  .then(() => {
+                    TokenStorage.clear();
+                    router.replace('/(auth)');
+                  });
+              }
             }}
           >
             <Typography variant="button">{item.title}</Typography>

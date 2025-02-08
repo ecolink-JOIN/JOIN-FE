@@ -26,7 +26,15 @@ interface Image {
 
 declare namespace Terms {
   export interface BaseDto extends Shared.HttpResponse {
-    data: { id: number; version: string; title: string; content: string; type: 'OPTIONAL' | 'REQUIRED' }[];
+    data: Term[];
+  }
+
+  export interface Term {
+    id: number;
+    version: string;
+    title: string;
+    content: string;
+    type: 'OPTIONAL' | 'REQUIRED';
   }
 
   export interface AgreeRequest {

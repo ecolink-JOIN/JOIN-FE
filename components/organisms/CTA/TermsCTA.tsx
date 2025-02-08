@@ -24,7 +24,7 @@ function TermsCTA() {
         status: term.checked ? 'Y' : 'N',
       })),
     };
-    // await TermsService().agree(body);
+    await TermsService().agree(body);
     router.push('/(auth)/nickname');
   };
 

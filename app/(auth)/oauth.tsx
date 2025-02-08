@@ -23,9 +23,9 @@ const WebViewOauthScreen = () => {
       let parsedData;
       try {
         parsedData = JSON.parse(data);
-        console.log('Data is in JSON format:', parsedData);
-      } catch (jsonError) {
-        console.log('Data is not in JSON format:', jsonError);
+        // console.log('Data is in JSON format:', parsedData);
+      } catch {
+        // console.log('Data is not in JSON format:', jsonError);
         return;
       }
 
@@ -33,7 +33,7 @@ const WebViewOauthScreen = () => {
 
       if (sessionId) {
         await TokenStorage.setToken(sessionId);
-        console.log('Session ID saved:', sessionId);
+        // console.log('Session ID saved:', sessionId);
         if (parsedData.data.new_user) {
           router.replace('/(auth)/terms');
         } else {

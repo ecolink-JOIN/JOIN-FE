@@ -8,7 +8,7 @@ import { Pressable } from 'react-native';
 interface TermsOptionProps {
   text: string;
   checked: boolean;
-  type: Terms.BaseDto['type'];
+  type: Terms.Term['type'];
   onCheckChange: () => void;
   onViewPress: () => void;
 }

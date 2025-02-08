@@ -5,10 +5,14 @@ import { colors } from '@/theme';
 import React, { useEffect, useState } from 'react';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
 import Button from '@/components/atoms/Button';
-import { UserService } from '@/apis';
+import { AvatarsService, UserService } from '@/apis';
+import { Pressable } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import FormData from 'form-data';
 
 const Index = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newImage, setImage] = useState<File | null>(null);
   const [profileImage, setProfileImage] = useState('');
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
@@ -27,12 +31,44 @@ const Index = () => {
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImage(result.assets[0].file || null);
+      setProfileImage(result.assets[0].uri);
+    }
+    var body = new FormData();
+    if (newImage) {
+      body.append('file', newImage);
+    }
+    body.append('request', {
+      string: JSON.stringify({ defaultPhoto: newImage ? false : true }),
+      type: 'application/json',
+    });
+    AvatarsService()
+      .photos(body)
+      .then(() => {
+        alert('프로필 사진 변경이 완료되었습니다.');
+      })
+      .catch(() => {
+        alert('프로필 사진 변경 에러');
+      });
+  };
+
   return (
     <ManageView>
       <Typography variant="heading3">계정 정보</Typography>
       <ImageWrapper>
         <ProfileImage source={profileImage !== '' ? { uri: profileImage } : require('@/assets/images/profile.png')} />
-        <CameraIcon source={require('@/assets/images/camera.png')} />
+        <Pressable onPress={pickImage}>
+          <CameraIcon source={require('@/assets/images/camera.png')} />
+        </Pressable>
       </ImageWrapper>
       <ManageBoxView style={shadowStyles.shadow}>
         <LinkView>

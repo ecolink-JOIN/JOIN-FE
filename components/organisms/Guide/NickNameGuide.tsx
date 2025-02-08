@@ -25,7 +25,6 @@ function NickNameGuide() {
     },
   });
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
@@ -49,15 +48,11 @@ function NickNameGuide() {
   }, [nickname, setIsNickNameValid]);
 
   const onSubmit = async (data: FormValues) => {
-    // const res = await Avatars.checkNickname({ nickname });
-    // console.log(nickname, res);
+    const res = await AvatarsService().nicknameValid(nickname);
+    console.log(nickname, res);
 
     if (data.nickname.length < 2 || data.nickname.length > 7) {
       setValidationMessage('2~7자리 한글 및 영문으로 입력해주세요.');
-      setNickname('');
-      setIsNickNameValid(false);
-    } else if (data.nickname === 'existingNickname') {
-      setValidationMessage('이미 사용 중인 닉네임이에요.');
       setNickname('');
       setIsNickNameValid(false);
     } else {

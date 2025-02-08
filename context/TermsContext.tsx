@@ -3,7 +3,8 @@ import React, { createContext, useState, ReactNode, FC } from 'react';
 export interface Term {
   id: number;
   version: string;
-  text: string;
+  title: string;
+  context: string;
   checked: boolean;
   required: boolean;
 }

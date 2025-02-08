@@ -31,7 +31,7 @@ export const AvatarsService = () => {
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/02.%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85/changeNickname
    */
   const nickname = async (nickname: string) => {
-    const req = (await API.post(`${url}/nickname`, { nickname })) as Avatars.NicknameDto;
+    const req = (await API.patch(`${url}/nickname`, { nickname })) as Avatars.NicknameDto;
     return req.data;
   };
 
@@ -44,7 +44,11 @@ export const AvatarsService = () => {
     return req.data;
   };
 
-  return { base, photos, nickname, nicknameValid };
+  const logout = async () => {
+    return (await API.post(`/logout`)) as Shared.HttpResponse;
+  };
+
+  return { base, photos, nickname, nicknameValid, logout };
 };
 
 export const TermsService = () => {
