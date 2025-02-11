@@ -34,31 +34,40 @@ const Index = () => {
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      // mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
     if (!result.canceled) {
+      console.log(result);
+
       setImage(result.assets[0].file || null);
+    }
+    if (!result.canceled) {
       setProfileImage(result.assets[0].uri);
     }
-    var body = new FormData();
-    if (newImage) {
-      body.append('file', newImage);
-    }
-    body.append('request', {
-      string: JSON.stringify({ defaultPhoto: newImage ? false : true }),
-      type: 'application/json',
+  };
+
+  const updateProfileImage = async () => {
+    pickImage().then(() => {
+      if (newImage) {
+        const body = new FormData();
+        body.append('file', newImage);
+        body.append('request', {
+          string: JSON.stringify({ defaultPhoto: false }),
+          type: 'application/json',
+        });
+        AvatarsService()
+          .photos(body)
+          .then(() => {
+            alert('프로필 사진 변경이 완료되었습니다.');
+          })
+          .catch(() => {
+            alert('프로필 사진 변경 에러');
+          });
+      }
     });
-    AvatarsService()
-      .photos(body)
-      .then(() => {
-        alert('프로필 사진 변경이 완료되었습니다.');
-      })
-      .catch(() => {
-        alert('프로필 사진 변경 에러');
-      });
   };
 
   return (
@@ -66,7 +75,7 @@ const Index = () => {
       <Typography variant="heading3">계정 정보</Typography>
       <ImageWrapper>
         <ProfileImage source={profileImage !== '' ? { uri: profileImage } : require('@/assets/images/profile.png')} />
-        <Pressable onPress={pickImage}>
+        <Pressable onPress={updateProfileImage}>
           <CameraIcon source={require('@/assets/images/camera.png')} />
         </Pressable>
       </ImageWrapper>

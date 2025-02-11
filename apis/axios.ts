@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logger, consoleTransport } from 'react-native-logs';
+import { useNavigation } from '@react-navigation/native';
 
 var log = logger.createLogger({
   levels: {
@@ -27,17 +28,6 @@ var log = logger.createLogger({
   fixedExtLvlLength: false,
   enabled: true,
 });
-export const AuthStorage = {
-  async setToken(token: string) {
-    await AsyncStorage.setItem('sessionId', token);
-  },
-  async getToken(): Promise<string | null> {
-    return AsyncStorage.getItem('sessionId');
-  },
-  async clear() {
-    await AsyncStorage.removeItem('sessionId');
-  },
-};
 
 export const TokenStorage = {
   async setToken(token: string) {

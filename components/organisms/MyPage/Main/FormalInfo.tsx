@@ -18,15 +18,23 @@ const FormalInfo = () => {
   const [profileImage, setProfileImage] = useState<string>('');
 
   const fetchInfo = async () => {
-    const data = await UserService().myPage();
-    const { averageAttendanceRate, averageProofRate, averageRating } = data;
-    setInfoList([
-      { title: '평균 출석률', value: averageAttendanceRate, extraString: '%' },
-      { title: '평균 인증률', value: averageProofRate, extraString: '%' },
-      { title: '평점', value: averageRating, extraString: '점' },
-    ]);
-    setNickname(data.nickname);
-    setProfileImage(data.image.url);
+    UserService()
+      .myPage()
+      .then((data) => {
+        const { averageAttendanceRate, averageProofRate, averageRating } = data;
+        setInfoList([
+          { title: '평균 출석률', value: averageAttendanceRate, extraString: '%' },
+          { title: '평균 인증률', value: averageProofRate, extraString: '%' },
+          { title: '평점', value: averageRating, extraString: '점' },
+        ]);
+        setNickname(data.nickname);
+        setProfileImage(data.image.url);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          router.replace('/(auth)');
+        }
+      });
   };
 
   useEffect(() => {

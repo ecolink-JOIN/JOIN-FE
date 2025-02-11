@@ -35,6 +35,7 @@ const WebViewOauthScreen = () => {
       if (sessionId) {
         await TokenStorage.setToken(sessionId);
         // console.log('Session ID saved:', sessionId);
+        // TODO: 로그인 성공 시 처리
         if (parsedData.data.new_user) {
           router.replace('/(auth)/terms');
         } else {
