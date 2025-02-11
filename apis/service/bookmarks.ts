@@ -5,8 +5,8 @@ export const BookmarksService = () => {
    * 북마크한 스터디 조회
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/07.%20%EB%B6%81%EB%A7%88%ED%81%AC/getBookmarkStudy
    */
-  const getBookmarks = async () => {
-    const req = (await API.get(`/bookmarks`)) as BookmarksResponse.GetBookmarks;
+  const getBookmarks = async (params: ViewsRequest.GetViewsParams) => {
+    const req = (await API.get(`/bookmarks`), params) as BookmarksResponse.GetBookmarks;
     return req.data;
   };
 

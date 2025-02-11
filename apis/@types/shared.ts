@@ -42,3 +42,10 @@ namespace SharedStudy {
   export type Form = 'ONLINE' | 'OFFLINE';
   export type TimeZone = 'MORNING' | 'AFTERNOON' | 'EVENING';
 }
+
+namespace GlobalVariable {
+  export interface UserInfo {
+    nickname: string;
+    profileImage: string;
+  }
+}

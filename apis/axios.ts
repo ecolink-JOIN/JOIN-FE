@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logger, consoleTransport } from 'react-native-logs';
-import { useNavigation } from '@react-navigation/native';
 
 var log = logger.createLogger({
   levels: {
@@ -54,6 +53,15 @@ export const OauthAPI = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+API.defaults.paramsSerializer = function (paramObj) {
+  const params = new URLSearchParams();
+  for (const key in paramObj) {
+    params.append(key, paramObj[key]);
+  }
+
+  return params.toString();
+};
 
 API.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {

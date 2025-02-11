@@ -4,14 +4,15 @@ import OauthButton from '@/components/molecules/OauthButton';
 import { Platform } from 'react-native';
 import RowView from '@/components/atoms/View/RowView';
 import { IconTypes } from '@/components/atoms/Icon';
-
 function SignInCTA() {
   const router = useRouter();
 
   const providers: IconTypes[] = ['naver', 'kakao', 'google', 'apple'];
-  const signIn = (provider: (typeof providers)[number]) => {
-    const path: Href = `/(auth)/oauth?provider=${provider}`;
-    router.push(path);
+  const signIn = async (provider: (typeof providers)[number]) => {
+    // TODO: 안드로이드 로그인 처리
+    router.replace('/(tabs)');
+    // const path: Href = `/(auth)/oauth?provider=${provider}`;
+    // router.push(path);
   };
 
   return (

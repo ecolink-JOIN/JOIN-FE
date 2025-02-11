@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import CardList from '@/components/molecules/CardList';
 import RowView from '@/components/atoms/View/RowView';
 import studySections from '@/constants/StudySections';
-import { StudyService } from '@/apis';
+import { BookmarksService, StudyService, ViewsService } from '@/apis';
 
 const Container = styled(RowView)`
   padding-top: 20px;
@@ -28,8 +28,12 @@ const StudySection: React.FC<StudySectionProps> = ({ section, searchParam }) => 
   const [studies, setStudies] = useState<StudyResponse.StudyInfo[]>([]);
   const router = useRouter();
   const { title, page } = section;
-
   useEffect(() => {
+    const studyProps: ViewsRequest.GetViewsParams = {
+      pageNumber: 0,
+      pageSize: 4,
+    };
+
     if (section === studySections.custom) {
       StudyService()
         .recommendation(searchParam)
@@ -38,22 +42,22 @@ const StudySection: React.FC<StudySectionProps> = ({ section, searchParam }) => 
         });
     } else if (section === studySections.popular) {
       // StudyService()
-      //   .popular(searchParam)
+      //   .popular(searchData)
       //   .then((res) => {
       //     setStudies(res);
       //   });
     } else if (section === studySections.interest) {
-      // StudyService()
-      //   .popular(searchParam)
-      //   .then((res) => {
-      //     setStudies(res);
-      //   });
+      BookmarksService()
+        .getBookmarks(studyProps)
+        .then((res) => {
+          setStudies(res.content);
+        });
     } else if (section === studySections.recent) {
-      // StudyService()
-      //   .popular(searchParam)
-      //   .then((res) => {
-      //     setStudies(res);
-      //   });
+      ViewsService()
+        .getViews(studyProps)
+        .then((res) => {
+          setStudies(res.content);
+        });
     }
   }, [searchParam, section]);
 

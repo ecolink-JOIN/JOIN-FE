@@ -38,7 +38,7 @@ declare namespace StudyResponse {
   }
 
   export interface Popular extends Shared.HttpResponse {
-    data: Popular;
+    data: StudyInfo[];
   }
 }
 

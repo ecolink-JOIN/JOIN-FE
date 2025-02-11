@@ -8,7 +8,8 @@ import { colors } from '@/theme';
 import studySections from '@/constants/StudySections';
 import RowView from '@/components/atoms/View/RowView';
 import FilterBottomSheet from '@/components/organisms/FilterBottomSheet';
-import { useEffect, useState } from 'react';
+import { useRecommendationContext } from '@/context/Recommendation';
+import { useGlobalContext } from '@/context/GlobalContext';
 
 const Container = styled(RowView)`
   justify-content: space-between;
@@ -17,11 +18,8 @@ const Container = styled(RowView)`
 `;
 
 function HomeScreen() {
-  const [searchData, setSearchData] = useState<StudyRequest.Recommendation>({});
-
-  useEffect(() => {
-    console.log('searchData', searchData);
-  }, [searchData]);
+  const { searchData, setSearchData } = useRecommendationContext();
+  const { userinfo } = useGlobalContext();
 
   return (
     <SafeAreaView>
@@ -29,7 +27,7 @@ function HomeScreen() {
         <AdsCarousel />
 
         <Container style={{ paddingVertical: 16, paddingHorizontal: 20 }}>
-          <Typography variant="subtitle1">(닉네임)님의 스터디 설정</Typography>
+          <Typography variant="subtitle1">{userinfo.nickname}님의 스터디 설정</Typography>
           <FilterBottomSheet {...{ searchData, setSearchData }} />
         </Container>
 

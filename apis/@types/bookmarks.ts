@@ -6,19 +6,7 @@ declare namespace BookmarksResponse {
   }
 
   interface Bookmark extends Shared.Pagenation {
-    content: BookmarkContent[];
-  }
-
-  interface BookmarkContent {
-    studyToken: string;
-    title: string;
-    isBookmark: boolean;
-    viewCount: number;
-    leader: {
-      nickname: string;
-      totalRating: number;
-    };
-    memberAverage: number;
+    content: StudyResponse.StudyInfo[];
   }
 }
 
