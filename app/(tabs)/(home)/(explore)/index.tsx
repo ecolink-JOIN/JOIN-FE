@@ -26,8 +26,19 @@ function HomeScreen() {
       <ScrollView style={{ backgroundColor: colors.white }}>
         <AdsCarousel />
 
-        <Container style={{ paddingVertical: 16, paddingHorizontal: 20 }}>
-          <Typography variant="subtitle1">{userinfo.nickname}님의 스터디 설정</Typography>
+        <Container
+          style={{
+            paddingVertical: 16,
+            paddingHorizontal: 20,
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: 12,
+          }}
+        >
+          <Typography variant="subtitle1">
+            {userinfo.nickname}
+            {'님에게\n딱 맞는 스터디를 찾았어요'}
+          </Typography>
           <FilterBottomSheet {...{ searchData, setSearchData }} />
         </Container>
 

@@ -24,16 +24,17 @@ interface StudySectionProps {
   searchParam: StudyRequest.Recommendation;
 }
 
+const studyProps: ViewsRequest.GetViewsParams = {
+  pageNumber: 0,
+  pageSize: 4,
+};
+
 const StudySection: React.FC<StudySectionProps> = ({ section, searchParam }) => {
   const [studies, setStudies] = useState<StudyResponse.StudyInfo[]>([]);
   const router = useRouter();
   const { title, page } = section;
-  useEffect(() => {
-    const studyProps: ViewsRequest.GetViewsParams = {
-      pageNumber: 0,
-      pageSize: 4,
-    };
 
+  useEffect(() => {
     if (section === studySections.custom) {
       StudyService()
         .recommendation(searchParam)
@@ -46,7 +47,11 @@ const StudySection: React.FC<StudySectionProps> = ({ section, searchParam }) => 
       //   .then((res) => {
       //     setStudies(res);
       //   });
-    } else if (section === studySections.interest) {
+    }
+  }, [searchParam, section]);
+
+  useEffect(() => {
+    if (section === studySections.interest) {
       BookmarksService()
         .getBookmarks(studyProps)
         .then((res) => {
@@ -59,7 +64,7 @@ const StudySection: React.FC<StudySectionProps> = ({ section, searchParam }) => 
           setStudies(res.content);
         });
     }
-  }, [searchParam, section]);
+  }, [section]);
 
   const handleMorePress = () => {
     router.setParams({ title });

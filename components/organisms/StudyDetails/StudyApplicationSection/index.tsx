@@ -2,8 +2,9 @@ import { View } from 'react-native';
 import StudyInfoSection from '@/components/molecules/StudyInfoSection';
 import Button from '@/components/atoms/Button';
 import { useRouter } from 'expo-router';
+import React from 'react';
 
-const StudyApplicationSection: React.FC = () => {
+const StudyApplicationSection = ({ props }: { props: StudyResponse.Detail['data'] | null }) => {
   const router = useRouter();
   const studyId = 0;
 
@@ -14,7 +15,7 @@ const StudyApplicationSection: React.FC = () => {
   return (
     <>
       <View style={{ paddingHorizontal: 28, gap: 10 }}>
-        <StudyInfoSection title="지원 자격" content="키 140이상" />
+        <StudyInfoSection title="지원 자격" content={props?.qualificationExp ?? ''} />
       </View>
 
       <View

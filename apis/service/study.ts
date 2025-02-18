@@ -7,8 +7,8 @@ export const StudyService = () => {
    * 스터디 상세 조회 - 인증 필수
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/getStudyDetails
    */
-  const detail = async (studyId: number) => {
-    const req = (await API.get(url, { params: { studyId } })) as StudyResponse.Detail;
+  const detail = async (studyToken: string) => {
+    const req = (await API.get(`${url}/${studyToken}`)) as StudyResponse.Detail;
     return req.data;
   };
 

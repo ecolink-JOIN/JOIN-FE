@@ -59,6 +59,7 @@ export type IconTypes =
   | 'arrow-left'
   | 'arrow-right'
   | 'arrow-right-outline'
+  | 'arrow-down-outline'
   | 'ellipsis'
   | 'pencil'
   | 'clock'
@@ -127,6 +128,8 @@ function Icon({ name, unread, ...rest }: IconProps) {
       return <ArrowLeftIcon {...rest} stroke={colors.primary} style={{ transform: [{ rotateY: '180deg' }] }} />;
     case 'arrow-right-outline':
       return <ArrowLeftIcon {...rest} style={[rest.style, { transform: [{ rotateY: '180deg' }] }]} />;
+    case 'arrow-down-outline':
+      return <ArrowLeftIcon {...rest} style={[rest.style, { transform: [{ rotate: '270deg' }] }]} />;
     case 'ellipsis':
       return <EllipsisIcon {...rest} />;
     case 'pencil':

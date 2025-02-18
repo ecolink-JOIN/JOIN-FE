@@ -17,6 +17,7 @@ declare namespace StudyResponse {
       ruleExp: string;
       qualificationExp: string;
       regular: boolean;
+      form: SharedStudy.Form;
     };
   }
 
@@ -63,6 +64,7 @@ declare namespace StudyRequest {
     qualification_exp: string;
     schedules: Schedule[];
     regular: boolean;
+    form: SharedStudy.Form;
   }
   export interface Applications {
     introduction: string;
