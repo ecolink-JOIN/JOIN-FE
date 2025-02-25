@@ -1,15 +1,15 @@
 import { View } from 'react-native';
 import StudyInfoSection from '@/components/molecules/StudyInfoSection';
 import Button from '@/components/atoms/Button';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 
 const StudyApplicationSection = ({ props }: { props: StudyResponse.Detail['data'] | null }) => {
   const router = useRouter();
-  const studyId = 0;
+  const { slug } = useLocalSearchParams<{ slug: string }>();
 
   const handlePress = () => {
-    router.push(`/(tabs)/(home)/(study)/${studyId}/application`);
+    router.push(`/(tabs)/(home)/(study)/${slug}/application`);
   };
 
   return (

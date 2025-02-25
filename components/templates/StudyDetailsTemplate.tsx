@@ -76,9 +76,10 @@ type Props = {
   leader: string;
   date: string;
   deadline: string;
+  studyToken: string;
 };
 
-const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, deadline }) => {
+const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, deadline, studyToken }) => {
   const router = useRouter();
   const [isModalVisible, setModalVisible] = useState(false);
   const {
@@ -123,7 +124,7 @@ const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, 
             size="large"
             onPress={() => {
               toggleModal();
-              router.push(`/(report)/${123456}`);
+              router.push(`/(report)/${studyToken}`);
             }}
           >
             신고하기

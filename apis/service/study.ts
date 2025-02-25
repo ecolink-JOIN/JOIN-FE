@@ -76,8 +76,8 @@ export const ApplicationsService = () => {
    * 스터디 지원 - 인증 필수
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/apply
    */
-  const post = async (body: StudyRequest.Recruit) => {
-    const req = (await API.post(`${url}/applications`, body)) as Shared.HttpResponse;
+  const post = async (body: StudyRequest.Applications) => {
+    const req = (await API.post(`${url}`, body)) as Shared.HttpResponse;
     return req.data;
   };
 

@@ -1,17 +1,12 @@
-import { View } from 'react-native';
 import React from 'react';
 import Button from '@/components/atoms/Button';
 import styled from 'styled-components/native';
-import { router } from 'expo-router';
 import RowView from '@/components/atoms/View/RowView';
 
-export default function ApplicationButton({ disabled }: { disabled: boolean }) {
-  const handleApplicationPress = () => {
-    router.replace('/(tabs)');
-  };
+export default function ApplicationButton({ disabled, onPress }: { disabled: boolean; onPress: () => void }) {
   return (
     <ButtonView>
-      <Button variant="contained" onPress={handleApplicationPress} disabled={disabled}>
+      <Button variant="contained" onPress={onPress} disabled={disabled}>
         신청 완료
       </Button>
     </ButtonView>

@@ -29,6 +29,7 @@ const StudyDetailsScreen: React.FC = () => {
           ? `마감 D-${Math.ceil((new Date(study?.recruitEndDate ?? '').getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}`
           : '마감'
       }
+      studyToken={params.slug}
     >
       <StudyOverviewSection props={study} />
       <Divider style={{ height: 4 }} />

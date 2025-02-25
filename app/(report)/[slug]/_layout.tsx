@@ -1,9 +1,10 @@
 import React from 'react';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import Icon from '@/components/atoms/Icon';
 import { Pressable } from 'react-native';
 
 function ReportLayout() {
+  const router = useRouter();
   return (
     <Stack
       screenOptions={({ navigation }) => ({
@@ -11,7 +12,7 @@ function ReportLayout() {
         headerShadowVisible: false,
         headerTitle: '',
         headerLeft: () => (
-          <Pressable onPress={navigation.goBack}>
+          <Pressable onPressIn={() => router.back()}>
             <Icon name="arrow-left" />
           </Pressable>
         ),
