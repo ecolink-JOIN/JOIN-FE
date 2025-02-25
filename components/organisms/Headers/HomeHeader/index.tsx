@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Typography from '@/components/atoms/Typography';
 import Icon from '@/components/atoms/Icon';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
 import RowView from '@/components/atoms/View/RowView';
 import IconButton from '@/components/molecules/IconButton';
-import SearchModal from '../../SearchModal';
 import SafeAreaView from '@/components/atoms/View/SafeAreaView';
 import { StudyService } from '@/apis';
 import { useRouter } from 'expo-router';
@@ -26,15 +25,11 @@ const IconContainer = styled(RowView)`
 
 const HomeHeader: React.FC = () => {
   const router = useRouter();
-  const [isModalVisible, setModalVisible] = useState<boolean>(false);
 
   const openModal = () => {
-    setModalVisible(true);
+    router.push('/(tabs)/(home)/search');
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
-  };
   const handleWrite = () => {
     router.push('/(form)/recruit-base');
   };
@@ -99,8 +94,6 @@ const HomeHeader: React.FC = () => {
           <IconButton name="search" onPress={openModal} />
         </IconContainer>
       </HeaderContainer>
-
-      <SearchModal visible={isModalVisible} onClose={closeModal} />
     </SafeAreaView>
   );
 };

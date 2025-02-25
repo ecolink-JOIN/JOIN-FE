@@ -18,7 +18,7 @@ export default function ApplicationConsent(props: ApplicationConsentProps) {
     <ConsentView>
       <Typography variant="body3">{ConsentTitle}</Typography>
       <Typography variant="caption2">{ConsentInfo}</Typography>
-      <AgreeView onPress={props.onChangeAgree}>
+      <AgreeView onPressIn={props.onChangeAgree}>
         <Checkbox selected={props.agree} />
         <Typography variant="body4">{ConsentAgree}</Typography>
       </AgreeView>

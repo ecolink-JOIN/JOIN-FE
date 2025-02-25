@@ -22,7 +22,11 @@ declare namespace StudyResponse {
   }
 
   export interface Search extends Shared.HttpResponse {
-    data: Search;
+    data: SearchResult;
+  }
+
+  export interface SearchResult extends Shared.Pagenation {
+    content: StudyInfo[];
   }
 
   export interface Recommendation extends Shared.HttpResponse {
