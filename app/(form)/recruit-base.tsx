@@ -1,5 +1,5 @@
 import StaticView from '@/components/atoms/View/StaticView';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Typography from '@/components/atoms/Typography';
 import styled from 'styled-components/native';
 import {
@@ -18,6 +18,7 @@ import DateTimePicker from 'react-native-ui-datepicker';
 import { View, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import Button from '@/components/atoms/Button';
+import { useForm } from 'react-hook-form';
 
 interface DurationProps {
   start: dayjs.Dayjs | null;
@@ -25,12 +26,24 @@ interface DurationProps {
 }
 
 export default function RecruitBase() {
+  const { watch, getValues, setValue } = useForm<StudyRequest.Recruit>({
+    defaultValues: {
+      capacity: 1,
+    },
+  });
   const router = useRouter();
-  const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
   const [duration, setDuration] = useState<DurationProps>({ start: null, end: null });
   const bottomSheetModalRef1 = useRef<BottomSheetModal>(null);
   const bottomSheetModalRef2 = useRef<BottomSheetModal>(null);
-  const [online, setOnline] = useState(true);
+
+  useEffect(() => {
+    setValue('st_date', dayjs(duration.start).format('YYYY-MM-DD'));
+    setValue('end_date', dayjs(duration.end).format('YYYY-MM-DD'));
+  }, [duration]);
+
+  useEffect(() => {
+    console.log(watch());
+  }, [watch()]);
 
   const onSubmit = () => {
     router.push('/(form)/recruit-add');
@@ -39,12 +52,32 @@ export default function RecruitBase() {
   const renderItem = () => (
     <StyledView>
       <Typography variant="heading4">스터디 기본 정보를 입력해주세요.</Typography>
-      <Category />
-      <Nums />
-      <EndDate value={endDate} bottomSheetModalRef={bottomSheetModalRef1} />
-      <MeetingWay online={online} setOnline={setOnline} />
-      {online || <MeetingLocation />}
-      <ActivateDuration value={duration} bottomSheetModalRef={bottomSheetModalRef2} />
+      <Category
+        setValue={(value) => {
+          setValue('category_name', value);
+        }}
+      />
+      <Nums value={getValues('capacity')} setValue={(value) => setValue('capacity', value)} />
+      <EndDate value={dayjs(watch('recruit_end_date'))} bottomSheetModalRef={bottomSheetModalRef1} />
+      <MeetingWay
+        online={watch('form') !== 'OFFLINE'}
+        setOnline={(value) => setValue('form', value ? 'ONLINE' : 'OFFLINE')}
+      />
+      {watch('form') === 'OFFLINE' && (
+        <MeetingLocation
+          province={watch('province')}
+          setProvince={(value) => setValue('province', value)}
+          state={watch('city')}
+          setState={(value) => setValue('city', value)}
+        />
+      )}
+      <ActivateDuration
+        value={{
+          start: dayjs(watch('st_date')),
+          end: dayjs(watch('end_date')),
+        }}
+        bottomSheetModalRef={bottomSheetModalRef2}
+      />
       <DateTime />
       <Button variant="contained" style={{ marginHorizontal: 'auto' }} onPress={onSubmit}>
         다음
@@ -60,12 +93,11 @@ export default function RecruitBase() {
         component={
           <>
             <DateTimePicker
-              locale="ko"
               mode="single"
               selectedItemColor="#FF7F5F"
-              date={endDate || new Date()}
+              date={dayjs(watch('recruit_end_date'))}
               onChange={(params: any) => {
-                setEndDate(params.date);
+                setValue('recruit_end_date', dayjs(params.date).format('YYYY-MM-DD'));
               }}
             />
             <Button

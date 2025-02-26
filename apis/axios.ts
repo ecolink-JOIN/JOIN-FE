@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logger, consoleTransport } from 'react-native-logs';
+import Toast from 'react-native-toast-message';
 
 var log = logger.createLogger({
   levels: {
@@ -27,6 +28,14 @@ var log = logger.createLogger({
   fixedExtLvlLength: false,
   enabled: true,
 });
+
+const showToastError = (text1: string, text2: string) => {
+  Toast.show({
+    type: 'error',
+    text1,
+    text2,
+  });
+};
 
 export const TokenStorage = {
   async setToken(token: string) {
@@ -104,10 +113,12 @@ API.interceptors.response.use(
         url: error.config?.url,
         baseUrl: error.config?.baseURL,
         headers: error.config?.headers,
-        // data: JSON.parse(error.config?.data.toString()),
+        data: error.config?.data,
         params: error.config?.params,
       },
     });
+    const errorResponse = error.response?.data as Shared.ErrorResponse;
+    showToastError(errorResponse.code, errorResponse.message);
     return Promise.reject(error);
   },
 );

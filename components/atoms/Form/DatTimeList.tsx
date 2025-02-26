@@ -71,7 +71,7 @@ const DateTimeList = ({ dayTime, setDayTime }: DateTimeListProps) => {
     <View style={{ gap: 12 }}>
       {dayTime.map((item, idx) => {
         return (
-          <RowView style={{ gap: 8, height: 44 }} key={idx}>
+          <RowView style={{ gap: 8, height: 44, alignItems: 'center' }} key={idx}>
             <View style={{ width: 84, height: 44 }}>
               <CustomDropdown items={items} placeholder="요일" onChangeValue={onChangeDay} idx={idx} />
             </View>

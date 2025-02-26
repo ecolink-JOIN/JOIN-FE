@@ -1,5 +1,4 @@
 import React from 'react';
-import Typography from '@/components/atoms/Typography';
 import Icon from '@/components/atoms/Icon';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
@@ -8,6 +7,7 @@ import IconButton from '@/components/molecules/IconButton';
 import SafeAreaView from '@/components/atoms/View/SafeAreaView';
 import { StudyService } from '@/apis';
 import { useRouter } from 'expo-router';
+import Logo from '@/assets/icons/appbar_logo.svg';
 
 const HeaderContainer = styled(RowView)`
   justify-content: space-between;
@@ -87,7 +87,7 @@ const HomeHeader: React.FC = () => {
   return (
     <SafeAreaView>
       <HeaderContainer>
-        <Typography variant="heading3">로고</Typography>
+        <Logo />
         <IconContainer>
           <Icon name="write" onPress={handleWrite} />
           <IconButton name="alarm" onPress={handleSearch} />

@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import FormModView from '@/components/atoms/View/FormMods';
 import Typography from '@/components/atoms/Typography';
 import { Radio } from '@/components/atoms/Radio';
@@ -15,12 +14,12 @@ export const MeetingWay: React.FC<MeetingWayProps> = ({ online, setOnline }) => 
     <FormModView>
       <Typography variant="button">모집 방법</Typography>
       <RowView style={{ alignItems: 'flex-end', gap: 40 }}>
-        <View style={{ alignItems: 'flex-end' }}>
+        <RowView style={{ alignItems: 'flex-end' }}>
           <Radio selected={online} onSelect={() => setOnline(true)} />
           <Typography variant="body2" style={{ marginLeft: 8 }} onPress={() => setOnline(true)}>
             온라인
           </Typography>
-        </View>
+        </RowView>
         <RowView style={{ alignItems: 'flex-end' }}>
           <Radio selected={!online} onSelect={() => setOnline(false)} />
           <Typography variant="body2" style={{ marginLeft: 8 }} onPress={() => setOnline(false)}>

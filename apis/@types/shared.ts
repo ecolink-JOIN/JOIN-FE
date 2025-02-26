@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 namespace Shared {
+  export interface ErrorResponse {
+    data: any;
+    code: string;
+    message: string;
+  }
   export interface HttpResponse {
     data: any;
     status: number;

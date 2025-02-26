@@ -5,7 +5,7 @@ import ApplicationButton from '@/components/organisms/Form/ApplicationButton';
 import StaticView from '@/components/atoms/View/StaticView';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ApplicationsService } from '@/apis';
-import { Alert } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export default function Application() {
   const params = useLocalSearchParams<{ slug: string }>();
@@ -13,9 +13,16 @@ export default function Application() {
   const [reason, setReason] = useState('');
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
+  const showToast = (text1: string, text2: string) => {
+    Toast.show({
+      type: 'success',
+      text1,
+      text2,
+    });
+  };
+
   useEffect(() => {
     setButtonDisabled(!(agree && reason && reason.length >= 10));
-    console.log(agree, reason, params.slug);
   }, [agree, reason]);
 
   const onChangeAgree = () => {
@@ -30,7 +37,7 @@ export default function Application() {
         studyToken: params.slug,
       })
       .then(() => {
-        Alert.alert('신청 완료', '스터디 신청이 완료되었습니다.');
+        showToast('신청이 완료되었습니다.', '스터디 참여 신청 확인 페이지로 이동합니다.');
         router.replace('/(tabs)');
       });
   };
@@ -38,7 +45,7 @@ export default function Application() {
     <StaticView>
       <ApplicationReason value={reason} onChangeText={setReason} />
       <ApplicationConsent {...{ agree, onChangeAgree }} />
-      <ApplicationButton disabled={buttonDisabled} onPress={onSubmit} />
+      <ApplicationButton disabled={buttonDisabled} onPressIn={onSubmit} />
     </StaticView>
   );
 }

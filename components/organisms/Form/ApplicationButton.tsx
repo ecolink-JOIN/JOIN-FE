@@ -3,10 +3,10 @@ import Button from '@/components/atoms/Button';
 import styled from 'styled-components/native';
 import RowView from '@/components/atoms/View/RowView';
 
-export default function ApplicationButton({ disabled, onPress }: { disabled: boolean; onPress: () => void }) {
+export default function ApplicationButton({ disabled, onPressIn }: { disabled: boolean; onPressIn: () => void }) {
   return (
     <ButtonView>
-      <Button variant="contained" onPress={onPress} disabled={disabled}>
+      <Button variant="contained" onPressIn={onPressIn} disabled={disabled}>
         신청 완료
       </Button>
     </ButtonView>

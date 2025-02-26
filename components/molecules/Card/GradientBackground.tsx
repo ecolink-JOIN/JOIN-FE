@@ -1,12 +1,26 @@
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import styled from 'styled-components/native';
 import Icon from '@/components/atoms/Icon';
+import { useState } from 'react';
+import { GestureResponderEvent } from 'react-native';
+import { BookmarksService } from '@/apis';
 
 interface GradientBackgroundProps {
   liked: boolean;
 }
 
 const GradientBackground: React.FC<GradientBackgroundProps> = ({ liked }) => {
+  const [likedNew, setLikedNew] = useState(liked);
+
+  const handleLike = (e: GestureResponderEvent) => {
+    e.stopPropagation();
+    // TODO: 좋아요 추가 기능 구현
+    // if (likedNew) {
+    // BookmarksService().deleteBookmark()
+    // setLikedNew(false);
+    setLikedNew(!likedNew);
+  };
+
   return (
     <GradientWrapper>
       <Svg style={{ width: '100%', height: '100%' }}>
@@ -29,8 +43,8 @@ const GradientBackground: React.FC<GradientBackgroundProps> = ({ liked }) => {
         <Rect width="100%" height="100%" fill="url(#radialGradient)" />
       </Svg>
 
-      <LikeIconWrapper>
-        <Icon name={liked ? 'like' : 'like-outline'} />
+      <LikeIconWrapper onPress={handleLike}>
+        <Icon name={likedNew ? 'like' : 'like-outline'} />
       </LikeIconWrapper>
     </GradientWrapper>
   );
@@ -44,7 +58,7 @@ const GradientWrapper = styled.View`
   height: 72px;
 `;
 
-const LikeIconWrapper = styled.View`
+const LikeIconWrapper = styled.Pressable`
   position: absolute;
   top: 12px;
   right: 12px;
