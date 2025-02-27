@@ -18,35 +18,57 @@ import DateTimePicker from 'react-native-ui-datepicker';
 import { View, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import Button from '@/components/atoms/Button';
-import { useForm } from 'react-hook-form';
-
+import { useFormContext } from '@/context/FormContext';
+import Toast from 'react-native-toast-message';
 interface DurationProps {
-  start: dayjs.Dayjs | null;
-  end: dayjs.Dayjs | null;
+  start: dayjs.Dayjs | undefined;
+  end: dayjs.Dayjs | undefined;
 }
 
 export default function RecruitBase() {
-  const { watch, getValues, setValue } = useForm<StudyRequest.Recruit>({
-    defaultValues: {
-      capacity: 1,
-    },
-  });
+  const { watch, getValues, setValue } = useFormContext();
   const router = useRouter();
-  const [duration, setDuration] = useState<DurationProps>({ start: null, end: null });
+  const [duration, setDuration] = useState<DurationProps>({ start: undefined, end: undefined });
   const bottomSheetModalRef1 = useRef<BottomSheetModal>(null);
   const bottomSheetModalRef2 = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
-    setValue('st_date', dayjs(duration.start).format('YYYY-MM-DD'));
-    setValue('end_date', dayjs(duration.end).format('YYYY-MM-DD'));
+    if (duration.start && duration.end) {
+      setValue('st_date', dayjs(duration.start).format('YYYY-MM-DD'));
+      setValue('end_date', dayjs(duration.end).format('YYYY-MM-DD'));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration]);
 
   useEffect(() => {
     console.log(watch());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch()]);
 
+  const showToast = ({ text1 }: { text1: string }) => {
+    Toast.show({
+      type: 'form',
+      text1,
+      position: 'bottom',
+      visibilityTime: 2000,
+    });
+  };
   const onSubmit = () => {
-    router.push('/(form)/recruit-add');
+    if (watch('category_name') === null) {
+      showToast({ text1: '카테고리를 선택해주세요' });
+    } else if (watch('recruit_end_date') === undefined) {
+      showToast({ text1: '모집 종료일을 입력해주세요' });
+    } else if (watch('st_date') === undefined || watch('end_date') === undefined) {
+      showToast({ text1: '스터디 기간을 입력해주세요' });
+    } else if (watch('form') === 'OFFLINE' && watch('province') === null) {
+      showToast({ text1: '지역을 선택해주세요' });
+    } else if (watch('form') === 'OFFLINE' && watch('city') === null) {
+      showToast({ text1: '시를 선택해주세요' });
+    } else if (watch('regular') === true && (watch('schedules') === null || watch('schedules').length === 0)) {
+      showToast({ text1: '진행 요일 및 시간을 입력해주세요' });
+    } else {
+      router.push('/(form)/recruit-add');
+    }
   };
 
   const renderItem = () => (
