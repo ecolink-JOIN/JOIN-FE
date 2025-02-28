@@ -1,42 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import NoList from '@/components/molecules/StudyInfoSection/NoList';
 import Card from '@/components/molecules/Card';
 import RowView from '@/components/atoms/View/RowView';
 import styled from 'styled-components/native';
-
-const cardData = new Array(4).fill(0).map(() => ({
-  title: '원어민 선생님과 함께 공부하실 스터디원ㅁㅇㄹㅁㅇㄴㄹㅁㄴ',
-  leader: '스터디장 닉네임',
-  leaderRating: 4.5,
-  member: '스터디원',
-  memberRating: 3.8,
-  views: 100,
-  liked: true,
-  studyId: 0,
-}));
+import { MyPageService } from '@/apis';
 
 const CardsContainer = styled(RowView)`
-  padding: 20px;
   gap: 12px;
   flex-wrap: wrap;
 `;
 
 const InterestStudy = () => {
-  return cardData.length ? (
+  const [studyList, setStudyList] = useState<MyPageResponse.InterestStudyInfo[]>([]);
+
+  useEffect(() => {
+    MyPageService()
+      .getInterestStudy()
+      .then((data) => {
+        setStudyList(data.interestStudyInfos);
+      });
+  }, []);
+
+  return studyList.length ? (
     <CardsContainer>
-      {cardData.map((item, index) => (
+      {/* {studyList.map((item, index) => (
         <Card
           key={index}
-          title={item.title}
-          leader={item.leader}
-          leaderRating={item.leaderRating}
-          member={item.member}
-          memberRating={item.memberRating}
-          views={item.views}
+          title={item.studyName}
+          leader={item.studyMemberInfos[0].nickname}
+          leaderRating={item.studyMemberInfos[0].rating}
+          member={item.studyMemberInfos[1].nickname}
+          memberRating={item.studyMemberInfos[1].rating}
+          views={item.viewCount}
           liked={item.liked}
           studyId={item.studyId}
         />
-      ))}
+      ))} */}
     </CardsContainer>
   ) : (
     <NoList

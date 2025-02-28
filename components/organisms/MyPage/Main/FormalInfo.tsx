@@ -6,7 +6,7 @@ import Chip from '@/components/atoms/Badge';
 import { colors } from '@/theme';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
 import { Href, router } from 'expo-router';
-import { UserService } from '@/apis';
+import { MyPageService } from '@/apis';
 export interface InfoProps {
   title: string;
   value: number;
@@ -18,8 +18,8 @@ const FormalInfo = () => {
   const [profileImage, setProfileImage] = useState<string>('');
 
   const fetchInfo = async () => {
-    UserService()
-      .myPage()
+    MyPageService()
+      .getMyPage()
       .then((data) => {
         const { averageAttendanceRate, averageProofRate, averageRating } = data;
         setInfoList([

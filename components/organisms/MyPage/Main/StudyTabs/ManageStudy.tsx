@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ManageList from '@/components/molecules/StudyInfoSection/ManageList';
 import { View } from 'react-native';
 import NoList from '@/components/molecules/StudyInfoSection/NoList';
+import { MyPageService } from '@/apis';
 
 const studyLinks: StudyLinkList[] = [
   {
@@ -18,24 +19,29 @@ const studyLinks: StudyLinkList[] = [
   },
 ];
 
-const StudyList: StudyList[] = [
-  { title: '직장인 영어 회화 스터디 💬', id: 1, active: true },
-  { title: '직장인 수학 스터디 💬', id: 2, active: false },
-  { title: '직장인 과학 스터디 💬', id: 3, active: true },
-];
-
 const ManageStudy = () => {
-  return StudyList.length ? (
+  const [studyList, setStudyList] = useState<MyPageResponse.StudyInfo[]>([]);
+
+  useEffect(() => {
+    MyPageService()
+      .getManageStudy()
+      .then((data) => {
+        setStudyList(data);
+      });
+  }, []);
+
+  return studyList.length ? (
     <View style={{ gap: 20 }}>
-      {StudyList.map((study, idx) => (
+      {studyList.map((study, idx) => (
         <ManageList
           key={idx}
           {...{
-            title: study.title,
-            id: study.id,
+            title: study.name,
+            // TODO: 스터디 토큰 정보 추가
+            id: 1,
             editHref: 'changename',
             studyLinks,
-            active: study.active,
+            active: study.status !== 'COMPLETED',
           }}
         />
       ))}

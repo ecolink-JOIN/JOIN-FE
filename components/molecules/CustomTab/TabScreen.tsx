@@ -43,7 +43,7 @@ const TabScreen = ({ menus, initTabIndex = 0, contents }: Props) => {
             style={{
               width: windowWidth,
               padding: 20,
-              backgroundColor: colors.white,
+              backgroundColor: colors.gray[2],
             }}
           >
             <View style={{ paddingBottom: 50 }}>{content}</View>
