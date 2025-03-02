@@ -7,18 +7,27 @@ import { BookmarksService } from '@/apis';
 
 interface GradientBackgroundProps {
   liked: boolean;
+  study_token: string;
 }
 
-const GradientBackground: React.FC<GradientBackgroundProps> = ({ liked }) => {
+const GradientBackground: React.FC<GradientBackgroundProps> = ({ liked, study_token }) => {
   const [likedNew, setLikedNew] = useState(liked);
 
   const handleLike = (e: GestureResponderEvent) => {
     e.stopPropagation();
-    // TODO: 좋아요 추가 기능 구현
-    // if (likedNew) {
-    // BookmarksService().deleteBookmark()
-    // setLikedNew(false);
-    setLikedNew(!likedNew);
+    if (likedNew) {
+      BookmarksService()
+        .deleteBookmark({ study_token })
+        .then(() => {
+          setLikedNew(false);
+        });
+    } else {
+      BookmarksService()
+        .postBookmark({ study_token })
+        .then(() => {
+          setLikedNew(true);
+        });
+    }
   };
 
   return (

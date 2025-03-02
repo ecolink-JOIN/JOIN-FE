@@ -2,13 +2,12 @@ import { DatePicker } from '@/components/atoms/DatePicker';
 import Typography from '@/components/atoms/Typography';
 import FormModView from '@/components/atoms/View/FormMods';
 import React from 'react';
-import dayjs from 'dayjs';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import RowView from '@/components/atoms/View/RowView';
 
 interface DurationProps {
-  start: dayjs.Dayjs | null;
-  end: dayjs.Dayjs | null;
+  start: string | null;
+  end: string | null;
 }
 interface EndDateProps {
   value: DurationProps;

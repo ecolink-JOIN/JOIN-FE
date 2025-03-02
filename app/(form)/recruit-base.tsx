@@ -80,7 +80,7 @@ export default function RecruitBase() {
         }}
       />
       <Nums value={getValues('capacity')} setValue={(value) => setValue('capacity', value)} />
-      <EndDate value={dayjs(watch('recruit_end_date'))} bottomSheetModalRef={bottomSheetModalRef1} />
+      <EndDate value={watch('recruit_end_date')} bottomSheetModalRef={bottomSheetModalRef1} />
       <MeetingWay
         online={watch('form') !== 'OFFLINE'}
         setOnline={(value) => setValue('form', value ? 'ONLINE' : 'OFFLINE')}
@@ -95,8 +95,8 @@ export default function RecruitBase() {
       )}
       <ActivateDuration
         value={{
-          start: dayjs(watch('st_date')),
-          end: dayjs(watch('end_date')),
+          start: watch('st_date'),
+          end: watch('end_date'),
         }}
         bottomSheetModalRef={bottomSheetModalRef2}
       />
@@ -143,7 +143,7 @@ export default function RecruitBase() {
               startDate={duration.start}
               endDate={duration.end}
               onChange={({ startDate, endDate }: any) => {
-                if (duration.start !== startDate || duration.end !== endDate) {
+                if (duration.start !== startDate && duration.end !== endDate) {
                   setDuration({ start: startDate, end: endDate });
                 }
               }}

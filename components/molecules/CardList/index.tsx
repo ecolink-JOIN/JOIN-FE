@@ -16,7 +16,7 @@ const CardList = ({ data }: { data: StudyResponse.StudyInfo[] }) => {
       {data.length < 1 ? (
         <Typography variant="body1">조건에 맞는 스터디가 없습니다.</Typography>
       ) : (
-        data.map((item, index) => <Card key={index} {...item} />)
+        data.map((item) => <Card key={item.studyToken} {...item} />)
       )}
     </CardsContainer>
   );

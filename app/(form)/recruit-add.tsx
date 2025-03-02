@@ -10,8 +10,11 @@ import StyledTextInput from '@/components/atoms/TextField';
 import Toast from 'react-native-toast-message';
 import { useFormContext } from '@/context/FormContext';
 import { StudyService } from '@/apis';
+import StudyRule from '@/components/organisms/Form/StudyRule';
+import { useRouter } from 'expo-router';
 
 export default function RecruitAdd() {
+  const router = useRouter();
   const { control, formState, handleSubmit } = useFormContext();
   const showToast = ({ text1 }: { text1: string }) => {
     Toast.show({
@@ -33,11 +36,14 @@ export default function RecruitAdd() {
       showToast({ text1: '스터디 규칙을 입력해주세요' });
     } else if (!qualification_exp) {
       showToast({ text1: '지원 자격을 입력해주세요' });
+    } else if (data.rules.length === 0) {
+      showToast({ text1: '스터디 규칙을 선택해주세요' });
     } else {
       StudyService()
         .recruit(data)
-        .then((res) => {
+        .then(() => {
           showToast({ text1: '스터디 등록이 완료되었습니다.' });
+          router.replace('/(tabs)');
         });
     }
   };
@@ -55,6 +61,18 @@ export default function RecruitAdd() {
               value={value}
               onChangeText={onChange}
               placeholder="글 제목을 입력해주세요."
+            />
+          )}
+        />
+        <Controller
+          name="study_name"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <NormalTextInput
+              title={'스터디 명'}
+              value={value}
+              onChangeText={onChange}
+              placeholder="스터디명을 입력해주세요."
             />
           )}
         />
@@ -85,12 +103,11 @@ export default function RecruitAdd() {
           )}
         />
         <View>
-          {/* TODO: 스터디 규칙 목록 선택 시 사용 */}
-          {/* <Controller
-          name="rules"
-          control={control}
-          render={({ field: { onChange, value } }) => <StudyRule value={value} onChange={onChange} />}
-        /> */}
+          <Controller
+            name="rules"
+            control={control}
+            render={({ field: { onChange, value } }) => <StudyRule value={value} onChange={onChange} />}
+          />
           <Controller
             name="rule_exp"
             control={control}

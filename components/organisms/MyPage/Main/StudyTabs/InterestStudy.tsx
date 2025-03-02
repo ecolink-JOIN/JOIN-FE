@@ -40,9 +40,9 @@ const InterestStudy = () => {
   ) : (
     <NoList
       {...{
-        desc: '운영 중인 스터디가 없습니다.',
-        buttonText: '스터디 모집하기',
-        buttonHref: '(form)/recruit-base',
+        desc: '관심있는 스터디가 없습니다.',
+        buttonText: '스터디 둘러보기',
+        buttonHref: '(tabs)/(home)/(explore)/custom',
       }}
     />
   );

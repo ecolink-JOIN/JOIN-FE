@@ -64,12 +64,17 @@ declare namespace StudyRequest {
     title: string;
     introduction: string;
     content: string;
+    rules: {
+      type: RuleType;
+    }[];
     rule_exp: string;
     qualification_exp: string;
     schedules: Schedule[];
     regular: boolean;
     form: SharedStudy.Form;
   }
+
+  export type RuleType = 'FINE' | 'EXPULSION' | 'PHOTO_PROOF' | 'TIMER_PROOF';
   export interface Applications {
     introduction: string;
     appDate: Date;

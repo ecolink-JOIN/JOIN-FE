@@ -26,6 +26,7 @@ const FormProvider = ({ children }: { children: ReactNode }) => {
       capacity: 1,
       form: 'ONLINE',
       regular: true,
+      rules: [],
     },
   });
 

@@ -12,10 +12,10 @@ declare namespace BookmarksResponse {
 
 declare namespace BookmarksRequest {
   export interface PostBookmark {
-    study_id: string;
+    study_token: string;
   }
 
   export interface DeleteBookmark {
-    study_id: string;
+    study_token: string;
   }
 }

@@ -43,12 +43,11 @@ const CharCount = styled(Typography)`
 
 interface ReportContentProps {
   control: any;
-  inputValue: string;
   maxLength: number;
   infoText: string;
 }
 
-const ReportContent: React.FC<ReportContentProps> = ({ control, inputValue, maxLength, infoText }) => {
+const ReportContent: React.FC<ReportContentProps> = ({ control, maxLength, infoText }) => {
   return (
     <Content>
       <InfoText variant="button">{infoText}</InfoText>

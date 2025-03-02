@@ -36,52 +36,53 @@ const HomeHeader: React.FC = () => {
 
   // TODO: API 테스트용 코드입니다. 추후 삭제 예정
   const handleSearch = async () => {
-    const req = await StudyService().recruit({
-      capacity: 10,
-      recruit_end_date: '2025-02-27',
-      st_date: '2025-02-28',
-      end_date: '2025-07-27',
-      province: '서울특별시',
-      city: '동작구',
-      category_name: '고시',
-      study_name: '신학기 학점올리기 프로젝트',
-      title: '신학기 학점올리기 프로젝트 모집중',
-      introduction:
-        '신학기 학점올리기 프로젝트 모집중신학기 학점올리기 프로젝트 모집중신학기 학점올리기 프로젝트 모집중신학기 학점올리기 프로젝트 모집중',
-      content: '매일 1시간씩 공부하고 서로 도와주는 스터디입니다.',
-      rule_exp: '매일 1시간 이상 공부',
-      qualification_exp: '학점 올리기를 원하는 학생',
-      schedules: [
-        {
-          weekOfDay: 'MON',
-          stTime: '18:00',
-          endTime: '19:00',
-        },
-        {
-          weekOfDay: 'TUE',
-          stTime: '18:00',
-          endTime: '19:00',
-        },
-        {
-          weekOfDay: 'WED',
-          stTime: '18:00',
-          endTime: '19:00',
-        },
-        {
-          weekOfDay: 'THU',
-          stTime: '18:00',
-          endTime: '19:00',
-        },
-        {
-          weekOfDay: 'FRI',
-          stTime: '18:00',
-          endTime: '19:00',
-        },
-      ],
-      regular: true,
-      form: 'ONLINE',
-    });
-    console.log(req);
+    router.push('/(tabs)/(home)/search');
+    // const req = await StudyService().recruit({
+    //   capacity: 10,
+    //   recruit_end_date: '2025-02-27',
+    //   st_date: '2025-02-28',
+    //   end_date: '2025-07-27',
+    //   province: '서울특별시',
+    //   city: '동작구',
+    //   category_name: '고시',
+    //   study_name: '신학기 학점올리기 프로젝트',
+    //   title: '신학기 학점올리기 프로젝트 모집중',
+    //   introduction:
+    //     '신학기 학점올리기 프로젝트 모집중신학기 학점올리기 프로젝트 모집중신학기 학점올리기 프로젝트 모집중신학기 학점올리기 프로젝트 모집중',
+    //   content: '매일 1시간씩 공부하고 서로 도와주는 스터디입니다.',
+    //   rule_exp: '매일 1시간 이상 공부',
+    //   qualification_exp: '학점 올리기를 원하는 학생',
+    //   schedules: [
+    //     {
+    //       weekOfDay: 'MON',
+    //       stTime: '18:00',
+    //       endTime: '19:00',
+    //     },
+    //     {
+    //       weekOfDay: 'TUE',
+    //       stTime: '18:00',
+    //       endTime: '19:00',
+    //     },
+    //     {
+    //       weekOfDay: 'WED',
+    //       stTime: '18:00',
+    //       endTime: '19:00',
+    //     },
+    //     {
+    //       weekOfDay: 'THU',
+    //       stTime: '18:00',
+    //       endTime: '19:00',
+    //     },
+    //     {
+    //       weekOfDay: 'FRI',
+    //       stTime: '18:00',
+    //       endTime: '19:00',
+    //     },
+    //   ],
+    //   regular: true,
+    //   form: 'ONLINE',
+    // });
+    // console.log(req);
   };
 
   return (

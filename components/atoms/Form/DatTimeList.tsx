@@ -93,6 +93,7 @@ const DateTimeList = () => {
                 setIdx(idx);
                 showTimepicker();
               }}
+              style={{ height: 44 }}
             >
               <TimePicker
                 time={item.stTime === undefined ? '' : item.stTime?.split(':')[0] + ' : ' + item.stTime?.split(':')[1]}
@@ -105,6 +106,7 @@ const DateTimeList = () => {
                 setIdx(idx);
                 showTimepicker();
               }}
+              style={{ height: 44 }}
             >
               <TimePicker
                 time={
