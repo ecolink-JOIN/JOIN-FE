@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Switch } from '../atoms/Switch';
 import { Radio } from '../atoms/Radio';
 import { Checkbox, CircleCheckbox } from '../atoms/Checkbox';
+import React from 'react';
 
 function ToggleComponentList() {
   const [value, setValue] = useState<boolean>(false);

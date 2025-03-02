@@ -7,3 +7,5 @@ export { ProofService } from './service/proof';
 export { AttendanceService } from './service/attendance';
 export { BookmarksService } from './service/bookmarks';
 export { ViewsService } from './service/views';
+export { MyPageService } from './service/my-page';
+export { ReportService } from './service/report';

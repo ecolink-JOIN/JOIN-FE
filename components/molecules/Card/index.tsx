@@ -17,7 +17,7 @@ const Card: React.FC<StudyResponse.StudyInfo> = (props) => {
   return (
     <Wrapper onPress={handleCardPress}>
       <View style={{ height: 72 }}>
-        <GradientBackground liked={props.isBookmark} />
+        <GradientBackground liked={props.isBookmark} study_token={props.studyToken} />
       </View>
       <CardTitle>{props.title}</CardTitle>
       <CardDescription

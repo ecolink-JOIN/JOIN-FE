@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 namespace Shared {
+  export interface ErrorResponse {
+    data: any;
+    code: string;
+    message: string;
+  }
   export interface HttpResponse {
     data: any;
     status: number;
@@ -41,4 +46,11 @@ namespace SharedStudy {
   export type PossibleDays = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN';
   export type Form = 'ONLINE' | 'OFFLINE';
   export type TimeZone = 'MORNING' | 'AFTERNOON' | 'EVENING';
+}
+
+namespace GlobalVariable {
+  export interface UserInfo {
+    nickname: string;
+    profileImage: string;
+  }
 }

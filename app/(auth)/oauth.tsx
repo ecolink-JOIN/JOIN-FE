@@ -12,7 +12,7 @@ const WebViewOauthScreen = () => {
 
   // NOTE: https 여야 정상 동작합니다.
 
-  const url = `http://3.38.27.246/api/v1/oauth2/authorization/${provider}`;
+  const url = `http://43.200.168.20/api/v1/oauth2/authorization/${provider}`;
 
   const handleWebViewMessage = async (event: any) => {
     try {
@@ -35,6 +35,7 @@ const WebViewOauthScreen = () => {
       if (sessionId) {
         await TokenStorage.setToken(sessionId);
         // console.log('Session ID saved:', sessionId);
+        // TODO: 로그인 성공 시 처리
         if (parsedData.data.new_user) {
           router.replace('/(auth)/terms');
         } else {

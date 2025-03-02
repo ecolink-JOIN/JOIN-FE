@@ -13,15 +13,20 @@ declare namespace StudyResponse {
       endDate: Date;
       writerId: number;
       writerNickname: string;
-      schedules: Schedule[];
+      schedules: StudyRequest.Schedule[];
       ruleExp: string;
       qualificationExp: string;
       regular: boolean;
+      form: SharedStudy.Form;
     };
   }
 
   export interface Search extends Shared.HttpResponse {
-    data: Search;
+    data: SearchResult;
+  }
+
+  export interface SearchResult extends Shared.Pagenation {
+    content: StudyInfo[];
   }
 
   export interface Recommendation extends Shared.HttpResponse {
@@ -38,7 +43,7 @@ declare namespace StudyResponse {
   }
 
   export interface Popular extends Shared.HttpResponse {
-    data: Popular;
+    data: StudyInfo[];
   }
 }
 
@@ -48,7 +53,7 @@ declare namespace StudyRequest {
   }
 
   export interface Recruit {
-    capacity: number;
+    capacity: number | null;
     recruit_end_date: string;
     st_date: string;
     end_date: string;
@@ -59,11 +64,17 @@ declare namespace StudyRequest {
     title: string;
     introduction: string;
     content: string;
+    rules: {
+      type: RuleType;
+    }[];
     rule_exp: string;
     qualification_exp: string;
     schedules: Schedule[];
     regular: boolean;
+    form: SharedStudy.Form;
   }
+
+  export type RuleType = 'FINE' | 'EXPULSION' | 'PHOTO_PROOF' | 'TIMER_PROOF';
   export interface Applications {
     introduction: string;
     appDate: Date;
@@ -100,6 +111,12 @@ declare namespace StudyRequest {
     pageNumber: number;
     pageSize: number;
   }
+
+  export interface Schedule {
+    weekOfDay: SharedStudy.PossibleDays;
+    stTime: string;
+    endTime: string;
+  }
 }
 interface Popular extends Shared.Pagenation {
   content: StudyContent[];
@@ -117,12 +134,6 @@ interface StudyContent {
 interface Leader {
   nickname: string;
   totalRating: number;
-}
-
-interface Schedule {
-  weekOfDay: SharedStudy.PossibleDays;
-  stTime: string;
-  endTime: string;
 }
 
 interface Search extends Shared.Pagenation {

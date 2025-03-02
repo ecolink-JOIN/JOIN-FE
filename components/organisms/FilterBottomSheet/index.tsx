@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import IconButton from '@/components/molecules/IconButton';
 import BottomSheet from '@/components/molecules/BottomSheet';
@@ -10,6 +10,8 @@ import CloseHeader from '@/components/molecules/BottomSheet/CloseHeader';
 import SliderSection from '@/components/molecules/SliderSection';
 import { CustomDropdown } from '@/components/atoms/Dropdown';
 import { sgis } from '@/assets/data/sgis';
+import Icon from '@/components/atoms/Icon';
+import { colors } from '@/theme';
 
 const Category: SharedStudy.Category[] = ['입시', '고시', '취업', '자격증', '사이드프로젝트', '기타'];
 const TimeZone: { label: string; value: SharedStudy.TimeZone }[] = [
@@ -41,6 +43,7 @@ const FilterBottomSheet = ({
   const [stateitems, setStateitems] = useState([{ label: '', value: '' }]);
   const [reset, setReset] = useState(0);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const [isSearchDataEmpty, setIsSearchDataEmpty] = useState(true);
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -53,6 +56,7 @@ const FilterBottomSheet = ({
 
   const onclickClose = async () => {
     await setSearchData(searchDataCopy);
+    console.log(searchDataCopy);
     handleCloseModalPress();
   };
 
@@ -67,10 +71,42 @@ const FilterBottomSheet = ({
     }
   }, [province, state]);
 
+  useEffect(() => {
+    setIsSearchDataEmpty(
+      !(
+        searchDataCopy.form ||
+        searchDataCopy.category ||
+        searchDataCopy.possibleDays ||
+        searchDataCopy.timeZone ||
+        searchDataCopy.minParticipationCount ||
+        searchDataCopy.minParticipationCount ||
+        searchDataCopy.province ||
+        searchDataCopy.city
+      ),
+    );
+  }, [searchDataCopy]);
+
   return (
     <View style={styles.container}>
-      <IconButton name="controller" onPress={handlePresentModalPress} />
-
+      <Pressable
+        style={{ ...styles.badge, backgroundColor: isSearchDataEmpty ? colors.white : colors.primary }}
+        onPress={handlePresentModalPress}
+      >
+        <Typography
+          variant="body3"
+          style={{
+            color: isSearchDataEmpty ? colors.gray[9] : colors.white,
+          }}
+        >
+          맞춤 스터디 설정
+        </Typography>
+        <Icon
+          name="arrow-down-outline"
+          width={16}
+          height={16}
+          stroke={isSearchDataEmpty ? colors.gray[9] : colors.white}
+        />
+      </Pressable>
       <BottomSheet
         snapPoints={['90%']}
         bottomSheetModalRef={bottomSheetModalRef}
@@ -93,22 +129,26 @@ const FilterBottomSheet = ({
                       <Chip
                         variant={searchDataCopy?.form === 'ONLINE' ? 'primary' : 'white'}
                         value="온라인"
-                        onPress={() =>
-                          setSearchDataCopy({
-                            ...searchDataCopy,
-                            form: searchDataCopy?.form === 'ONLINE' ? undefined : 'ONLINE',
-                          })
-                        }
+                        onPress={() => {
+                          if (searchDataCopy?.form === 'ONLINE') {
+                            delete searchDataCopy.form;
+                            setSearchDataCopy({ ...searchDataCopy });
+                          } else {
+                            setSearchDataCopy({ ...searchDataCopy, form: 'ONLINE' });
+                          }
+                        }}
                       />
                       <Chip
                         variant={searchDataCopy?.form === 'OFFLINE' ? 'primary' : 'white'}
                         value="오프라인"
-                        onPress={() =>
-                          setSearchDataCopy({
-                            ...searchDataCopy,
-                            form: searchDataCopy?.form === 'OFFLINE' ? undefined : 'OFFLINE',
-                          })
-                        }
+                        onPress={() => {
+                          if (searchDataCopy?.form === 'OFFLINE') {
+                            delete searchDataCopy.form;
+                            setSearchDataCopy({ ...searchDataCopy });
+                          } else {
+                            setSearchDataCopy({ ...searchDataCopy, form: 'OFFLINE' });
+                          }
+                        }}
                       />
                     </RowView>
                   </View>
@@ -121,12 +161,14 @@ const FilterBottomSheet = ({
                           key={item}
                           variant={searchDataCopy?.category === item ? 'primary' : 'white'}
                           value={item}
-                          onPress={() =>
-                            setSearchDataCopy({
-                              ...searchDataCopy,
-                              category: searchDataCopy?.category === item ? undefined : item,
-                            })
-                          }
+                          onPress={() => {
+                            if (searchDataCopy?.category === item) {
+                              delete searchDataCopy.category;
+                              setSearchDataCopy({ ...searchDataCopy });
+                            } else {
+                              setSearchDataCopy({ ...searchDataCopy, category: item });
+                            }
+                          }}
                         />
                       ))}
                     </RowView>
@@ -144,7 +186,12 @@ const FilterBottomSheet = ({
                             const newPossibleDays = searchDataCopy.possibleDays?.includes(item.value)
                               ? searchDataCopy.possibleDays.filter((day) => day !== item.value)
                               : [...(searchDataCopy.possibleDays || []), item.value];
-                            setSearchDataCopy({ ...searchDataCopy, possibleDays: newPossibleDays });
+                            if (newPossibleDays.length === 0) {
+                              delete searchDataCopy.possibleDays;
+                              setSearchDataCopy({ ...searchDataCopy });
+                            } else {
+                              setSearchDataCopy({ ...searchDataCopy, possibleDays: newPossibleDays });
+                            }
                           }}
                         />
                       ))}
@@ -158,12 +205,14 @@ const FilterBottomSheet = ({
                           key={item.value}
                           variant={searchDataCopy?.timeZone === item.value ? 'primary' : 'white'}
                           value={item.label}
-                          onPress={() =>
-                            setSearchDataCopy({
-                              ...searchDataCopy,
-                              timeZone: searchDataCopy?.timeZone === item.value ? undefined : item.value,
-                            })
-                          }
+                          onPress={() => {
+                            if (searchDataCopy?.timeZone === item.value) {
+                              delete searchDataCopy.timeZone;
+                              setSearchDataCopy({ ...searchDataCopy });
+                            } else {
+                              setSearchDataCopy({ ...searchDataCopy, timeZone: item.value });
+                            }
+                          }}
                         />
                       ))}
                     </RowView>
@@ -173,9 +222,19 @@ const FilterBottomSheet = ({
                     max={10}
                     minValue={searchDataCopy.minParticipationCount || 1}
                     maxValue={searchDataCopy.maxParticipationCount || 10}
-                    onValueChange={(min, max) =>
-                      setSearchDataCopy({ ...searchDataCopy, minParticipationCount: min, maxParticipationCount: max })
-                    }
+                    onValueChange={(min, max) => {
+                      if (min === 1 && max === 10) {
+                        delete searchDataCopy.minParticipationCount;
+                        delete searchDataCopy.maxParticipationCount;
+                        setSearchDataCopy({ ...searchDataCopy });
+                      } else {
+                        setSearchDataCopy({
+                          ...searchDataCopy,
+                          minParticipationCount: min,
+                          maxParticipationCount: max,
+                        });
+                      }
+                    }}
                   />
                 </View>
 
@@ -204,7 +263,11 @@ const FilterBottomSheet = ({
                       placeholder="시/도"
                       onChangeValue={(value) => {
                         setProvince(value);
-                        setSearchDataCopy({ ...searchDataCopy, province: value || undefined });
+                        if (value) {
+                          setSearchDataCopy({ ...searchDataCopy, province: value });
+                        } else {
+                          delete searchDataCopy.province;
+                        }
                       }}
                     />
                   </View>
@@ -215,7 +278,8 @@ const FilterBottomSheet = ({
                       items={stateitems}
                       placeholder="구/군"
                       onChangeValue={(value) => {
-                        setSearchDataCopy({ ...searchDataCopy, city: value || undefined });
+                        if (value) setSearchDataCopy({ ...searchDataCopy, city: value });
+                        else delete searchDataCopy.city;
                       }}
                     />
                   </View>
@@ -232,6 +296,19 @@ const FilterBottomSheet = ({
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
+  },
+  badge: {
+    borderRadius: 999,
+    borderStyle: 'solid',
+    borderColor: colors.sub1,
+    borderWidth: 1,
+    width: 138,
+    height: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    color: colors.gray[9],
   },
 });
 

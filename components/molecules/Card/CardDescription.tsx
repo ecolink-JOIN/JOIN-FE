@@ -16,8 +16,8 @@ interface CardDescriptionProps {
 const CardDescription: React.FC<CardDescriptionProps> = ({ leader, leaderRating, member, memberRating, views }) => {
   return (
     <DescriptionWrapper>
-      <InfoWithRating name={leader} rating={leaderRating} />
-      <InfoWithRating name={member} rating={memberRating} />
+      <InfoWithRating name={'스터디장: ' + leader} rating={leaderRating} />
+      <InfoWithRating name={'스터디원 평균' + member} rating={memberRating} />
 
       <View style={{ alignItems: 'flex-end' }}>
         <ViewsTypography>조회수 {views}회</ViewsTypography>
@@ -29,7 +29,8 @@ const CardDescription: React.FC<CardDescriptionProps> = ({ leader, leaderRating,
 export default CardDescription;
 
 const DescriptionWrapper = styled.View`
-  padding-horizontal: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
   padding-top: 8px;
   gap: 4px;
 `;

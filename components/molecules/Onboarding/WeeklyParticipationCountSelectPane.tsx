@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import { View } from 'react-native';
-import Slider from '@react-native-community/slider';
 import RowView from '@/components/atoms/View/RowView';
 
 const WeeklyParticipationCountSelectPane: React.FC = () => {
@@ -13,7 +12,7 @@ const WeeklyParticipationCountSelectPane: React.FC = () => {
     <>
       <Typography variant="heading3">주 몇 회 참석 가능하신가요?</Typography>
       <View style={{ width: '100%', marginTop: 32 }}>
-        <Slider
+        {/* <Slider
           minimumValue={1}
           maximumValue={7}
           step={1}
@@ -22,7 +21,7 @@ const WeeklyParticipationCountSelectPane: React.FC = () => {
           minimumTrackTintColor={colors.primary}
           maximumTrackTintColor={colors.gray[6]}
           thumbTintColor={colors.primary}
-        />
+        /> */}
         <View style={{ position: 'relative', paddingRight: 20 }}>
           <RowView style={{ justifyContent: 'space-between' }}>
             <Typography variant="body3" style={{ color: colors.gray[7] }}>

@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logger, consoleTransport } from 'react-native-logs';
+import Toast from 'react-native-toast-message';
 
 var log = logger.createLogger({
   levels: {
@@ -27,16 +28,13 @@ var log = logger.createLogger({
   fixedExtLvlLength: false,
   enabled: true,
 });
-export const AuthStorage = {
-  async setToken(token: string) {
-    await AsyncStorage.setItem('sessionId', token);
-  },
-  async getToken(): Promise<string | null> {
-    return AsyncStorage.getItem('sessionId');
-  },
-  async clear() {
-    await AsyncStorage.removeItem('sessionId');
-  },
+
+const showToastError = (text1: string, text2: string) => {
+  Toast.show({
+    type: 'error',
+    text1,
+    text2,
+  });
 };
 
 export const TokenStorage = {
@@ -64,6 +62,15 @@ export const OauthAPI = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+API.defaults.paramsSerializer = function (paramObj) {
+  const params = new URLSearchParams();
+  for (const key in paramObj) {
+    params.append(key, paramObj[key]);
+  }
+
+  return params.toString();
+};
 
 API.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
@@ -106,10 +113,12 @@ API.interceptors.response.use(
         url: error.config?.url,
         baseUrl: error.config?.baseURL,
         headers: error.config?.headers,
-        // data: JSON.parse(error.config?.data.toString()),
+        data: error.config?.data,
         params: error.config?.params,
       },
     });
+    const errorResponse = error.response?.data as Shared.ErrorResponse;
+    showToastError(errorResponse.code, errorResponse.message);
     return Promise.reject(error);
   },
 );
