@@ -5,9 +5,17 @@ import StyledTextInput from '@/components/atoms/TextField';
 import styled from 'styled-components/native';
 import colors from '@/theme/colors';
 import Button from '@/components/atoms/Button';
+import { useLocalSearchParams } from 'expo-router';
+import { NoticeService } from '@/apis';
 
 const Notice = () => {
-  const [value, onChangeText] = React.useState('');
+  const [content, onChangeText] = React.useState('');
+  const { token } = useLocalSearchParams<{ token: string }>();
+
+  const onSubmit = () => {
+    NoticeService().studyNotice(token, { content: content });
+    console.log(token);
+  };
 
   return (
     <ManageView>
@@ -15,13 +23,13 @@ const Notice = () => {
       <BoxView>
         <ReasonInput
           onChangeText={onChangeText}
-          value={value}
+          value={content}
           placeholder={'스터디 공지를 작성해주세요.'}
           multiline={true}
         />
-        <TextLimit variant="body4">{value.length || 0} / 100</TextLimit>
+        <TextLimit variant="body4">{content.length || 0} / 100</TextLimit>
       </BoxView>
-      <Button variant="contained" style={{ marginHorizontal: 'auto' }}>
+      <Button variant="contained" style={{ marginHorizontal: 'auto' }} onPressIn={onSubmit}>
         공지하기
       </Button>
     </ManageView>

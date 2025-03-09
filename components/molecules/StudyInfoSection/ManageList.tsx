@@ -12,20 +12,23 @@ interface ManageListProps {
   active?: boolean;
   editHref?: string;
   studyLinks: StudyLinkList[];
+  openBottomSheet: (studyName: string) => void;
 }
 
-const ManageList: FC<ManageListProps> = ({ title, studyToken, editHref, active, studyLinks }) => {
-  const href = `/manage/${studyToken}/progress`;
+const ManageList: FC<ManageListProps> = ({ title, studyToken, editHref, active, studyLinks, openBottomSheet }) => {
   return active ? (
     <Container style={styles.shadow}>
       <TitleView>
         <Typography variant="subtitle1">{title}</Typography>
-        {editHref && <Icon name="pencil" onPress={() => router.push(`/${editHref}`)} />}
+        {editHref && <Icon name="pencil" onPress={() => openBottomSheet(title)} />}
       </TitleView>
       {studyLinks.map((list, idx) => (
         <ListView
           key={idx}
-          onPress={() => router.push(list.href.replace('[id]', studyToken.toString()) as Href)}
+          onPress={() => {
+            console.log(list.href.replace('[token]', studyToken.toString()));
+            router.push(list.href.replace('[token]', studyToken.toString()) as Href);
+          }}
           last={idx === studyLinks.length - 1}
         >
           <Typography variant="button">{list.title}</Typography>

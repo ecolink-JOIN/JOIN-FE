@@ -17,8 +17,8 @@ function ManageLayout() {
         headerLeft: () => <Icon name="arrow-left" onPress={() => router.back()} />,
         headerRight: () => (
           <View style={{ flexDirection: 'row', gap: 12 }}>
-            <Icon name="alarm-unread" onPress={() => router.push('alarm')} />
-            <Icon name="search" onPress={() => router.push('search')} />
+            <Icon name="alarm-unread" onPress={() => router.push('/alarm')} />
+            <Icon name="search" onPress={() => router.push('/search')} />
           </View>
         ),
       }}

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { ManageView, ManageBox, ListComponent } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
@@ -13,13 +13,8 @@ import { ModalWrapper } from '@/components/molecules/ModalViews';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
 
-const Progress = ({
-  id,
-  bottomSheetModalRef,
-}: {
-  id: string | string[] | undefined;
-  bottomSheetModalRef: React.RefObject<BottomSheetModalMethods>;
-}) => {
+const Progress = ({ bottomSheetModalRef }: { bottomSheetModalRef: React.RefObject<BottomSheetModalMethods> }) => {
+  const { token } = useLocalSearchParams<{ token: string }>();
   const [kakaolink, setKakaoLink] = React.useState('https://open.kakao.com/o/joinjoinjoi');
   const [isModalVisible, setIsModalVisible] = React.useState(false);
 
@@ -29,7 +24,7 @@ const Progress = ({
 
   return (
     <ManageView>
-      <Typography variant="heading3">진행 관리</Typography>
+      <Typography variant="heading3">진행 관리{token}</Typography>
       <ManageBox title="진행 현황">
         <Status value={false} />
       </ManageBox>
@@ -40,11 +35,11 @@ const Progress = ({
         <Approval />
       </ManageBox>
       <ManageBox>
-        <ListComponent title="스터디 회차 설정" href={`/manage/${id}/round`} />
+        <ListComponent title="스터디 회차 설정" href={`/manage/${token}/round`} />
       </ManageBox>
       <ManageBox title="스터디 메시지">
-        <ListComponent title="스터디 공지" href={`/manage/${id}/notice`} />
-        <ListComponent title="자동 알림 메세지 설정" href={`/manage/${id}/alarm`} />
+        <ListComponent title="스터디 공지" href={`/manage/${token}/notice`} />
+        <ListComponent title="자동 알림 메세지 설정" href={`/manage/${token}/alarm`} />
       </ManageBox>
       <ManageBox
         title="스터디 카카오톡 링크"
@@ -93,9 +88,8 @@ const Progress = ({
 };
 
 const ProgressWraper = () => {
-  const { id } = useLocalSearchParams();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  return <FlatList data={[null]} renderItem={() => <Progress {...{ id, bottomSheetModalRef }} />} />;
+  return <FlatList data={[null]} renderItem={() => <Progress {...{ bottomSheetModalRef }} />} />;
 };
 
 export default ProgressWraper;
