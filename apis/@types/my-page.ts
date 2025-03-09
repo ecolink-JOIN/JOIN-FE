@@ -17,45 +17,43 @@ declare namespace MyPageResponse {
   }
 
   export interface GetJoinStudy extends Shared.HttpResponse {
-    data: { ongoingStudyCount: number; completedStudyCount: number; joinStudyInfos: JoinStudyInfo[] };
+    data: {
+      ongoingStudyCount: number;
+      completedStudyCount: number;
+      joinStudyInfos: JoinStudyInfo[];
+    };
   }
 
   export interface GetInterestStudy extends Shared.HttpResponse {
-    data: { interestStudyInfos: InterestStudyInfo[] };
+    data: StudyResponse.StudyInfo[];
   }
-
-  interface StudyInfo {
+  export interface StudyInfo {
+    studyToken: string;
     name: string;
     status: string;
     teamAverageAttendanceRate: number;
     teamAverageProofRate: number;
     studyMembersInfos: StudyMembersInfo[];
-    kakaoUrl: null;
+    kakaoUrl: string;
   }
 
-  interface StudyMembersInfo {
+  export interface StudyMembersInfo {
     avatarToken: string;
-    nickname: null | string;
+    nickname: string;
     averageAttendanceRate: number;
     averageProofRate: number;
     isFullyApproved: boolean;
   }
 
   export interface JoinStudyInfo {
+    studyToken: string;
     name: string;
     status: string;
   }
-  export interface InterestStudyInfo {
-    studyName: string;
-    status: string;
-    studyMemberInfos: StudyMemberInfo[];
-    viewCount: number;
-  }
 
-  interface StudyMemberInfo {
-    studyRole: string;
+  export interface Leader {
     nickname: string;
-    rating: number;
+    totalRating: number;
   }
 
   interface Image {

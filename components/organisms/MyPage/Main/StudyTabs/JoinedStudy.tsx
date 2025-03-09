@@ -47,7 +47,7 @@ const JoinedStudy = () => {
           key={idx}
           {...{
             title: study.name,
-            id: 1,
+            studyToken: study.studyToken,
             studyLinks,
             active: study.status !== 'COMPLETED',
           }}

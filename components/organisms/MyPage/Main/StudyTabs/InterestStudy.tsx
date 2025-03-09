@@ -12,7 +12,7 @@ const CardsContainer = styled(RowView)`
 `;
 
 const InterestStudy = () => {
-  const [studyList, setStudyList] = useState<MyPageResponse.InterestStudyInfo[]>([]);
+  const [studyList, setStudyList] = useState<StudyResponse.StudyInfo[]>([]);
   const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -20,26 +20,16 @@ const InterestStudy = () => {
     MyPageService()
       .getInterestStudy()
       .then((data) => {
-        setStudyList(data.interestStudyInfos);
+        setStudyList(data);
         setIsLoading(false);
       });
   }, []);
 
   return studyList.length ? (
     <CardsContainer>
-      {/* {studyList.map((item, index) => (
-        <Card
-          key={index}
-          title={item.studyName}
-          leader={item.studyMemberInfos[0].nickname}
-          leaderRating={item.studyMemberInfos[0].rating}
-          member={item.studyMemberInfos[1].nickname}
-          memberRating={item.studyMemberInfos[1].rating}
-          views={item.viewCount}
-          liked={item.liked}
-          studyId={item.studyId}
-        />
-      ))} */}
+      {studyList.map((item, index) => (
+        <Card key={index} {...item} />
+      ))}
     </CardsContainer>
   ) : (
     <>

@@ -4,28 +4,28 @@ import styled from 'styled-components/native';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
 import Icon from '@/components/atoms/Icon';
-import { router } from 'expo-router';
+import { Href, router } from 'expo-router';
 
 interface ManageListProps {
   title: string;
-  id: number;
+  studyToken: string;
   active?: boolean;
   editHref?: string;
   studyLinks: StudyLinkList[];
 }
 
-const ManageList: FC<ManageListProps> = ({ title, id, editHref, active, studyLinks }) => {
-  const href = `/manage/${id}/progress`;
+const ManageList: FC<ManageListProps> = ({ title, studyToken, editHref, active, studyLinks }) => {
+  const href = `/manage/${studyToken}/progress`;
   return active ? (
     <Container style={styles.shadow}>
       <TitleView>
         <Typography variant="subtitle1">{title}</Typography>
-        {editHref && <Icon name="pencil" onPress={() => router.push(editHref)} />}
+        {editHref && <Icon name="pencil" onPress={() => router.push(`/${editHref}`)} />}
       </TitleView>
       {studyLinks.map((list, idx) => (
         <ListView
           key={idx}
-          onPress={() => router.push(list.href.replace('[id]', id.toString()))}
+          onPress={() => router.push(list.href.replace('[id]', studyToken.toString()) as Href)}
           last={idx === studyLinks.length - 1}
         >
           <Typography variant="button">{list.title}</Typography>

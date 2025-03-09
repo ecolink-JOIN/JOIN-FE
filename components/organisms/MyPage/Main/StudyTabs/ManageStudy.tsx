@@ -40,8 +40,7 @@ const ManageStudy = () => {
           key={idx}
           {...{
             title: study.name,
-            // TODO: 스터디 토큰 정보 추가
-            id: 1,
+            studyToken: study.studyToken,
             editHref: 'changename',
             studyLinks,
             active: study.status !== 'COMPLETED',
