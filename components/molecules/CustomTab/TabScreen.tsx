@@ -1,8 +1,7 @@
 import { useState, useRef } from 'react';
-import { Dimensions, View, ScrollView } from 'react-native';
+import { Dimensions, View, ScrollView, RefreshControl } from 'react-native';
 import Tabs from './Tabs';
 import { colors } from '@/theme';
-import Colors from '@/constants/Colors';
 
 interface Props {
   menus: string[];

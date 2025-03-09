@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ManageList from '@/components/molecules/StudyInfoSection/ManageList';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import NoList from '@/components/molecules/StudyInfoSection/NoList';
 import { MyPageService } from '@/apis';
 
@@ -21,12 +21,15 @@ const studyLinks: StudyLinkList[] = [
 
 const ManageStudy = () => {
   const [studyList, setStudyList] = useState<MyPageResponse.StudyInfo[]>([]);
+  const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     MyPageService()
       .getManageStudy()
       .then((data) => {
         setStudyList(data);
+        setIsLoading(false);
       });
   }, []);
 
@@ -47,13 +50,19 @@ const ManageStudy = () => {
       ))}
     </View>
   ) : (
-    <NoList
-      {...{
-        desc: '운영 중인 스터디가 없습니다.',
-        buttonText: '스터디 모집하기',
-        buttonHref: '(form)/recruit-base',
-      }}
-    />
+    <>
+      {isloading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <NoList
+          {...{
+            desc: '운영 중인 스터디가 없습니다.',
+            buttonText: '스터디 모집하기',
+            buttonHref: '(form)/recruit-base',
+          }}
+        />
+      )}
+    </>
   );
 };
 

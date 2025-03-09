@@ -18,17 +18,33 @@ const Index = () => {
 
 export default Index;
 
-// import React, { useState } from 'react';
-// import { Text, ScrollView, RefreshControl, View } from 'react-native';
+// import React, { useEffect, useState } from 'react';
+// import { Text, ScrollView, RefreshControl, View, SafeAreaView } from 'react-native';
+// import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 // const Card = () => {
-//   const [now] = useState(new Date().toLocaleString());
+//   const [now, setNow] = useState('');
+//   const [isLoading, setIsLoading] = useState(true);
+
+//   useEffect(() => {
+//     setIsLoading(true);
+//     setTimeout(() => {
+//       setNow(new Date().toLocaleString());
+//       setIsLoading(false);
+//     }, 2000);
+//   }, []);
 
 //   return (
 //     <View style={{ flex: 1 }}>
-//       {Array.from({ length: 100 }).map((_, index) => (
-//         <Text key={index} style={{ textAlign: 'center', justifyContent: 'center', fontSize: 16 }}>{`${now}`}</Text>
-//       ))}
+//       {isLoading ? (
+//         <SkeletonPlaceholder borderRadius={4}>
+//           <Text style={{ marginTop: 6, fontSize: 14, lineHeight: 18 }}>Hello world</Text>
+//         </SkeletonPlaceholder>
+//       ) : (
+//         Array.from({ length: 100 }).map((_, index) => (
+//           <Text key={index} style={{ textAlign: 'center', justifyContent: 'center', fontSize: 20 }}>{`${now}`}</Text>
+//         ))
+//       )}
 //     </View>
 //   );
 // };
@@ -39,25 +55,22 @@ export default Index;
 
 //   const handleRefresh = () => {
 //     setRefreshing(true);
-//     setTimeout(() => {
-//       setKey(new Date().getTime());
-//       setRefreshing(false);
-//     }, 1000);
+//     setKey(new Date().getTime());
+//     setRefreshing(false);
 //   };
 
 //   return (
-//     <ScrollView
-//       key={key}
-//       style={{ flex: 1, backgroundColor: 'white', padding: 20 }}
-//       refreshControl={
-//         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={['blue', 'red', 'green']} />
-//       }
-//     >
-//       <View style={{ flex: 1, flexDirection: 'row' }}>
-//         <Card key={key} />
-//         <Card />
-//       </View>
-//     </ScrollView>
+//     <SafeAreaView style={{ flex: 1, backgroundColor: 'white', padding: 20 }}>
+//       <ScrollView
+//         refreshControl={
+//           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={['blue', 'red', 'green']} />
+//         }
+//       >
+//         <View style={{ flex: 1, flexDirection: 'row' }}>
+//           <Card key={key} />
+//         </View>
+//       </ScrollView>
+//     </SafeAreaView>
 //   );
 // };
 

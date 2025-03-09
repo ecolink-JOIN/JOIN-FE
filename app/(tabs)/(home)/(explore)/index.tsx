@@ -1,4 +1,4 @@
-import { SafeAreaView } from 'react-native';
+import { RefreshControl, SafeAreaView } from 'react-native';
 import { ScrollView } from 'react-native';
 import Typography from '@/components/atoms/Typography';
 import styled from 'styled-components/native';
@@ -10,6 +10,7 @@ import RowView from '@/components/atoms/View/RowView';
 import FilterBottomSheet from '@/components/organisms/FilterBottomSheet';
 import { useRecommendationContext } from '@/context/Recommendation';
 import { useGlobalContext } from '@/context/GlobalContext';
+import { useState } from 'react';
 
 const Container = styled(RowView)`
   justify-content: space-between;
@@ -20,10 +21,22 @@ const Container = styled(RowView)`
 function HomeScreen() {
   const { searchData, setSearchData } = useRecommendationContext();
   const { userinfo } = useGlobalContext();
+  const [key, setKey] = useState(new Date().getTime());
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setKey(new Date().getTime());
+    setRefreshing(false);
+  };
 
   return (
     <SafeAreaView>
-      <ScrollView style={{ backgroundColor: colors.white }}>
+      <ScrollView
+        style={{ backgroundColor: colors.white }}
+        key={key}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+      >
         <AdsCarousel />
 
         <Container

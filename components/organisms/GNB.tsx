@@ -29,12 +29,13 @@ function GNB() {
         tabBarLabelPosition: 'below-icon',
       }}
     >
-      <Tabs.Screen
+      {/* TODO: 테스트 페이지 오픈*/}
+      {/* <Tabs.Screen
         name="index"
         options={{
           href: null,
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="(home)"
         options={{

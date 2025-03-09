@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ManageList from '@/components/molecules/StudyInfoSection/ManageList';
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import NoList from '@/components/molecules/StudyInfoSection/NoList';
 import JoinedStatus from '../JoinedStatus';
 import { MyPageService } from '@/apis';
@@ -22,12 +22,15 @@ const studyLinks: StudyLinkList[] = [
 
 const JoinedStudy = () => {
   const [studyList, setStudyList] = useState<MyPageResponse.JoinStudyInfo[]>([]);
+  const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     MyPageService()
       .getJoinStudy()
       .then((data) => {
         setStudyList(data.joinStudyInfos);
+        setIsLoading(false);
       });
   }, []);
 
@@ -52,13 +55,19 @@ const JoinedStudy = () => {
       ))}
     </View>
   ) : (
-    <NoList
-      {...{
-        desc: '가입한 스터디가 없습니다.',
-        buttonText: '스터디 둘러보기',
-        buttonHref: '(home)',
-      }}
-    />
+    <>
+      {isloading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <NoList
+          {...{
+            desc: '가입한 스터디가 없습니다.',
+            buttonText: '스터디 둘러보기',
+            buttonHref: '(home)',
+          }}
+        />
+      )}
+    </>
   );
 };
 

@@ -4,6 +4,7 @@ import Card from '@/components/molecules/Card';
 import RowView from '@/components/atoms/View/RowView';
 import styled from 'styled-components/native';
 import { MyPageService } from '@/apis';
+import { ActivityIndicator } from 'react-native';
 
 const CardsContainer = styled(RowView)`
   gap: 12px;
@@ -12,12 +13,15 @@ const CardsContainer = styled(RowView)`
 
 const InterestStudy = () => {
   const [studyList, setStudyList] = useState<MyPageResponse.InterestStudyInfo[]>([]);
+  const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     MyPageService()
       .getInterestStudy()
       .then((data) => {
         setStudyList(data.interestStudyInfos);
+        setIsLoading(false);
       });
   }, []);
 
@@ -38,13 +42,19 @@ const InterestStudy = () => {
       ))} */}
     </CardsContainer>
   ) : (
-    <NoList
-      {...{
-        desc: '관심있는 스터디가 없습니다.',
-        buttonText: '스터디 둘러보기',
-        buttonHref: '(tabs)/(home)/(explore)/custom',
-      }}
-    />
+    <>
+      {isloading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <NoList
+          {...{
+            desc: '관심있는 스터디가 없습니다.',
+            buttonText: '스터디 둘러보기',
+            buttonHref: '(tabs)/(home)/(explore)/custom',
+          }}
+        />
+      )}
+    </>
   );
 };
 
