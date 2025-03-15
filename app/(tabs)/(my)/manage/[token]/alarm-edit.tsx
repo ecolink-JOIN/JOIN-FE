@@ -38,6 +38,7 @@ const AlarmEdit = () => {
         <AlarmMessage
           onChangeText={onChangeText}
           value={value}
+          maxLength={100}
           placeholder={'알림 메세지를 작성해주세요.'}
           multiline={true}
         />
@@ -63,14 +64,14 @@ const AlarmEdit = () => {
       </ModalWrapper>
       <ModalWrapper isModalVisible={isEditModalVisible} toggleModal={toggleEditModal}>
         <ModalContents>
-          <Daypicker />
+          {/* <Daypicker />
           <TimePicker title="전송 시간" />
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <Button variant="outlined" onPress={toggleEditModal}>
               취소
             </Button>
             <Button variant="contained">확인</Button>
-          </View>
+          </View> */}
         </ModalContents>
       </ModalWrapper>
     </ManageView>

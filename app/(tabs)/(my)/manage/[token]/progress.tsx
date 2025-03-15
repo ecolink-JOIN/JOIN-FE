@@ -24,7 +24,7 @@ const Progress = ({ bottomSheetModalRef }: { bottomSheetModalRef: React.RefObjec
 
   return (
     <ManageView>
-      <Typography variant="heading3">진행 관리{token}</Typography>
+      <Typography variant="heading3">진행 관리</Typography>
       <ManageBox title="진행 현황">
         <Status value={false} />
       </ManageBox>

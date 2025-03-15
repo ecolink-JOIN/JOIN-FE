@@ -20,7 +20,7 @@ const AlarmList = [
   },
 ];
 
-const Alarm = (id: string | string[] | undefined) => {
+const Alarm = (token: string | string[] | undefined) => {
   return (
     <ManageView>
       <Typography variant="heading3">자동 알림 메세지 설정</Typography>
@@ -28,7 +28,7 @@ const Alarm = (id: string | string[] | undefined) => {
         <ManageBox key={index}>
           <ListComponent
             title={alarm.day}
-            href={`/manage/${id}/alarm-edit?day=${alarm.day}&time=${alarm.time}&message=${alarm.message}`}
+            href={`/manage/${token}/alarm-edit?day=${alarm.day}&time=${alarm.time}&message=${alarm.message}`}
           >
             <Typography variant="body2" style={{ color: colors.gray[7] }}>
               {alarm.time}
@@ -41,7 +41,7 @@ const Alarm = (id: string | string[] | undefined) => {
           </AlarmMessage>
         </ManageBox>
       ))}
-      <AddAlarm onPress={() => router.push(`/manage/${id}/alarm-add` as Href)}>
+      <AddAlarm onPress={() => router.push(`/manage/${token}/alarm-add` as Href)}>
         <Icon name="plus-circle-outline" />
         <Typography variant="body2" style={{ color: colors.gray[7] }}>
           추가하기
@@ -52,8 +52,8 @@ const Alarm = (id: string | string[] | undefined) => {
 };
 
 const AlarmWrapper = () => {
-  const { id } = useLocalSearchParams();
-  return <FlatList data={[null]} renderItem={() => Alarm(id)} />;
+  const { token } = useLocalSearchParams();
+  return <FlatList data={[null]} renderItem={() => Alarm(token)} />;
 };
 export default AlarmWrapper;
 

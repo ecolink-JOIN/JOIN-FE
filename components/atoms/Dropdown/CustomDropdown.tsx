@@ -7,7 +7,7 @@ interface CustomStepperProps {
   items: { label: string; value: string }[];
   placeholder: string;
   showArrow?: boolean;
-  onChangeValue: (value: string | null, idx?: number) => void;
+  onChangeValue: any;
   idx?: number;
   defaultValue?: string | null;
 }

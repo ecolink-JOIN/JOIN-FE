@@ -5,16 +5,24 @@ import StyledTextInput from '@/components/atoms/TextField';
 import styled from 'styled-components/native';
 import colors from '@/theme/colors';
 import Button from '@/components/atoms/Button';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { NoticeService } from '@/apis';
+import Toast from 'react-native-toast-message';
 
 const Notice = () => {
   const [content, onChangeText] = React.useState('');
   const { token } = useLocalSearchParams<{ token: string }>();
 
   const onSubmit = () => {
-    NoticeService().studyNotice(token, { content: content });
-    console.log(token);
+    NoticeService()
+      .studyNotice(token, { content: content })
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: '공지가 성공적으로 등록되었습니다.',
+        });
+        router.replace(`/manage/${token}/progress`);
+      });
   };
 
   return (
