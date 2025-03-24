@@ -1,61 +1,69 @@
-import { FlatList } from 'react-native';
-import React from 'react';
-import { ManageView, ManageBox, ListComponent } from '@/components/molecules/MyMolecules/ManageView';
+import { FlatList, ListRenderItem, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ManageBox, ListComponent } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import styled from 'styled-components/native';
 import Icon from '@/components/atoms/Icon';
 import { useLocalSearchParams, router, Href } from 'expo-router';
+import { BatchJobService } from '@/apis';
 
-const AlarmList = [
-  {
-    day: '화요일',
-    time: '19:50',
-    message: '출석 인증이 시작되었습니다. 잊지 말고 출석 체크 진행해주세요 :)',
-  },
-  {
-    day: '목요일',
-    time: '22:50',
-    message: '오늘 진행한 스터디 내용 정리한 것을 잊지 말고 사진 인증해주세요~',
-  },
-];
+const Alarm = () => {
+  const { token } = useLocalSearchParams<{ token: string }>();
+  const [alarmList, setAlarmList] = useState<BatchJobResponse.BatchJob['data']>([]);
 
-const Alarm = (token: string | string[] | undefined) => {
-  return (
-    <ManageView>
-      <Typography variant="heading3">자동 알림 메세지 설정</Typography>
-      {AlarmList.map((alarm, index) => (
-        <ManageBox key={index}>
-          <ListComponent
-            title={alarm.day}
-            href={`/manage/${token}/alarm-edit?day=${alarm.day}&time=${alarm.time}&message=${alarm.message}`}
-          >
-            <Typography variant="body2" style={{ color: colors.gray[7] }}>
-              {alarm.time}
-            </Typography>
-          </ListComponent>
-          <AlarmMessage>
-            <Typography variant="body2" style={{ color: colors.gray[9] }}>
-              {alarm.message}
-            </Typography>
-          </AlarmMessage>
-        </ManageBox>
-      ))}
-      <AddAlarm onPress={() => router.push(`/manage/${token}/alarm-add` as Href)}>
-        <Icon name="plus-circle-outline" />
+  useEffect(() => {
+    BatchJobService()
+      .getBatchJobs(token)
+      .then((res) => {
+        setAlarmList(res);
+      });
+  }, [token]);
+
+  const renderItem: ListRenderItem<BatchJobResponse.Job> = ({ item }) => (
+    <ManageBox>
+      <ListComponent
+        title={item.day}
+        href={`/manage/${token}/alarm-edit?day=${item.day}&time=${item.time}&message=${item.content}`}
+      >
         <Typography variant="body2" style={{ color: colors.gray[7] }}>
-          추가하기
+          {item.time}
         </Typography>
-      </AddAlarm>
-    </ManageView>
+      </ListComponent>
+      <AlarmMessage>
+        <Typography variant="body2" style={{ color: colors.gray[9] }}>
+          {item.content}
+        </Typography>
+      </AlarmMessage>
+    </ManageBox>
+  );
+
+  return (
+    <FlatList
+      style={{ backgroundColor: colors.gray[2], flex: 1 }}
+      data={alarmList}
+      keyExtractor={(_, index) => index.toString()}
+      ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+      contentContainerStyle={{ padding: 20 }}
+      ListHeaderComponent={() => (
+        <Typography variant="heading3" style={{ marginBottom: 20 }}>
+          자동 알림 메세지 설정
+        </Typography>
+      )}
+      ListFooterComponent={() => (
+        <AddAlarm onPress={() => router.push(`/manage/${token}/alarm-add` as Href)}>
+          <Icon name="plus-circle-outline" />
+          <Typography variant="body2" style={{ color: colors.gray[7] }}>
+            추가하기
+          </Typography>
+        </AddAlarm>
+      )}
+      renderItem={renderItem}
+    />
   );
 };
 
-const AlarmWrapper = () => {
-  const { token } = useLocalSearchParams();
-  return <FlatList data={[null]} renderItem={() => Alarm(token)} />;
-};
-export default AlarmWrapper;
+export default Alarm;
 
 const AlarmMessage = styled.View`
   margin: 8px 0;
@@ -72,4 +80,5 @@ const AddAlarm = styled.Pressable`
   flex-direction: row;
   align-items: center;
   gap: 8px;
+  margin-top: 20px;
 `;

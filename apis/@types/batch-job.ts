@@ -17,3 +17,15 @@ declare namespace BatchJobRequest {
     studyToken: string;
   }
 }
+
+declare namespace BatchJobResponse {
+  export interface BatchJob extends Shared.HttpResponse {
+    data: Job[];
+  }
+
+  export interface Job {
+    content: string;
+    day: string;
+    time: string;
+  }
+}

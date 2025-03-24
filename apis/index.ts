@@ -9,3 +9,4 @@ export { BookmarksService } from './service/bookmarks';
 export { ViewsService } from './service/views';
 export { MyPageService } from './service/my-page';
 export { ReportService } from './service/report';
+export { BatchJobService } from './service/batch-job';
