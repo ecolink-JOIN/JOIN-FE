@@ -14,11 +14,11 @@ function MyInfo() {
           borderTopWidth: 3,
         },
         headerTitle: '',
-        headerLeft: () => <Icon name="arrow-left" onPress={() => router.back()} />,
+        headerLeft: () => <Icon name="arrow-left" onPressIn={() => router.back()} />,
         headerRight: () => (
           <View style={{ flexDirection: 'row', gap: 12 }}>
-            <Icon name="alarm-unread" onPress={() => router.push('alarm' as Href)} />
-            <Icon name="search" onPress={() => router.push('search' as Href)} />
+            <Icon name="alarm-unread" onPressIn={() => router.push('alarm' as Href)} />
+            <Icon name="search" onPressIn={() => router.push('search' as Href)} />
           </View>
         ),
       }}
