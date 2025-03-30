@@ -30,7 +30,7 @@ declare namespace MyPageResponse {
   export interface StudyInfo {
     studyToken: string;
     name: string;
-    status: string;
+    status: 'RECRUITING' | 'READY' | 'ACTIVE' | 'COMPLETED';
     teamAverageAttendanceRate: number;
     teamAverageProofRate: number;
     studyMembersInfos: StudyMembersInfo[];

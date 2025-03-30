@@ -20,7 +20,7 @@ const Screen = () => {
       style={{ flex: 1 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
     >
-      <FormalInfo key={infoKey} />
+      <FormalInfo key={infoKey + 'formal'} />
       <TabScreen
         menus={['운영 스터디', '가입 스터디', '관심 스터디']}
         contents={[

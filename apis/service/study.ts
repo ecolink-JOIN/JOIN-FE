@@ -68,36 +68,3 @@ export const StudyService = () => {
 
   return { detail, search, recommendation, popular, close, recruit, reRecruit };
 };
-
-export const ApplicationsService = () => {
-  const url = '/applications';
-
-  /**
-   * 스터디 지원 - 인증 필수
-   * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/apply
-   */
-  const post = async (body: StudyRequest.Applications) => {
-    const req = (await API.post(`${url}`, body)) as Shared.HttpResponse;
-    return req.data;
-  };
-
-  /**
-   * 스터디 지원 - 인증 필수
-   * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/apply
-   */
-  const reject = async (applicationId: number, body: StudyRequest.Reject) => {
-    const req = (await API.patch(`${url}/${applicationId}/reject`, body)) as Shared.HttpResponse;
-    return req.data;
-  };
-
-  /**
-   * 스터디 지원 반려 - 인증 필수
-   * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/rejectApplication
-   */
-  const accept = async (applicationId: number) => {
-    const req = (await API.patch(`${url}/${applicationId}/accept`)) as Shared.HttpResponse;
-    return req.data;
-  };
-
-  return { post, reject, accept };
-};

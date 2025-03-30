@@ -11,7 +11,7 @@ const Card: React.FC<StudyResponse.StudyInfo> = (props) => {
   const router = useRouter();
 
   const handleCardPress = () => {
-    router.push(`/(tabs)/(home)/(study)/${props.studyToken}`);
+    router.push(`/study/${props.studyToken}`);
   };
 
   return (

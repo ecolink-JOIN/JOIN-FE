@@ -48,6 +48,7 @@ const ManageStudy = () => {
           {...{
             title: study.name,
             studyToken: study.studyToken,
+            status: study.status,
             editHref: 'changename',
             studyLinks,
             active: study.status !== 'COMPLETED',

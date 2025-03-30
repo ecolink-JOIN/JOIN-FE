@@ -9,7 +9,7 @@ const StudyApplicationSection = ({ props }: { props: StudyResponse.Detail['data'
   const { slug } = useLocalSearchParams<{ slug: string }>();
 
   const handlePress = () => {
-    router.push(`/(tabs)/(home)/(study)/${slug}/application`);
+    router.push(`/study/${slug}/application`);
   };
 
   return (

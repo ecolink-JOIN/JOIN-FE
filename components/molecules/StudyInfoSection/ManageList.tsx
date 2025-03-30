@@ -9,25 +9,34 @@ import { Href, router } from 'expo-router';
 interface ManageListProps {
   title: string;
   studyToken: string;
+  status?: string;
   active?: boolean;
   editHref?: string;
   studyLinks: StudyLinkList[];
-  openBottomSheet: (studyName: string) => void;
+  openBottomSheet?: (studyName: string) => void;
 }
 
-const ManageList: FC<ManageListProps> = ({ title, studyToken, editHref, active, studyLinks, openBottomSheet }) => {
+const ManageList: FC<ManageListProps> = ({
+  title,
+  studyToken,
+  status,
+  editHref,
+  active,
+  studyLinks,
+  openBottomSheet,
+}) => {
   return active ? (
     <Container style={styles.shadow}>
       <TitleView>
         <Typography variant="subtitle1">{title}</Typography>
-        {editHref && <Icon name="pencil" onPress={() => openBottomSheet(title)} />}
+        {editHref && openBottomSheet && <Icon name="pencil" onPress={() => openBottomSheet(title)} />}
       </TitleView>
       {studyLinks.map((list, idx) => (
         <ListView
           key={idx}
           onPress={() => {
-            console.log(list.href.replace('[token]', studyToken.toString()));
-            router.push(list.href.replace('[token]', studyToken.toString()) as Href);
+            console.log(list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`);
+            router.push((list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`) as Href);
           }}
           last={idx === studyLinks.length - 1}
         >
