@@ -6,7 +6,7 @@ declare namespace ApplicationsResponse {
   export interface GetApplicationsResult {
     applicationId: number;
     nickname: string;
-    applicationStatus: '승인 대기중' | '승인 완료' | '승인 거절';
+    applicationStatus: '승인 대기중' | '승인 완료' | '거절 완료';
     introduction: string;
     activeStudyStats: StudyStats;
     completedStudyStats: StudyStats;

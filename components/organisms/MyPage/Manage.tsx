@@ -434,13 +434,6 @@ export const ApplicationApproval = () => {
       });
   }, [token]);
 
-  // const memberInfo = [
-  //   { name: '김지수', approve: false, profile: require('@/assets/images/profile.png'), user_id: 1 },
-  //   { name: '박지수', approve: true, profile: require('@/assets/images/profile.png'), user_id: 2 },
-  //   { name: '이지수', approve: false, profile: require('@/assets/images/profile.png'), user_id: 3 },
-  //   { name: '홍지수', approve: true, profile: require('@/assets/images/profile.png'), user_id: 4 },
-  //   { name: '미지수', approve: false, profile: require('@/assets/images/profile.png'), user_id: 5 },
-  // ];
   return (
     <View style={{ marginVertical: 8 }}>
       {applicationList.map((member, index) => (

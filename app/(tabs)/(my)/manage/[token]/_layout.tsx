@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import Icon from '@/components/atoms/Icon';
+import { colors } from '@/theme';
 
 function ManageLayout() {
   const router = useRouter();
@@ -13,6 +14,7 @@ function ManageLayout() {
         contentStyle: {
           borderTopColor: '#FF000000',
           borderTopWidth: 3,
+          backgroundColor: colors.gray[2],
         },
         headerTitle: '',
         header: () => (

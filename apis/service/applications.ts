@@ -22,7 +22,7 @@ export const ApplicationsService = () => {
   };
 
   /**
-   * 스터디 지원 반려 - 인증 필수
+   * 스터디 지원 승인 - 인증 필수
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/rejectApplication
    */
   const accept = async (applicationId: number) => {
