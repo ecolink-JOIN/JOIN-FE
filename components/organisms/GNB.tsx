@@ -18,9 +18,6 @@ function GNB() {
           borderTopColor: colors.sub2,
           borderTopWidth: 1.5,
         },
-        tabBarIconStyle: {
-          bottom: 0.5,
-        },
         tabBarLabel: ({ children, color }) => (
           <Typography variant="gnb" style={{ color }}>
             {children}

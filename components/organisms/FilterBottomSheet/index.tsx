@@ -261,7 +261,7 @@ const FilterBottomSheet = ({
                       defaultValue={searchDataCopy.province}
                       items={provinceitems}
                       placeholder="시/도"
-                      onChangeValue={(value) => {
+                      onChangeValue={(value: any) => {
                         setProvince(value);
                         if (value) {
                           setSearchDataCopy({ ...searchDataCopy, province: value });
@@ -277,7 +277,7 @@ const FilterBottomSheet = ({
                       defaultValue={searchDataCopy.city}
                       items={stateitems}
                       placeholder="구/군"
-                      onChangeValue={(value) => {
+                      onChangeValue={(value: any) => {
                         if (value) setSearchDataCopy({ ...searchDataCopy, city: value });
                         else delete searchDataCopy.city;
                       }}

@@ -27,7 +27,7 @@ const HomeHeader: React.FC = () => {
   const router = useRouter();
 
   const openModal = () => {
-    router.push('/(tabs)/(home)/search');
+    router.push('/study/search');
   };
 
   const handleWrite = () => {
@@ -36,7 +36,7 @@ const HomeHeader: React.FC = () => {
 
   // TODO: API 테스트용 코드입니다. 추후 삭제 예정
   const handleSearch = async () => {
-    router.push('/(tabs)/(home)/search');
+    router.push('/study/search');
     // const req = await StudyService().recruit({
     //   capacity: 10,
     //   recruit_end_date: '2025-02-27',

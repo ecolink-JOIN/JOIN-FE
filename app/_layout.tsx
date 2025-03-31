@@ -6,7 +6,6 @@ import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from '@/components/atoms/Toast/CustomToast';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import '../reanimatedConfig';
 import { GlobalProvider } from '@/context/GlobalContext';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -42,16 +41,14 @@ export default function RootLayout() {
     // <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GlobalProvider>
-        <BottomSheetModalProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-            <Stack.Screen name="(form)" options={{ headerShown: false }} />
-            <Stack.Screen name="(report)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </BottomSheetModalProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+          <Stack.Screen name="(form)" options={{ headerShown: false }} />
+          <Stack.Screen name="(report)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
         <Toast config={toastConfig} />
       </GlobalProvider>
     </GestureHandlerRootView>

@@ -4,12 +4,12 @@ import HomeHeader from '@/components/organisms/Headers/HomeHeader';
 import { SafeAreaView, View } from 'react-native';
 import MoreStudiesHeader from '@/components/organisms/Headers/MoreStudiesHeader';
 import studySections from '@/constants/StudySections';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 function ExploreLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
         <View style={{ flex: 1 }}>
           <HomeHeader />
           <Stack
@@ -31,8 +31,8 @@ function ExploreLayout() {
             />
           </Stack>
         </View>
-      </SafeAreaView>
-    </GestureHandlerRootView>
+      </BottomSheetModalProvider>
+    </SafeAreaView>
   );
 }
 

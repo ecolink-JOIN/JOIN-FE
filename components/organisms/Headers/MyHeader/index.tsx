@@ -31,7 +31,7 @@ const MyHeader: React.FC = () => {
   };
 
   const handleSearch = async () => {
-    router.push('/(tabs)/(home)/search');
+    router.push('/study/search');
   };
 
   return (

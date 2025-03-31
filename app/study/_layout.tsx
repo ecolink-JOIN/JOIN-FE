@@ -1,12 +1,15 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 import { View } from 'react-native';
+import { RecommendationProvider } from '@/context/Recommendation';
 
 function StudyLayout() {
   return (
-    <View style={{ flex: 1 }}>
-      <Stack screenOptions={{ headerShown: false }} />
-    </View>
+    <RecommendationProvider>
+      <View style={{ flex: 1 }}>
+        <Stack screenOptions={{ headerShown: false }} />
+      </View>
+    </RecommendationProvider>
   );
 }
 

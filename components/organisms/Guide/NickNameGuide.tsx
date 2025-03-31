@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
-import { Keyboard, View, TouchableWithoutFeedback, TextInput, Pressable } from 'react-native';
+import { Keyboard, View, TextInput, Pressable } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useForm, Controller } from 'react-hook-form';
 import Typography from '@/components/atoms/Typography';
 import ContentView from '@/components/atoms/View/ContentView';
