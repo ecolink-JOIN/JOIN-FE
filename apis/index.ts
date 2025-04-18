@@ -11,3 +11,5 @@ export { MyPageService } from './service/my-page';
 export { ReportService } from './service/report';
 export { BatchJobService } from './service/batch-job';
 export { ApplicationsService } from './service/applications';
+export { StudyEnrollmentsService } from './service/study-enrollments';
+export { WithdrawService } from './service/withdraw';

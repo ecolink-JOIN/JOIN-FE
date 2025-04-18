@@ -66,5 +66,13 @@ export const StudyService = () => {
     return req.data;
   };
 
-  return { detail, search, recommendation, popular, close, recruit, reRecruit };
+  /**
+   * 스터디 멤버 조회 - 인증 필수
+   * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/getStudyMembers
+   */
+  const getMember = async (studyToken: string) => {
+    const req = (await API.post(`${url}/${studyToken}/member`)) as StudyResponse.MemberResponse;
+    return req.data;
+  };
+  return { detail, search, recommendation, popular, close, recruit, reRecruit, getMember };
 };

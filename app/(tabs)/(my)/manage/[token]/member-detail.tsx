@@ -1,4 +1,4 @@
-import { ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { ManageView, shadowStyles, ManageBoxView } from '@/components/molecules/MyMolecules/ManageView';
@@ -9,76 +9,29 @@ import Button from '@/components/atoms/Button';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
 import Chip from '@/components/atoms/Badge';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
+import { StudyEnrollmentsService } from '@/apis';
+import { useQuery } from '@tanstack/react-query';
+import { useGlobalContext } from '@/context/GlobalContext';
 
-const RoundData = [
-  {
-    id: 1,
-    date: '2021.09.01',
-    attendence: '출석',
-    certify: true,
-  },
-  {
-    id: 2,
-    date: '2021.09.08',
-    attendence: '출석',
-    certify: true,
-  },
-  {
-    id: 3,
-    date: '2021.09.15',
-    attendence: '출석',
-    certify: true,
-  },
-  {
-    id: 4,
-    date: '2021.09.22',
-    attendence: '지각',
-    certify: true,
-  },
-  {
-    id: 5,
-    date: '2021.09.29',
-    attendence: '결석',
-    certify: true,
-  },
-  {
-    id: 6,
-    date: '2021.10.06',
-    attendence: '출석',
-    certify: true,
-  },
-  {
-    id: 7,
-    date: '2021.10.13',
-    attendence: '출석',
-    certify: true,
-  },
-  {
-    id: 8,
-    date: '2021.10.20',
-    attendence: '출석',
-    certify: true,
-  },
-  {
-    id: 9,
-    date: '2021.10.27',
-    attendence: '출석',
-    certify: false,
-  },
-  {
-    id: 10,
-    date: '2021.11.03',
-    attendence: '출석',
-    certify: true,
-  },
-];
 const MemberDetail = () => {
-  const params = useLocalSearchParams<{ userid: string }>();
+  const { userinfo } = useGlobalContext();
+  const { avartarToken, token } = useLocalSearchParams<{ avartarToken: string; token: string }>();
   const [isAttendenceModalVisible, setIsAttendenceModalVisible] = React.useState(false);
   const [isCertifyModalVisible, setIsCertifyModalVisible] = React.useState(false);
   const [isEntrustModalVisible, setIsEntrustModalVisible] = React.useState(false);
   const [onClickDate, setOnClickDate] = React.useState('');
   const [selectedChip, setSelectedChip] = React.useState(0);
+  const [isForcedOutModalVisible, setIsForcedOutModalVisible] = React.useState(false);
+  const [evaluationModalVisible, setEvaluationModalVisible] = React.useState(false);
+
+  const { data: memberDetail } = useQuery({
+    queryKey: ['member', avartarToken],
+    queryFn: () => StudyEnrollmentsService().getMemberDetail(avartarToken),
+  });
+  const { data: memberAttendance } = useQuery({
+    queryKey: ['memberAttendance', avartarToken],
+    queryFn: () => StudyEnrollmentsService().getMemberAttendance(token, avartarToken),
+  });
 
   const attendenceToggleModal = () => {
     setIsAttendenceModalVisible(!isAttendenceModalVisible);
@@ -91,56 +44,75 @@ const MemberDetail = () => {
   const entrustToggleModal = () => {
     setIsEntrustModalVisible(!isEntrustModalVisible);
   };
+
+  const forcedOutToggleModal = () => {
+    setIsForcedOutModalVisible(!isForcedOutModalVisible);
+  };
   return (
     <ScrollView>
       <ManageView>
         <Typography variant="heading3">스터디원 관리</Typography>
         <ManageBox style={[shadowStyles.shadow]}>
           <ProfileImage
-            source={require('@/assets/images/profile.png')}
+            source={{ uri: memberDetail?.profileUrl }}
             style={{ width: 80, height: 80, borderRadius: 100 }}
           />
           <Typography variant="heading4" style={{ marginVertical: 8 }}>
-            닉네임{params.userid}
+            {memberDetail?.nickname}
           </Typography>
           <InfoViewBox
+            center
             InfoList={[
-              { title: '출석률', value: '100%' },
-              { title: '인증률', value: '97%' },
+              { title: '출석률', value: `${memberDetail?.averageAttendanceRate}`, extraString: '%' },
+              { title: '인증률', value: `${memberDetail?.averageProofRate}`, extraString: '%' },
             ]}
           />
           <ContentBox>
-            {RoundData.map((item) => (
-              <RoundBox key={item.id}>
-                <RoundNumber variant="body3">{item.id}회차</RoundNumber>
-                <RoundDate variant="body3">{item.date}</RoundDate>
-                <RoundStatus
-                  variant="body3"
-                  status={item.attendence === '출석'}
-                  date
-                  onPress={() => {
-                    attendenceToggleModal();
-                    setOnClickDate(item.date);
-                  }}
-                >
-                  {item.attendence}
-                </RoundStatus>
-                <RoundStatus
-                  variant="body3"
-                  status={item.certify}
-                  onPress={() => {
-                    certifyToggleModal();
-                    setOnClickDate(item.date);
-                  }}
-                >
-                  {item.certify ? '인증' : '미인증'}
-                </RoundStatus>
-              </RoundBox>
-            ))}
+            {memberAttendance && memberAttendance.meetingAttendanceStatus.length > 0 ? (
+              memberAttendance?.meetingAttendanceStatus.map((item) => (
+                <RoundBox key={item.meetingNo}>
+                  <RoundNumber variant="body3">{item.meetingNo}회차</RoundNumber>
+                  <RoundDate variant="body3">
+                    {item.studyDate.getFullYear()}.{item.studyDate.getMonth()}.{item.studyDate.getDate()}
+                  </RoundDate>
+                  <RoundStatus
+                    variant="body3"
+                    status={item.attendanceStatus === 'PRESENT'}
+                    date
+                    onPress={() => {
+                      attendenceToggleModal();
+                      setOnClickDate(item.studyDate.toLocaleDateString());
+                    }}
+                  >
+                    {item.attendanceStatus === 'PRESENT'
+                      ? '출석'
+                      : item.attendanceStatus === 'LATENESS'
+                        ? '지각'
+                        : '결석'}
+                  </RoundStatus>
+                  <RoundStatus
+                    variant="body3"
+                    status={item.hasApproveProof}
+                    onPress={() => {
+                      certifyToggleModal();
+                      setOnClickDate(item.studyDate.toLocaleDateString());
+                    }}
+                  >
+                    {item.hasApproveProof ? '인증' : '미인증'}
+                  </RoundStatus>
+                </RoundBox>
+              ))
+            ) : (
+              <Typography variant="body3" style={{ textAlign: 'center' }}>
+                출석 내역이 없습니다.
+              </Typography>
+            )}
           </ContentBox>
           <ButtonBox>
             <Button variant="contained">평가하기</Button>
-            <Button variant="outlined">강퇴하기</Button>
+            <Button variant="outlined" onPress={() => setIsForcedOutModalVisible(true)}>
+              강퇴하기
+            </Button>
           </ButtonBox>
           <Chip variant="simple" value="스터디장 위임하기" onPress={entrustToggleModal} />
         </ManageBox>
@@ -206,12 +178,51 @@ const MemberDetail = () => {
         <ModalContents>
           <Typography variant="subtitle1">스터디장 위임하기</Typography>
           <Typography variant="body4" style={{ textAlign: 'center' }}>
-            닉네임{params.userid} 님에게 스터디장을 위임합니다.
+            {memberDetail?.nickname} 님에게 스터디장을 위임합니다.
           </Typography>
           <Typography variant="body4" style={{ textAlign: 'center' }}>
-            .이후 스터디장의 모든 권리는{'\n'}닉네임{params.userid} 님에게 위임됩니다.
+            스터디장 위임은 1회만 가능하며,{'\n'}위임 후 재위임은 불가하므로 위임을 원하는{'\n'}스터디원과의 충분한
+            논의를 통해{'\n'}위임을 진행해주세요.
           </Typography>
-          <Button variant="contained" onPress={entrustToggleModal} style={{ marginHorizontal: 'auto' }}>
+          <Typography variant="body4" style={{ textAlign: 'center' }}>
+            {userinfo.nickname} 님이 스터디장 위임 승인 시{'\n'}이후 스터디장의 모든 권리는{'\n'}
+            {memberDetail?.nickname} 님에게 위임됩니다.
+          </Typography>
+          <Button
+            variant="contained"
+            style={{ marginHorizontal: 'auto' }}
+            onPress={() => {
+              StudyEnrollmentsService()
+                .delegateStudy(token, avartarToken)
+                .finally(() => {
+                  entrustToggleModal();
+                });
+            }}
+          >
+            확인
+          </Button>
+        </ModalContents>
+      </ModalWrapper>
+      <ModalWrapper isModalVisible={isForcedOutModalVisible} toggleModal={forcedOutToggleModal}>
+        <ModalContents>
+          <Typography variant="subtitle1">강퇴하기</Typography>
+          <Typography variant="body4" style={{ textAlign: 'center' }}>
+            {memberDetail?.nickname} 님을 강퇴하시겠습니까?
+          </Typography>
+          <Typography variant="body4" style={{ textAlign: 'center' }}>
+            강퇴 후 스터디원은{'\n'}스터디에 참여할 수 없습니다.
+          </Typography>
+          <Button
+            variant="contained"
+            style={{ marginHorizontal: 'auto' }}
+            onPress={() => {
+              StudyEnrollmentsService()
+                .forcedOut(token, avartarToken)
+                .finally(() => {
+                  forcedOutToggleModal();
+                });
+            }}
+          >
             확인
           </Button>
         </ModalContents>

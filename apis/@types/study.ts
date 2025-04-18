@@ -45,6 +45,16 @@ declare namespace StudyResponse {
   export interface Popular extends Shared.HttpResponse {
     data: StudyInfo[];
   }
+
+  export interface MemberResponse extends Shared.HttpResponse {
+    data: Member[];
+  }
+
+  export interface Member {
+    avatarToken: string;
+    role: string;
+    nickname: string;
+  }
 }
 
 declare namespace StudyRequest {

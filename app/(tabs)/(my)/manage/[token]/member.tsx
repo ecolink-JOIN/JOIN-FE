@@ -6,68 +6,15 @@ import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import { styled } from 'styled-components/native';
 import Icon from '@/components/atoms/Icon';
+import { useQuery } from '@tanstack/react-query';
+import { StudyEnrollmentsService } from '@/apis/service/study-enrollments';
 
 const Member = () => {
-  const { id } = useLocalSearchParams();
-
-  const memebers = [
-    {
-      id: 1,
-      nickname: '닉네임1',
-      profile: require('@/assets/images/profile.png'),
-      attendance: '98%',
-      certify: '100%',
-      fine: 5000,
-    },
-    {
-      id: 2,
-      nickname: '닉네임2',
-      profile: require('@/assets/images/profile.png'),
-      attendance: '98%',
-      certify: '100%',
-      fine: 5000,
-    },
-    {
-      id: 3,
-      nickname: '닉네임3',
-      profile: require('@/assets/images/profile.png'),
-      attendance: '98%',
-      certify: '100%',
-      fine: 5000,
-    },
-    {
-      id: 4,
-      nickname: '닉네임4',
-      profile: require('@/assets/images/profile.png'),
-      attendance: '98%',
-      certify: '100%',
-      fine: 5000,
-    },
-    {
-      id: 5,
-      nickname: '닉네임5',
-      profile: require('@/assets/images/profile.png'),
-      attendance: '98%',
-      certify: '100%',
-      fine: 5000,
-    },
-    {
-      id: 6,
-      nickname: '닉네임6',
-      profile: require('@/assets/images/profile.png'),
-      attendance: '98%',
-      certify: '100%',
-      fine: 5000,
-    },
-    {
-      id: 7,
-      nickname: '닉네임7',
-      profile: require('@/assets/images/profile.png'),
-      attendance: '98%',
-      certify: '100%',
-      fine: 5000,
-    },
-  ];
+  const { token } = useLocalSearchParams<{ token: string }>();
+  const { data } = useQuery({
+    queryKey: ['study', token],
+    queryFn: () => StudyEnrollmentsService().getStudyEnrollments(token),
+  });
 
   return (
     <ScrollView>
@@ -84,34 +31,37 @@ const Member = () => {
           >
             스터디 출석 및 인증 현황
           </Typography>
-          {memebers.map((member, index) => {
-            return (
-              <ContentsWrapper
-                key={index}
-                onPress={() => router.push(`/manage/${id}/member-detail?userid=${member.id}` as Href)}
-              >
-                <ContentViewTop>
-                  <ProfileImage source={member.profile} style={{ width: 28, height: 28, borderRadius: 100 }} />
-                  <Typography variant="body3">{member.nickname}</Typography>
-                  <Icon name="arrow-right" stroke={colors.gray[7]} style={{ marginLeft: 'auto' }} />
-                </ContentViewTop>
-                <ContentViewBottom>
-                  <Typography variant="body3" style={{ color: colors.gray[9] }}>
-                    출석 {member.attendance}
-                  </Typography>
-                  <Typography variant="body3" style={{ color: colors.gray[9] }}>
-                    인증 {member.certify}
-                  </Typography>
-                  <Typography variant="body3" style={{ color: colors.gray[9] }}>
-                    벌금 {member.fine}원
-                  </Typography>
-                </ContentViewBottom>
-              </ContentsWrapper>
-            );
-          })}
+          {data &&
+            data.map((member, index) => {
+              return (
+                <ContentsWrapper
+                  key={index}
+                  onPress={() =>
+                    router.push(`/manage/${token}/member-detail?avartarToken=${member.memberToken}` as Href)
+                  }
+                >
+                  <ContentViewTop>
+                    {/* <ProfileImage source={member} style={{ width: 28, height: 28, borderRadius: 100 }} /> */}
+                    <Typography variant="body3">{member.nickname}</Typography>
+                    <Icon name="arrow-right" stroke={colors.gray[7]} style={{ marginLeft: 'auto' }} />
+                  </ContentViewTop>
+                  <ContentViewBottom>
+                    <Typography variant="body3" style={{ color: colors.gray[9] }}>
+                      출석 {member.attendanceRate}%
+                    </Typography>
+                    <Typography variant="body3" style={{ color: colors.gray[9] }}>
+                      인증 {member.proofRate}%
+                    </Typography>
+                    <Typography variant="body3" style={{ color: colors.gray[9] }}>
+                      벌금 {member.totalFine.toLocaleString()}원
+                    </Typography>
+                  </ContentViewBottom>
+                </ContentsWrapper>
+              );
+            })}
         </ManageBoxView>
         <ManageBox style={shadowStyles.shadow}>
-          <ListComponent title="탈퇴 요청 승인" href={`/manage/${id}/withdrawal`} />
+          <ListComponent title="탈퇴 요청 승인" href={`/manage/${token}/withdrawal`} />
         </ManageBox>
       </ManageView>
     </ScrollView>

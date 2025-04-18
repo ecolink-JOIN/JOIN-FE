@@ -1,4 +1,4 @@
-import { Alert, TextInput, View } from 'react-native';
+import { Alert, TextInput, View, Image } from 'react-native';
 import React from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ManageBox, ManageView } from '@/components/molecules/MyMolecules/ManageView';
@@ -47,10 +47,7 @@ const RecruitingMemb = () => {
         <Typography variant="heading3">스터디 신청자 확인</Typography>
         <ManageBox>
           <View style={{ padding: 20, alignItems: 'center' }}>
-            {/* <Image
-            source={{ uri: getmember.profileImageUrl }}
-            style={{ width: 80, height: 80, borderRadius: 40 }}
-          /> */}
+            <Image source={{ uri: getmember.image }} style={{ width: 80, height: 80, borderRadius: 40 }} />
             <View style={{ height: 10 }} />
             <Typography variant="heading4" style={{ color: colors.black }}>
               {getmember.nickname}
@@ -64,7 +61,7 @@ const RecruitingMemb = () => {
                 개수
               </Typography>
               <Typography variant="body3" style={{ color: colors.primary, marginLeft: 4 }}>
-                1
+                {getmember.activeStudyStats.studyCount}
               </Typography>
             </View>
             <View style={{ height: 16 }} />
@@ -106,7 +103,7 @@ const RecruitingMemb = () => {
                 개수
               </Typography>
               <Typography variant="body3" style={{ color: colors.primary, marginLeft: 4 }}>
-                1
+                {getmember.completedStudyStats.studyCount}
               </Typography>
             </View>
             <View style={{ height: 16 }} />

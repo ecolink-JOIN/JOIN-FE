@@ -7,7 +7,8 @@ import { colors } from '@/theme';
 import styled from 'styled-components/native';
 import Button from '@/components/atoms/Button';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
-
+import { WithdrawService } from '@/apis';
+import { useQuery } from '@tanstack/react-query';
 const users = [
   {
     id: 1,
@@ -42,9 +43,14 @@ const users = [
 ];
 
 const WidthDrawal = () => {
-  const { id } = useLocalSearchParams();
+  const { token } = useLocalSearchParams<{ token: string }>();
   const [isApproveModalVisible, setIsApproveModalVisible] = React.useState(false);
   const [isWithdrawModalVisible, setIsWithdrawModalVisible] = React.useState(false);
+  const [selectedWithdrawId, setSelectedWithdrawId] = React.useState<number | null>(null);
+  const { data: requestList, refetch } = useQuery({
+    queryKey: ['requestList', token],
+    queryFn: () => WithdrawService().getRequest(token),
+  });
 
   const approveToggleModal = () => {
     setIsApproveModalVisible(!isApproveModalVisible);
@@ -69,17 +75,23 @@ const WidthDrawal = () => {
             탈퇴 요청한 계정
           </Typography>
           <ContentsWrapper>
-            {users.map((user) => (
-              <Contents key={user.id}>
-                <ProfileImage source={user.profile} style={{ width: 28, height: 28, borderRadius: 100 }} />
-                <Typography variant="body3">{user.name}</Typography>
-                <ApproveButton onPress={withdrawToggleModal}>
-                  <Typography variant="body3" style={{ color: colors.primary }}>
-                    탈퇴 승인
-                  </Typography>
-                </ApproveButton>
-              </Contents>
-            ))}
+            {requestList && requestList.length > 0 ? (
+              requestList.map((user) => (
+                <Contents key={user.withdrawId}>
+                  {/* <ProfileImage source={{ uri: user.profileUrl }} style={{ width: 28, height: 28, borderRadius: 100 }} /> */}
+                  <Typography variant="body3">{user.nickname}</Typography>
+                  <ApproveButton onPress={() => setSelectedWithdrawId(user.withdrawId)}>
+                    <Typography variant="body3" style={{ color: colors.primary }}>
+                      탈퇴 승인
+                    </Typography>
+                  </ApproveButton>
+                </Contents>
+              ))
+            ) : (
+              <Typography variant="body3" style={{ color: colors.gray[9] }}>
+                탈퇴 요청한 계정이 없습니다.
+              </Typography>
+            )}
           </ContentsWrapper>
         </ManageBoxView>
       </ManageView>
@@ -95,7 +107,7 @@ const WidthDrawal = () => {
           </Button>
         </ModalContents>
       </ModalWrapper>
-      <ModalWrapper isModalVisible={isWithdrawModalVisible} toggleModal={withdrawToggleModal}>
+      <ModalWrapper isModalVisible={selectedWithdrawId !== null} toggleModal={withdrawToggleModal}>
         <ModalContents>
           <Typography variant="subtitle1" style={{ width: 150, height: 28 }}>
             스터디원 탈퇴 승인
@@ -103,7 +115,19 @@ const WidthDrawal = () => {
           <Typography variant="body4" style={{ textAlign: 'center' }}>
             해당 스터디원의 탈퇴를 승인합니다.{'\n'}‘확인'을 누르면 스터디에서 탈퇴처리됩니다.
           </Typography>
-          <Button variant="contained" onPress={withdrawToggleModal} style={{ marginHorizontal: 'auto' }}>
+          <Button
+            variant="contained"
+            onPress={() =>
+              WithdrawService()
+                .approveWithdraw(token, selectedWithdrawId!)
+                .finally(() => {
+                  setSelectedWithdrawId(null);
+                  setIsWithdrawModalVisible(false);
+                  refetch();
+                })
+            }
+            style={{ marginHorizontal: 'auto' }}
+          >
             확인
           </Button>
         </ModalContents>

@@ -9,8 +9,8 @@ import { Href, router } from 'expo-router';
 import { MyPageService } from '@/apis';
 export interface InfoProps {
   title: string;
-  value: number;
-  extraString: string;
+  value: number | string;
+  extraString?: string;
 }
 const FormalInfo = () => {
   const [infoList, setInfoList] = useState<InfoProps[]>([]);
