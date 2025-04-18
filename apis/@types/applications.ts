@@ -6,6 +6,9 @@ declare namespace ApplicationsResponse {
   export interface GetApplicationsResult {
     applicationId: number;
     nickname: string;
+    image: {
+      url: string;
+    };
     applicationStatus: '승인 대기중' | '승인 완료' | '거절 완료';
     introduction: string;
     activeStudyStats: StudyStats;
@@ -26,7 +29,7 @@ declare namespace ApplicationsRequest {
     studyToken: string;
   }
   export interface Reject {
-    rejectReason: string;
+    rejectReason: 'ATTENDANCE' | 'AUTHENTICATION' | 'RATING' | 'STUDY_COUNT' | 'OTHER';
     otherReason: string;
   }
 }

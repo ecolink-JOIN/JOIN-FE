@@ -44,6 +44,7 @@ const TabScreen = ({ menus, initTabIndex = 0, contents }: Props) => {
         {contents.map((content, index) => (
           <ScrollView
             key={index}
+            scrollEnabled={false}
             style={{
               width: windowWidth,
               padding: 20,

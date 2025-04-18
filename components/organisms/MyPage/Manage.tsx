@@ -448,8 +448,7 @@ export const ApplicationApproval = () => {
           }
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            {/* TODO: 프로필 이미지 필요 */}
-            {/* <Image source={member.} style={{ width: 24, height: 24 }} /> */}
+            <Image source={{ uri: member.image.url }} style={{ width: 24, height: 24, borderRadius: 12 }} />
             <Typography variant="body3" style={{ color: colors.gray[9] }}>
               {member.nickname}
             </Typography>

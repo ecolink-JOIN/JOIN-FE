@@ -8,7 +8,7 @@ const Index = () => {
 
   useEffect(() => {
     // TODO: 안드로이드용 토큰 저장
-    TokenStorage.setToken('9e5fc560-a97b-470d-9d66-04a757dfcc45');
+    TokenStorage.setToken('a47312c4-8c3b-4674-a0f4-3a36f6c70420');
     TokenStorage.getToken().then((token) => {
       if (token == null) {
         return router.replace('/(auth)');
