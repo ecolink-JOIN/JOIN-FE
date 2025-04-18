@@ -76,13 +76,7 @@ const SearchScreen = () => {
   const [searchText, setSearchText] = useState('');
   const [submitText, setSubmitText] = useState('');
   const [results, setResults] = useState<StudyResponse.StudyInfo[]>([]);
-  const [recentSearches, setRecentSearches] = useState<string[]>([
-    'Example 1',
-    'Example 2',
-    'Example 3',
-    'Example 4',
-    'Example 5',
-  ]);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
   useEffect(() => {
     if (searchText.length === 0) {
@@ -94,12 +88,17 @@ const SearchScreen = () => {
   useEffect(() => {
     if (submitText.length > 0) {
       StudyService()
-        .search(submitText, 1, 10)
+        .search({
+          keyword: submitText,
+          pageNumber: 1,
+          pageSize: 10,
+          ...searchData,
+        })
         .then((res) => {
           setResults(res.content);
         });
     }
-  }, [submitText]);
+  }, [submitText, searchData]);
 
   const renderItem = ({ item }: { item: string }) => (
     <RecentSearchItem onPress={() => handleRecentSearch(item)}>
@@ -157,9 +156,11 @@ const SearchScreen = () => {
           )}
         </SearchInputContainer>
       </HeaderContainer>
-
       {submitText.length === 0 ? (
         <View style={{ paddingHorizontal: 20 }}>
+          <View style={{ alignItems: 'flex-end' }}>
+            <FilterBottomSheet {...{ searchData, setSearchData }} />
+          </View>
           <RecentSearchContainer>
             <Typography variant="subtitle2">최근 검색</Typography>
             <DeleteButton onPress={handleDeleteAll}>

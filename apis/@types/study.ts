@@ -93,6 +93,12 @@ declare namespace StudyRequest {
     otherReason: string;
   }
 
+  export interface Search extends Recommendation {
+    keyword: string;
+    pageNumber: number;
+    pageSize: number;
+  }
+
   export interface Recommendation {
     category?: SharedStudy.Category;
     form?: SharedStudy.Form;

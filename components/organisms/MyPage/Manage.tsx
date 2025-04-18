@@ -439,6 +439,7 @@ export const ApplicationApproval = () => {
       {applicationList.map((member, index) => (
         <Pressable
           key={index}
+          disabled={member.applicationStatus === '승인 완료' || member.applicationStatus === '거절 완료'}
           style={{ flexDirection: 'row', paddingVertical: 8, alignItems: 'center', justifyContent: 'space-between' }}
           onPress={() =>
             router.push({
@@ -466,7 +467,9 @@ export const ApplicationApproval = () => {
             >
               {member.applicationStatus}
             </Typography>
-            <Icon name="arrow-right-outline" width={24} height={24} stroke={colors.gray[7]} />
+            {member.applicationStatus === '승인 대기중' && (
+              <Icon name="arrow-right-outline" width={24} height={24} stroke={colors.gray[7]} />
+            )}
           </View>
         </Pressable>
       ))}
