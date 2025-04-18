@@ -55,6 +55,31 @@ declare namespace StudyResponse {
     role: string;
     nickname: string;
   }
+
+  export interface GetRule extends Shared.HttpResponse {
+    data: Rule;
+  }
+  export interface Rule {
+    startDate: string;
+    endDate: string;
+    schedules: StudyRequest.Schedule[];
+    form: SharedStudy.Form;
+    ruleExp: string;
+    rules: string;
+    fineReasonAmounts: FineReasonAmounts;
+  }
+
+  export interface FineReasonAmounts {
+    tardiness: number;
+    absence: number;
+    nonProof: number;
+  }
+
+  export interface Schedule {
+    weekOfDay: SharedStudy.PossibleDays;
+    stTime: string;
+    endTime: string;
+  }
 }
 
 declare namespace StudyRequest {
@@ -132,6 +157,35 @@ declare namespace StudyRequest {
     weekOfDay: SharedStudy.PossibleDays;
     stTime: string;
     endTime: string;
+  }
+
+  export interface PatchRules {
+    startDate?: Date;
+    endDate?: Date;
+    schedules?: PatchSchedule[];
+    form?: SharedStudy.Form;
+    ruleExp?: string;
+    rules?: string[];
+    fine?: Fine;
+  }
+
+  export interface Fine {
+    isFineEnabled?: boolean;
+    tardiness?: number;
+    absence?: number;
+    nonProof?: number;
+  }
+
+  export interface Form {
+    form?: SharedStudy.Form;
+    province?: string;
+    city?: string;
+  }
+
+  export interface PatchSchedule {
+    weekOfDay?: SharedStudy.PossibleDays;
+    stTime?: string;
+    endTime?: string;
   }
 }
 interface Popular extends Shared.Pagenation {

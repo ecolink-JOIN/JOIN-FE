@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocalSearchParams, router, Href } from 'expo-router';
 import { ManageView, ManageBoxView, shadowStyles } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
@@ -15,18 +15,23 @@ import Icon from '@/components/atoms/Icon';
 import { Radio } from '@/components/atoms/Radio';
 import { Switch } from '@/components/atoms/Switch';
 import Toast from 'react-native-toast-message';
-import { MeetingLocation } from '@/components/molecules/FormControl/RecruitBase';
+import { useQuery } from '@tanstack/react-query';
+import { StudyService } from '@/apis';
 
 const Rule = ({
-  id,
+  token,
   bottomSheetModalRef,
 }: {
-  id: string | string[] | undefined;
+  token: string | string[] | undefined;
   bottomSheetModalRef: React.RefObject<BottomSheetModalMethods>;
 }) => {
   const [value, setvalue] = React.useState('');
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [online, setOnline] = useState(true);
+  const { data } = useQuery({
+    queryKey: ['rule', token],
+    queryFn: () => StudyService().getRules(token as string),
+  });
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
@@ -45,11 +50,43 @@ const Rule = ({
     });
   };
 
+  useEffect(() => {
+    if (data?.form === 'ONLINE') {
+      setOnline(true);
+    } else {
+      setOnline(false);
+    }
+  }, [data]);
+
+  const FineList = [
+    {
+      title: '지각',
+      price: data?.fineReasonAmounts.tardiness,
+    },
+    {
+      title: '결석',
+      price: data?.fineReasonAmounts.absence,
+    },
+    {
+      title: '미인증',
+      price: data?.fineReasonAmounts.nonProof,
+    },
+  ];
+  const WeekofDay = {
+    MON: '월요일',
+    TUE: '화요일',
+    WED: '수요일',
+    THU: '목요일',
+    FRI: '금요일',
+    SAT: '토요일',
+    SUN: '일요일',
+  };
+
   return (
     <ManageView>
       <Typography variant="heading3">운영 규칙 관리</Typography>
       <ManageBoxView style={[shadowStyles.shadow]}>
-        <BoxTitle onPress={() => router.push(`manage/${id}/study-schedule` as Href)}>
+        <BoxTitle onPress={() => router.push(`manage/${token}/study-schedule` as Href)}>
           <Typography
             variant="body3"
             style={{
@@ -63,27 +100,21 @@ const Rule = ({
         <BoxTitle>
           <Typography variant="button">스터디 기간</Typography>
           <Typography variant="button" style={{ color: colors.gray[8] }}>
-            2024.06.04 - 2024.10.31
+            {data?.startDate} - {data?.endDate}
           </Typography>
         </BoxTitle>
         <Contents>
           <Typography variant="body3">진행 요일 및 시간</Typography>
-          <Content>
-            <Typography variant="button" style={{ color: colors.gray[8] }}>
-              화요일
-            </Typography>
-            <Typography variant="button" style={{ color: colors.gray[8] }}>
-              20:00 - 22:00
-            </Typography>
-          </Content>
-          <Content>
-            <Typography variant="button" style={{ color: colors.gray[8] }}>
-              화요일
-            </Typography>
-            <Typography variant="button" style={{ color: colors.gray[8] }}>
-              20:00 - 22:00
-            </Typography>
-          </Content>
+          {data?.schedules?.map((schedule) => (
+            <Content key={schedule.endTime + schedule.weekOfDay}>
+              <Typography variant="button" style={{ color: colors.gray[8] }}>
+                {WeekofDay[schedule.weekOfDay]}
+              </Typography>
+              <Typography variant="button" style={{ color: colors.gray[8] }}>
+                {schedule.stTime} - {schedule.endTime}
+              </Typography>
+            </Content>
+          ))}
         </Contents>
       </ManageBoxView>
       <Box style={[shadowStyles.shadow]}>
@@ -106,7 +137,14 @@ const Rule = ({
             </Typography>
           </RadioBox>
         </RadioGroup>
-        {!online && <MeetingLocation />}
+        {/* {!online && (
+          <MeetingLocation
+            province={data?.data.form.province}
+            setProvince={() => {}}
+            state={data?.data.form.city}
+            setState={() => {}}
+          />
+        )} */}
       </Box>
       <ManageBoxView style={[shadowStyles.shadow]}>
         <View style={{ borderBottomColor: colors.gray[2], borderBottomWidth: 2, padding: 20, gap: 10 }}>
@@ -124,12 +162,12 @@ const Rule = ({
               color: colors.gray[9],
             }}
           >
-            스터디 시작 시간 전후 10분 (총 20분간) 출석 가능
+            {data?.ruleExp}
           </Typography>
         </View>
         <BoxContents>
           <Typography variant="body3">벌금</Typography>
-          <Switch value={true} />
+          <Switch value={data?.rules.includes('FINE')} />
         </BoxContents>
         {FineList.map((item, index) => (
           <BoxContents key={index} onPress={toggleBottomSheet}>
@@ -142,7 +180,7 @@ const Rule = ({
             <Icon name="arrow-right-outline" stroke={colors.gray[7]} />
           </BoxContents>
         ))}
-        <BoxBottom onPress={() => router.push(`manage/${id}/rule-edit` as Href)}>
+        <BoxBottom onPress={() => router.push(`manage/${token}/rule-edit?ruleExp=${data?.ruleExp}` as Href)}>
           <Typography variant="button">규칙 안내 메세지 수정</Typography>
           <Icon name="arrow-right" />
         </BoxBottom>
@@ -204,9 +242,9 @@ const Rule = ({
 };
 
 const RuleWrapper = () => {
-  const { id } = useLocalSearchParams();
+  const { token } = useLocalSearchParams();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  return <FlatList data={[null]} renderItem={() => <Rule {...{ id, bottomSheetModalRef }} />} />;
+  return <FlatList data={[null]} renderItem={() => <Rule {...{ token, bottomSheetModalRef }} />} />;
 };
 
 export default RuleWrapper;
@@ -269,18 +307,3 @@ const RadioBox = styled.Pressable`
   align-items: center;
   gap: 8px;
 `;
-
-const FineList = [
-  {
-    title: '지각',
-    price: '1,000원',
-  },
-  {
-    title: '결석',
-    price: '2,000원',
-  },
-  {
-    title: '미인증',
-    price: '500원',
-  },
-];
