@@ -35,8 +35,11 @@ const ManageList: FC<ManageListProps> = ({
         <ListView
           key={idx}
           onPress={() => {
-            console.log(list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`);
-            router.push((list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`) as Href);
+            if (list.href.includes('progress')) {
+              router.push((list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`) as Href);
+            } else {
+              router.push(list.href.replace('[token]', studyToken.toString()) as Href);
+            }
           }}
           last={idx === studyLinks.length - 1}
         >

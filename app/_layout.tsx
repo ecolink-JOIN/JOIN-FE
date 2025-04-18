@@ -8,13 +8,17 @@ import Toast from 'react-native-toast-message';
 import { toastConfig } from '@/components/atoms/Toast/CustomToast';
 import '../reanimatedConfig';
 import { GlobalProvider } from '@/context/GlobalContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useReactQueryDevTools } from '@dev-plugins/react-query';
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
+const queryClient = new QueryClient();
 export const unstable_settings = {
   initialRouteName: '(tabs)/',
 };
 export default function RootLayout() {
+  useReactQueryDevTools(queryClient);
   const [loaded] = useFonts({
     'Pretendard-Black': require('@/assets/fonts/Pretendard-Black.ttf'),
     'Pretendard-Bold': require('@/assets/fonts/Pretendard-Bold.ttf'),
@@ -40,17 +44,19 @@ export default function RootLayout() {
   return (
     // <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <GlobalProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-          <Stack.Screen name="(form)" options={{ headerShown: false }} />
-          <Stack.Screen name="(report)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <Toast config={toastConfig} />
-      </GlobalProvider>
+      <QueryClientProvider client={queryClient}>
+        <GlobalProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+            <Stack.Screen name="(form)" options={{ headerShown: false }} />
+            <Stack.Screen name="(report)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <Toast config={toastConfig} />
+        </GlobalProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
     // </ThemeProvider>
   );
