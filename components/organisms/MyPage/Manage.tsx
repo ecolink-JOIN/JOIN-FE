@@ -449,7 +449,7 @@ export const ApplicationApproval = () => {
           }
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Image source={{ uri: member.image.url }} style={{ width: 24, height: 24, borderRadius: 12 }} />
+            <Image source={{ uri: member.profileImage.url }} style={{ width: 24, height: 24, borderRadius: 12 }} />
             <Typography variant="body3" style={{ color: colors.gray[9] }}>
               {member.nickname}
             </Typography>

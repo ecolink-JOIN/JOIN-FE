@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useLocalSearchParams, router, Href } from 'expo-router';
+import { useLocalSearchParams, router, Href, RelativePathString } from 'expo-router';
 import { ManageView, ManageBoxView, shadowStyles } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import { FlatList, View } from 'react-native';
@@ -86,7 +86,14 @@ const Rule = ({
     <ManageView>
       <Typography variant="heading3">운영 규칙 관리</Typography>
       <ManageBoxView style={[shadowStyles.shadow]}>
-        <BoxTitle onPress={() => router.push(`manage/${token}/study-schedule` as Href)}>
+        <BoxTitle
+          onPress={() =>
+            router.push({
+              pathname: `manage/${token}/study-schedule` as RelativePathString,
+              params: { schedules: JSON.stringify(data?.schedules) },
+            })
+          }
+        >
           <Typography
             variant="body3"
             style={{

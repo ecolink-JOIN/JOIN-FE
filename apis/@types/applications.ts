@@ -7,6 +7,9 @@ declare namespace ApplicationsResponse {
     applicationId: number;
     nickname: string;
     image: string;
+    profileImage: {
+      url: string;
+    };
     applicationStatus: '승인 대기중' | '승인 완료' | '거절 완료';
     introduction: string;
     activeStudyStats: StudyStats;

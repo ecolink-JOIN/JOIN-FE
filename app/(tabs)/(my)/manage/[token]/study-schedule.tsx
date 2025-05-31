@@ -15,6 +15,15 @@ import { Dayjs } from 'dayjs';
 import Toast from 'react-native-toast-message';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
 
+const WeekofDay = {
+  MON: '월요일',
+  TUE: '화요일',
+  WED: '수요일',
+  THU: '목요일',
+  FRI: '금요일',
+  SAT: '토요일',
+  SUN: '일요일',
+};
 const StudySchedule = ({
   id,
   bottomSheetModalRef,
@@ -22,12 +31,13 @@ const StudySchedule = ({
   id: string | string[] | undefined;
   bottomSheetModalRef: React.RefObject<BottomSheetModalMethods>;
 }) => {
+  const { schedules } = useLocalSearchParams();
+  const getSchedules = JSON.parse(schedules as string) as StudyRequest.Schedule[];
   const [duration, setDuration] = useState<{ startDate: DateType; endDate: DateType }>({
     startDate: new Date(),
     endDate: new Date(),
   });
   const [is30day, setIs30day] = useState<boolean>(false);
-
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
@@ -94,14 +104,14 @@ const StudySchedule = ({
             진행 요일 및 시간
           </Typography>
         </BoxTitle>
-        {dayAndTime.map((item, index) => (
+        {getSchedules.map((item, index) => (
           <View key={index}>
             <BoxTitle onPress={toggleModal}>
               <Typography variant="button" style={{ color: colors.black }}>
-                {item.day}요일
+                {WeekofDay[item.weekOfDay]}
               </Typography>
               <Typography variant="button" style={{ color: colors.gray[9], marginLeft: 'auto', marginRight: 8 }}>
-                {item.time}
+                {item.stTime} - {item.endTime}
               </Typography>
               <Icon name="arrow-right" />
             </BoxTitle>
