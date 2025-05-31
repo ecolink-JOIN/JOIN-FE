@@ -1,19 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ManageView, ManageBoxView, shadowStyles } from '@/components/molecules/MyMolecules/ManageView';
-import { FlatList, Pressable, View } from 'react-native';
+import { FlatList, View, TouchableOpacity, ScrollView } from 'react-native';
 import Typography from '@/components/atoms/Typography';
 import Icon from '@/components/atoms/Icon';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
-import { Href, router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, RelativePathString } from 'expo-router';
 import Button from '@/components/atoms/Button';
 import BottomSheetComp from '@/components/molecules/BottomSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import DateTimePicker, { DateType } from 'react-native-ui-datepicker';
-import { Dayjs } from 'dayjs';
+// Dayjs import 제거
 import Toast from 'react-native-toast-message';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
+import { StudyService } from '@/apis';
 
 const WeekofDay = {
   MON: '월요일',
@@ -24,6 +25,88 @@ const WeekofDay = {
   SAT: '토요일',
   SUN: '일요일',
 };
+
+// 요일 선택을 위한 옵션
+const dayOptions = Object.entries(WeekofDay).map(([key, value]) => ({
+  label: value,
+  value: key as SharedStudy.PossibleDays,
+}));
+
+// 요일 선택용 SelectBox 컴포넌트
+const SelectBox = ({
+  options,
+  value,
+  onChange,
+}: {
+  options: { label: string; value: string }[];
+  value: string;
+  onChange: (value: string) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find((option) => option.value === value);
+
+  return (
+    <View style={{ position: 'relative', width: '100%' }}>
+      <TouchableOpacity
+        style={{
+          backgroundColor: colors.gray[2],
+          padding: 10,
+          borderRadius: 4,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          height: 40,
+        }}
+        onPress={() => setIsOpen(!isOpen)}
+      >
+        <Typography variant="body2">{selectedOption?.label || '요일 선택'}</Typography>
+        <Icon name="chevron-down" />
+      </TouchableOpacity>
+
+      {isOpen && (
+        <View
+          style={{
+            position: 'absolute',
+            top: 45,
+            left: 0,
+            right: 0,
+            backgroundColor: colors.white,
+            borderRadius: 4,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
+            zIndex: 100,
+          }}
+        >
+          <ScrollView style={{ maxHeight: 200 }}>
+            {options.map((option) => (
+              <TouchableOpacity
+                key={option.value}
+                style={{ padding: 12 }}
+                onPress={() => {
+                  onChange(option.value);
+                  setIsOpen(false);
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  style={{
+                    color: option.value === value ? colors.primary : colors.black,
+                  }}
+                >
+                  {option.label}
+                </Typography>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+    </View>
+  );
+};
+
 const StudySchedule = ({
   id,
   bottomSheetModalRef,
@@ -31,16 +114,93 @@ const StudySchedule = ({
   id: string | string[] | undefined;
   bottomSheetModalRef: React.RefObject<BottomSheetModalMethods>;
 }) => {
-  const { schedules } = useLocalSearchParams();
-  const getSchedules = JSON.parse(schedules as string) as StudyRequest.Schedule[];
+  const { schedules, stDate, endDate, token } = useLocalSearchParams();
+  // 안전하게 스케줄 초기화 - JSON.parse가 실패할 경우 빈 배열 사용
+  const getSchedules = () => {
+    try {
+      return schedules ? (JSON.parse(schedules as string) as StudyRequest.Schedule[]) : [];
+    } catch (e) {
+      console.error('스케줄 데이터 파싱 오류:', e);
+      return [];
+    }
+  };
+
+  const [schedulesData, setSchedulesData] = useState<StudyRequest.Schedule[]>(getSchedules());
+  // 기본 날짜 설정 함수
+  const getInitialDate = (dateStr: string | string[] | undefined): DateType => {
+    if (!dateStr) return new Date();
+    try {
+      const date = new Date(dateStr as string);
+      return !isNaN(date.getTime()) ? date : new Date();
+    } catch (e) {
+      console.error('날짜 초기화 오류:', e);
+      return new Date();
+    }
+  };
+
   const [duration, setDuration] = useState<{ startDate: DateType; endDate: DateType }>({
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: getInitialDate(stDate),
+    endDate: getInitialDate(endDate),
   });
   const [is30day, setIs30day] = useState<boolean>(false);
+
+  // 현재 선택된 스케줄을 관리 (편집 또는 새로 추가)
+  const [selectedSchedule, setSelectedSchedule] = useState<StudyRequest.Schedule>({
+    weekOfDay: 'MON',
+    stTime: '09:00',
+    endTime: '10:00',
+  });
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+
+  // 스터디 스케줄과 기간 정보를 안전하게 초기화
+  useEffect(() => {
+    // 1. 스케줄 데이터 초기화
+    if (schedules) {
+      try {
+        const parsedSchedules = JSON.parse(schedules as string) as StudyRequest.Schedule[];
+        if (Array.isArray(parsedSchedules) && parsedSchedules.length > 0) {
+          setSchedulesData(parsedSchedules);
+        }
+      } catch (e) {
+        console.error('스케줄 데이터 파싱 오류:', e);
+        // 빈 배열로 초기화
+        setSchedulesData([]);
+      }
+    }
+
+    // 2. 스터디 기간 초기화
+    if (stDate && endDate) {
+      try {
+        const start = new Date(stDate as string);
+        const end = new Date(endDate as string);
+
+        // 날짜가 유효한지 확인
+        if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+          // 상태 업데이트
+          setDuration({ startDate: start, endDate: end });
+
+          // 30일 이상 여부 체크
+          const diff = end.getTime() - start.getTime();
+          const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+
+          if (diff >= thirtyDaysInMs) {
+            setIs30day(true);
+          } else {
+            setIs30day(false);
+          }
+        } else {
+          console.error('유효하지 않은 날짜 데이터:', { stDate, endDate });
+        }
+      } catch (dateError) {
+        console.error('날짜 데이터 초기화 오류:', dateError);
+      }
+    }
+  }, [schedules, stDate, endDate]);
+
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
-  }, []);
+  }, [bottomSheetModalRef]);
 
   const showToast = ({ text1 }: { text1: string }) => {
     Toast.show({
@@ -67,21 +227,177 @@ const StudySchedule = ({
       })
       .replace(/\./g, '.');
   };
+  // 날짜 선택 시 처리 및 유효성 검사
   const showToastDate = (dates: any) => {
-    setDuration({ startDate: dates.startDate, endDate: dates.endDate });
-    if (dates.startDate && dates.endDate) {
-      const startDate = dates.startDate instanceof Date ? dates.startDate : (dates.startDate as Dayjs).toDate();
-      const endDate = dates.endDate instanceof Date ? dates.endDate : (dates.endDate as Dayjs).toDate();
-      const diff = endDate.getTime() - startDate.getTime();
-      if (diff < 30 * 24 * 60 * 60 * 1000) showToast({ text1: '스터디 기간은 최소 30일 이상으로 설정해주세요.' });
-      else setIs30day(true);
+    // dates 객체에서 날짜 추출
+    if (!dates || typeof dates !== 'object') {
+      console.error('유효하지 않은 날짜 데이터:', dates);
+      return;
+    }
+
+    try {
+      // 날짜를 안전하게 Date 타입으로 변환
+      const getDateObject = (dateValue: any): Date | null => {
+        if (!dateValue) return null;
+
+        if (dateValue instanceof Date) return dateValue;
+
+        if (typeof dateValue === 'object' && 'toDate' in dateValue && typeof dateValue.toDate === 'function') {
+          // dayjs 객체인 경우
+          return dateValue.toDate();
+        }
+
+        try {
+          // 문자열이나 다른 형식의 경우 Date 생성자로 시도
+          const date = new Date(dateValue.toString());
+          return !isNaN(date.getTime()) ? date : null;
+        } catch (e) {
+          return null;
+        }
+      };
+
+      const startDateObj = getDateObject(dates.startDate);
+      const endDateObj = getDateObject(dates.endDate);
+
+      // 두 날짜가 모두 유효한 경우에만 상태 업데이트
+      if (startDateObj && endDateObj) {
+        setDuration({
+          startDate: startDateObj,
+          endDate: endDateObj,
+        });
+
+        // 날짜 간격이 30일 이상인지 확인
+        const diff = endDateObj.getTime() - startDateObj.getTime();
+        if (diff < 30 * 24 * 60 * 60 * 1000) {
+          showToast({ text1: '스터디 기간은 최소 30일 이상으로 설정해주세요.' });
+          setIs30day(false);
+        } else {
+          setIs30day(true);
+        }
+      } else {
+        // 날짜 변환 실패
+        showToast({ text1: '유효한 날짜를 선택해주세요.' });
+      }
+    } catch (error) {
+      console.error('날짜 처리 오류:', error);
+      showToast({ text1: '날짜 처리 중 오류가 발생했습니다.' });
     }
   };
   const [isModalVisible, setIsModalVisible] = React.useState(false);
 
-  const toggleModal = () => {
+  // 새 스케줄 추가 또는 기존 스케줄 수정
+  const toggleModal = (index: number = -1) => {
+    if (index >= 0) {
+      // 편집 모드
+      setIsEditing(true);
+      setSelectedIndex(index);
+      setSelectedSchedule({ ...schedulesData[index] });
+    } else {
+      // 추가 모드
+      setIsEditing(false);
+      setSelectedIndex(-1);
+      setSelectedSchedule({
+        weekOfDay: 'MON',
+        stTime: '09:00',
+        endTime: '10:00',
+      });
+    }
     setIsModalVisible(!isModalVisible);
   };
+
+  // 스케줄 저장 (추가 또는 편집)
+  const saveSchedule = () => {
+    if (isEditing && selectedIndex >= 0) {
+      // 기존 스케줄 수정
+      const updatedSchedules = [...schedulesData];
+      updatedSchedules[selectedIndex] = selectedSchedule;
+      setSchedulesData(updatedSchedules);
+    } else {
+      // 새 스케줄 추가
+      setSchedulesData([...schedulesData, selectedSchedule]);
+    }
+    setIsModalVisible(false);
+    showToastNobutton({ text1: '스케줄이 저장되었습니다.' });
+  };
+
+  // 스케줄 삭제
+  const deleteSchedule = React.useCallback(
+    (index: number) => {
+      const updatedSchedules = schedulesData.filter((_, i) => i !== index);
+      setSchedulesData(updatedSchedules);
+      showToastNobutton({ text1: '스케줄이 삭제되었습니다.' });
+      setIsModalVisible(false);
+    },
+    [schedulesData],
+  );
+
+  // 시간 형식 변환 (시:분)
+  const formatTime = (hour: string, minute: string) => {
+    // 둘 다 비어있으면 빈 문자열 반환
+    if (hour === '' && minute === '') {
+      return '';
+    }
+
+    // 시간 처리 (초 제거, 2자리 강제 변환 제거)
+    const h = hour.trim();
+    const hourNum = parseInt(h);
+    const validHour = h === '' ? '00' : !isNaN(hourNum) && hourNum >= 0 && hourNum < 24 ? h : '00';
+
+    // 분 처리 (초 제거, 2자리 강제 변환 제거)
+    const m = minute.trim();
+    const minuteNum = parseInt(m);
+    const validMinute = m === '' ? '00' : !isNaN(minuteNum) && minuteNum >= 0 && minuteNum < 60 ? m : '00';
+
+    return `${validHour}:${validMinute}:00`;
+  };
+
+  // 시간 문자열에서 시간과 분 추출
+  const extractTime = (timeStr: string) => {
+    // 기본값 설정
+    const defaultTime = { hour: '00', minute: '00' };
+
+    // 유효성 검사
+    if (!timeStr || typeof timeStr !== 'string' || timeStr.indexOf(':') === -1) {
+      return defaultTime;
+    }
+
+    try {
+      const [hour, minute] = timeStr.split(':');
+      return {
+        hour: hour && /^\d{1,2}$/.test(hour) ? hour : '00',
+        minute: minute && /^\d{1,2}$/.test(minute) ? minute : '00',
+      };
+    } catch (error) {
+      console.error('시간 형식 추출 오류:', error);
+      return defaultTime;
+    }
+  };
+
+  // 요일 업데이트
+  const updateDay = (day: string) => {
+    setSelectedSchedule({
+      ...selectedSchedule,
+      weekOfDay: day as SharedStudy.PossibleDays,
+    });
+  };
+
+  // 시작 시간 업데이트
+  const updateStartTime = (hour: string, minute: string) => {
+    // 임시 시간 상태를 유지하여 사용자가 지우는 동안에도 입력을 유지
+    setSelectedSchedule({
+      ...selectedSchedule,
+      stTime: hour === '' && minute === '' ? '' : formatTime(hour, minute),
+    });
+  };
+
+  // 종료 시간 업데이트
+  const updateEndTime = (hour: string, minute: string) => {
+    setSelectedSchedule({
+      ...selectedSchedule,
+      endTime: hour === '' && minute === '' ? '' : formatTime(hour, minute),
+    });
+  };
+
   return (
     <ManageView>
       <Typography variant="heading3">스터디 스케쥴</Typography>
@@ -104,27 +420,121 @@ const StudySchedule = ({
             진행 요일 및 시간
           </Typography>
         </BoxTitle>
-        {getSchedules.map((item, index) => (
+        {schedulesData.map((item, index) => (
           <View key={index}>
-            <BoxTitle onPress={toggleModal}>
+            <BoxTitle onPress={() => toggleModal(index)}>
               <Typography variant="button" style={{ color: colors.black }}>
                 {WeekofDay[item.weekOfDay]}
               </Typography>
               <Typography variant="button" style={{ color: colors.gray[9], marginLeft: 'auto', marginRight: 8 }}>
-                {item.stTime} - {item.endTime}
+                {item.stTime.replace(/:\d{2}$/, '')} - {item.endTime.replace(/:\d{2}$/, '')}
               </Typography>
               <Icon name="arrow-right" />
             </BoxTitle>
           </View>
         ))}
-        <AddAlarm onPress={toggleModal}>
+        <AddAlarm onPress={() => toggleModal()}>
           <Icon name="plus-circle-outline" />
           <Typography variant="body2" style={{ color: colors.gray[7] }}>
             추가하기
           </Typography>
         </AddAlarm>
       </ManageBoxView>
-      <Button variant="contained" onPress={() => {}} style={{ marginHorizontal: 'auto' }}>
+      <Button
+        variant="contained"
+        onPress={() => {
+          // 날짜 형식 변환 (yyyy-MM-dd)
+          const formatDateForApi = (date: DateType): string => {
+            // 빈 값 처리
+            if (!date) return '';
+
+            try {
+              // Date 인스턴스인 경우 직접 변환
+              if (date instanceof Date) {
+                return date.toISOString().split('T')[0];
+              }
+
+              // 문자열인 경우 처리
+              if (typeof date === 'string') {
+                const parsed = new Date(date);
+                if (!isNaN(parsed.getTime())) {
+                  return parsed.toISOString().split('T')[0];
+                }
+              }
+
+              // 다른 객체 타입인 경우(Dayjs 등)
+              if (typeof date === 'object') {
+                // format 메서드가 있는 객체인 경우(Dayjs 같은 라이브러리)
+                if (date && 'format' in date && typeof date.format === 'function') {
+                  return date.format('YYYY-MM-DD');
+                }
+
+                // 일반 객체를 Date로 변환 시도
+                const dateStr = date.toString();
+                const parsed = new Date(dateStr);
+                if (!isNaN(parsed.getTime())) {
+                  return parsed.toISOString().split('T')[0];
+                }
+              }
+
+              // 형식 변환 실패 시 현재 날짜 반환
+              console.warn('날짜 형식 변환 실패:', date);
+              return new Date().toISOString().split('T')[0];
+            } catch (error) {
+              console.error('날짜 변환 중 오류 발생:', error);
+              return new Date().toISOString().split('T')[0];
+            }
+          };
+
+          // 데이터 유효성 검사
+          if (schedulesData.length === 0) {
+            showToast({ text1: '최소 하나 이상의 스케줄을 추가해주세요.' });
+            return;
+          }
+
+          // 날짜 유효성 검사
+          const startDate = formatDateForApi(duration.startDate);
+          const endDate = formatDateForApi(duration.endDate);
+
+          if (!startDate || !endDate) {
+            showToast({ text1: '유효한 스터디 기간을 설정해주세요.' });
+            return;
+          }
+
+          // 스터디 기간 최소 30일 검사
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          const diff = end.getTime() - start.getTime();
+          if (diff < 30 * 24 * 60 * 60 * 1000) {
+            showToast({ text1: '스터디 기간은 최소 30일 이상으로 설정해주세요.' });
+            return;
+          }
+
+          // API 요청 데이터 준비
+          // StudyRequest.PatchRules 인터페이스에서는 Date 타입이지만
+          // 실제 API는 문자열 날짜를 받으므로 타입 캐스팅
+          const requestData = {
+            schedules: schedulesData,
+            startDate: startDate,
+            endDate: endDate,
+          } as unknown as StudyRequest.PatchRules;
+
+          // API를 통해 서버에 저장
+          StudyService()
+            .patchRules(token as string, requestData)
+            .then(() => {
+              showToastNobutton({ text1: '스터디 스케줄이 성공적으로 저장되었습니다.' });
+              router.push({
+                pathname: `manage/${token}/rule` as RelativePathString,
+              });
+            })
+            .catch((error: any) => {
+              console.error('스케줄 저장 오류:', error);
+              showToast({ text1: '스케줄 저장 중 오류가 발생했습니다. 다시 시도해주세요.' });
+            });
+        }}
+        style={{ marginHorizontal: 'auto' }}
+      >
         저장하기
       </Button>
       <BottomSheetComp
@@ -139,7 +549,7 @@ const StudySchedule = ({
               selectedItemColor={colors.primary}
               startDate={duration.startDate}
               endDate={duration.endDate}
-              onChange={(dates) => {
+              onChange={(dates: any) => {
                 showToastDate(dates);
               }}
             />
@@ -156,8 +566,12 @@ const StudySchedule = ({
                 disabled={!is30day}
                 style={{ marginHorizontal: 'auto' }}
                 onPress={() => {
+                  if (!is30day) {
+                    showToast({ text1: '스터디 기간은 최소 30일 이상으로 설정해주세요.' });
+                    return;
+                  }
                   bottomSheetModalRef.current?.dismiss();
-                  showToastNobutton({ text1: '수정 사항이 성공적으로 반영되었습니다.' });
+                  showToastNobutton({ text1: '기간 수정이 성공적으로 반영되었습니다.' });
                 }}
               >
                 수정하기
@@ -166,42 +580,109 @@ const StudySchedule = ({
           </DateView>
         }
       />
-      <ModalWrapper isModalVisible={isModalVisible} toggleModal={toggleModal}>
+      <ModalWrapper isModalVisible={isModalVisible} toggleModal={() => toggleModal()}>
         <ModalContents>
           <View style={{ paddingHorizontal: 60, width: '100%', alignItems: 'center' }}>
             <Typography variant="subtitle2" style={{ color: colors.gray[9] }}>
               요일
             </Typography>
-            <TimeWrapper>
-              <TimeBox placeholder="요일" />
-            </TimeWrapper>
+            <View style={{ width: '100%', marginTop: 8 }}>
+              <SelectBox
+                options={dayOptions}
+                value={selectedSchedule.weekOfDay}
+                onChange={(value) => updateDay(value)}
+              />
+            </View>
             <Typography variant="subtitle2" style={{ color: colors.gray[9], marginTop: 20 }}>
               시작 시간
             </Typography>
             <TimeWrapper>
-              <TimeBox placeholder="20" />
+              <TimeBox
+                placeholder="09"
+                value={extractTime(selectedSchedule.stTime).hour}
+                keyboardType="number-pad"
+                maxLength={2}
+                onChangeText={(text) => {
+                  // 숫자만 입력 가능하도록 설정
+                  const numericText = text.replace(/[^0-9]/g, '');
+                  // 빈 값이거나 24 미만의 값 허용
+                  if (numericText === '' || (parseInt(numericText) >= 0 && parseInt(numericText) < 24)) {
+                    updateStartTime(numericText, extractTime(selectedSchedule.stTime).minute);
+                  }
+                }}
+              />
               <Typography variant="heading1" style={{ margin: 0 }}>
                 :
               </Typography>
-              <TimeBox placeholder="00" />
+              <TimeBox
+                placeholder="00"
+                value={extractTime(selectedSchedule.stTime).minute}
+                keyboardType="number-pad"
+                maxLength={2}
+                onChangeText={(text) => {
+                  // 숫자만 입력 가능하도록 설정
+                  const numericText = text.replace(/[^0-9]/g, '');
+                  // 빈 값이거나 60 미만의 값 허용
+                  if (numericText === '' || (parseInt(numericText) >= 0 && parseInt(numericText) < 60)) {
+                    updateStartTime(extractTime(selectedSchedule.stTime).hour, numericText);
+                  }
+                }}
+              />
             </TimeWrapper>
             <Typography variant="subtitle2" style={{ color: colors.gray[9], marginTop: 20 }}>
               종료 시간
             </Typography>
             <TimeWrapper>
-              <TimeBox placeholder="20" />
+              <TimeBox
+                placeholder="10"
+                value={extractTime(selectedSchedule.endTime).hour}
+                keyboardType="number-pad"
+                maxLength={2}
+                onChangeText={(text) => {
+                  // 숫자만 입력 가능하도록 설정
+                  const numericText = text.replace(/[^0-9]/g, '');
+                  // 빈 값이거나 24 미만의 값 허용
+                  if (numericText === '' || (parseInt(numericText) >= 0 && parseInt(numericText) < 24)) {
+                    updateEndTime(numericText, extractTime(selectedSchedule.endTime).minute);
+                  }
+                }}
+              />
               <Typography variant="heading1" style={{ margin: 0 }}>
                 :
               </Typography>
-              <TimeBox placeholder="00" />
+              <TimeBox
+                placeholder="00"
+                value={extractTime(selectedSchedule.endTime).minute}
+                keyboardType="number-pad"
+                maxLength={2}
+                onChangeText={(text) => {
+                  // 숫자만 입력 가능하도록 설정
+                  const numericText = text.replace(/[^0-9]/g, '');
+                  // 빈 값이거나 60 미만의 값 허용
+                  if (numericText === '' || (parseInt(numericText) >= 0 && parseInt(numericText) < 60)) {
+                    updateEndTime(extractTime(selectedSchedule.endTime).hour, numericText);
+                  }
+                }}
+              />
             </TimeWrapper>
           </View>
           <ButtonWrapper>
-            <Button variant="outlined" onPress={toggleModal} style={{ marginHorizontal: 'auto' }}>
+            {isEditing && (
+              <Button
+                variant="outlined"
+                onPress={() => deleteSchedule(selectedIndex)}
+                style={{ marginHorizontal: 'auto', borderColor: '#E53935' }}
+              >
+                <Typography variant="body2" style={{ color: '#E53935' }}>
+                  삭제
+                </Typography>
+              </Button>
+            )}
+            <Button variant="outlined" onPress={() => toggleModal()} style={{ marginHorizontal: 'auto' }}>
               취소
             </Button>
-            <Button variant="contained" onPress={toggleModal} style={{ marginHorizontal: 'auto' }}>
-              수정하기
+            <Button variant="contained" onPress={saveSchedule} style={{ marginHorizontal: 'auto' }}>
+              {isEditing ? '수정하기' : '추가하기'}
             </Button>
           </ButtonWrapper>
         </ModalContents>
@@ -223,6 +704,7 @@ const BoxTitle = styled.Pressable`
   align-items: center;
   padding: 12px 20px;
 `;
+
 const AddAlarm = styled.Pressable`
   justify-content: center;
   align-items: center;
@@ -231,13 +713,6 @@ const AddAlarm = styled.Pressable`
   gap: 8px;
   margin: 12px 0;
 `;
-
-const dayAndTime = [
-  { day: '월', time: '19:00 - 21:00' },
-  { day: '수', time: '19:00 - 21:00' },
-  { day: '금', time: '19:00 - 21:00' },
-  { day: '일', time: '19:00 - 21:00' },
-];
 
 const DateView = styled.View`
   align-items: center;
@@ -269,15 +744,11 @@ const TimeWrapper = styled.View`
 const TimeBox = styled.TextInput`
   flex: 1;
   background: ${colors.gray[2]};
-  justify-content: center;
-  align-items: center;
   height: 40px;
   border-radius: 4px;
   text-align: center;
   font-family: 'Pretendard-Medium';
-  font-size: 22px;
+  font-size: 15px;
   color: ${colors.black};
-  focus {
-    outline: none;
-  }
+  padding: 0 5px;
 `;

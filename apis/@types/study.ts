@@ -163,7 +163,7 @@ declare namespace StudyRequest {
     startDate?: Date;
     endDate?: Date;
     schedules?: PatchSchedule[];
-    form?: SharedStudy.Form;
+    form?: Form;
     ruleExp?: string;
     rules?: string[];
     fine?: Fine;
