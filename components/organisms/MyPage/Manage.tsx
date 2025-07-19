@@ -87,7 +87,7 @@ export const StudyAnnouncement = () => {
 };
 
 // 진행 현황
-export const Status = ({ value }: { value: boolean }) => {
+export const Status = ({ value, onToggle }: { value: boolean; onToggle?: () => void }) => {
   const [toggle, setToggle] = React.useState(value);
 
   return (
@@ -97,7 +97,13 @@ export const Status = ({ value }: { value: boolean }) => {
         <Typography variant="button" style={{ color: colors.gray[7], paddingRight: 12 }}>
           모집 완료
         </Typography>
-        <Switch value={toggle} onValueChange={setToggle} />
+        <Switch
+          value={toggle}
+          onValueChange={() => {
+            // setToggle(!toggle);
+            if (onToggle) onToggle();
+          }}
+        />
       </LineView>
     </LineView>
   );

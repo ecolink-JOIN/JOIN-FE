@@ -84,5 +84,27 @@ export const StudyService = () => {
     const req = (await API.post(`${url}/${studyToken}/member`)) as StudyResponse.MemberResponse;
     return req.data;
   };
-  return { detail, search, recommendation, popular, close, recruit, reRecruit, getMember, getRules, patchRules };
+
+  /**
+   * 스터디 모집 상태 변경 - 인증 필수
+   * @api-doc: http://ec2-43-200-168-20.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/toggleRecruitStatus
+   */
+  const toggleRecruitStatus = async (studyToken: string) => {
+    const req = (await API.patch(`${url}/${studyToken}/recruitment`)) as Shared.HttpResponse;
+    return req.data;
+  };
+
+  return {
+    detail,
+    search,
+    recommendation,
+    popular,
+    close,
+    recruit,
+    reRecruit,
+    getMember,
+    getRules,
+    patchRules,
+    toggleRecruitStatus,
+  };
 };
