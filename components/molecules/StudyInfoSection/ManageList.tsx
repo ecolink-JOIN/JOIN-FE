@@ -36,6 +36,7 @@ const ManageList: FC<ManageListProps> = ({
           key={idx}
           onPress={() => {
             if (list.href.includes('progress')) {
+              console.log(list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`);
               router.push((list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`) as Href);
             } else {
               router.push(list.href.replace('[token]', studyToken.toString()) as Href);

@@ -95,7 +95,7 @@ export const Status = ({ value, onToggle }: { value: boolean; onToggle?: () => v
       <Typography variant="button">모집 상태</Typography>
       <LineView>
         <Typography variant="button" style={{ color: colors.gray[7], paddingRight: 12 }}>
-          모집 완료
+          {value ? '모집 중' : '모집 완료'}
         </Typography>
         <Switch
           value={toggle}
