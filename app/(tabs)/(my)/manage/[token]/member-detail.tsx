@@ -109,7 +109,14 @@ const MemberDetail = () => {
             )}
           </ContentBox>
           <ButtonBox>
-            <Button variant="contained">평가하기</Button>
+            <Button
+              variant="contained"
+              onPress={() => {
+                // TODO: 평가하기 페이지 제작
+              }}
+            >
+              평가하기
+            </Button>
             <Button variant="outlined" onPress={() => setIsForcedOutModalVisible(true)}>
               강퇴하기
             </Button>
