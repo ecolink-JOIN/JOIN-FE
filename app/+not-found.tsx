@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 
 import ThemedText from '@/components/atoms/ThemedText';
 import ThemedView from '@/components/atoms/View/ThemedView';
+import React from 'react';
 
 export default function NotFoundScreen() {
   return (

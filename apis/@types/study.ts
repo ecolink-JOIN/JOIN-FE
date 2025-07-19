@@ -13,15 +13,20 @@ declare namespace StudyResponse {
       endDate: Date;
       writerId: number;
       writerNickname: string;
-      schedules: Schedule[];
+      schedules: StudyRequest.Schedule[];
       ruleExp: string;
       qualificationExp: string;
       regular: boolean;
+      form: SharedStudy.Form;
     };
   }
 
   export interface Search extends Shared.HttpResponse {
-    data: Search;
+    data: SearchResult;
+  }
+
+  export interface SearchResult extends Shared.Pagenation {
+    content: StudyInfo[];
   }
 
   export interface Recommendation extends Shared.HttpResponse {
@@ -38,7 +43,42 @@ declare namespace StudyResponse {
   }
 
   export interface Popular extends Shared.HttpResponse {
-    data: Popular;
+    data: StudyInfo[];
+  }
+
+  export interface MemberResponse extends Shared.HttpResponse {
+    data: Member[];
+  }
+
+  export interface Member {
+    avatarToken: string;
+    role: string;
+    nickname: string;
+  }
+
+  export interface GetRule extends Shared.HttpResponse {
+    data: Rule;
+  }
+  export interface Rule {
+    startDate: string;
+    endDate: string;
+    schedules: StudyRequest.Schedule[];
+    form: SharedStudy.Form;
+    ruleExp: string;
+    rules: string;
+    fineReasonAmounts: FineReasonAmounts;
+  }
+
+  export interface FineReasonAmounts {
+    tardiness: number;
+    absence: number;
+    nonProof: number;
+  }
+
+  export interface Schedule {
+    weekOfDay: SharedStudy.PossibleDays;
+    stTime: string;
+    endTime: string;
   }
 }
 
@@ -48,7 +88,7 @@ declare namespace StudyRequest {
   }
 
   export interface Recruit {
-    capacity: number;
+    capacity: number | null;
     recruit_end_date: string;
     st_date: string;
     end_date: string;
@@ -59,11 +99,17 @@ declare namespace StudyRequest {
     title: string;
     introduction: string;
     content: string;
+    rules: {
+      type: RuleType;
+    }[];
     rule_exp: string;
     qualification_exp: string;
     schedules: Schedule[];
     regular: boolean;
+    form: SharedStudy.Form;
   }
+
+  export type RuleType = 'FINE' | 'EXPULSION' | 'PHOTO_PROOF' | 'TIMER_PROOF';
   export interface Applications {
     introduction: string;
     appDate: Date;
@@ -80,6 +126,12 @@ declare namespace StudyRequest {
   export interface Reject {
     rejectReason: string;
     otherReason: string;
+  }
+
+  export interface Search extends Recommendation {
+    keyword: string;
+    pageNumber: number;
+    pageSize: number;
   }
 
   export interface Recommendation {
@@ -100,6 +152,41 @@ declare namespace StudyRequest {
     pageNumber: number;
     pageSize: number;
   }
+
+  export interface Schedule {
+    weekOfDay: SharedStudy.PossibleDays;
+    stTime: string;
+    endTime: string;
+  }
+
+  export interface PatchRules {
+    startDate?: Date;
+    endDate?: Date;
+    schedules?: PatchSchedule[];
+    form?: Form;
+    ruleExp?: string;
+    rules?: string[];
+    fine?: Fine;
+  }
+
+  export interface Fine {
+    isFineEnabled?: boolean;
+    tardiness?: number;
+    absence?: number;
+    nonProof?: number;
+  }
+
+  export interface Form {
+    form?: SharedStudy.Form;
+    province?: string;
+    city?: string;
+  }
+
+  export interface PatchSchedule {
+    weekOfDay?: SharedStudy.PossibleDays;
+    stTime?: string;
+    endTime?: string;
+  }
 }
 interface Popular extends Shared.Pagenation {
   content: StudyContent[];
@@ -117,12 +204,6 @@ interface StudyContent {
 interface Leader {
   nickname: string;
   totalRating: number;
-}
-
-interface Schedule {
-  weekOfDay: SharedStudy.PossibleDays;
-  stTime: string;
-  endTime: string;
 }
 
 interface Search extends Shared.Pagenation {

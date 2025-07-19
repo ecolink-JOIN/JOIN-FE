@@ -1,18 +1,19 @@
 import { Image, Pressable, View } from 'react-native';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { Switch } from '@/components/atoms/Switch';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
 import Badge from '@/components/atoms/Badge';
 import Icon from '@/components/atoms/Icon';
-import { Href, router, useLocalSearchParams } from 'expo-router';
+import { Href, RelativePathString, router, useLocalSearchParams } from 'expo-router';
 import RowView from '@/components/atoms/View/RowView';
 import Divider from '@/components/atoms/Divider';
 import Evaluator from '@/components/molecules/Evaluator';
 import Button from '@/components/atoms/Button';
 import FineOptions from '@/components/molecules/FineOption';
+import { ApplicationsService } from '@/apis';
 
 // 스터디 모임 방법
 export const MeetingType = () => {
@@ -86,7 +87,7 @@ export const StudyAnnouncement = () => {
 };
 
 // 진행 현황
-export const Status = ({ value }: { value: boolean }) => {
+export const Status = ({ value, onToggle }: { value: boolean; onToggle?: () => void }) => {
   const [toggle, setToggle] = React.useState(value);
 
   return (
@@ -94,9 +95,15 @@ export const Status = ({ value }: { value: boolean }) => {
       <Typography variant="button">모집 상태</Typography>
       <LineView>
         <Typography variant="button" style={{ color: colors.gray[7], paddingRight: 12 }}>
-          모집 완료
+          {value ? '모집 중' : '모집 완료'}
         </Typography>
-        <Switch value={toggle} onValueChange={setToggle} />
+        <Switch
+          value={toggle}
+          onValueChange={() => {
+            // setToggle(!toggle);
+            if (onToggle) onToggle();
+          }}
+        />
       </LineView>
     </LineView>
   );
@@ -114,7 +121,7 @@ export const MyAttendance = ({ id }: MyAttendanceProps) => {
     <View style={{ marginTop: 16, marginBottom: 10 }}>
       <InfoViewBox
         InfoList={[
-          { title: '나의 출석률', value: '100%' },
+          { title: '나의 출석률', value: '100' },
           { title: '나의 인증률', value: '97%' },
         ]}
       />
@@ -413,6 +420,62 @@ export const Approval = () => {
               {member.approve ? '승인 완료' : '승인 미완료'}
             </Typography>
             <Icon name="arrow-right-outline" width={24} height={24} stroke={colors.gray[7]} />
+          </View>
+        </Pressable>
+      ))}
+    </View>
+  );
+};
+
+//스터디 인증 승인
+export const ApplicationApproval = () => {
+  const { token } = useLocalSearchParams<{ token: string }>();
+  const [applicationList, setApplicationList] = React.useState<ApplicationsResponse.GetApplicationsResult[]>([]);
+
+  useEffect(() => {
+    ApplicationsService()
+      .getApplications(token)
+      .then((res) => {
+        setApplicationList(res);
+      });
+  }, [token]);
+
+  return (
+    <View style={{ marginVertical: 8 }}>
+      {applicationList.map((member, index) => (
+        <Pressable
+          key={index}
+          disabled={member.applicationStatus === '승인 완료' || member.applicationStatus === '거절 완료'}
+          style={{ flexDirection: 'row', paddingVertical: 8, alignItems: 'center', justifyContent: 'space-between' }}
+          onPress={() =>
+            router.push({
+              pathname: `/manage/${token}/recruiting-member` as RelativePathString,
+              params: { member: JSON.stringify(member) },
+            })
+          }
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Image source={{ uri: member.profileImage.url }} style={{ width: 24, height: 24, borderRadius: 12 }} />
+            <Typography variant="body3" style={{ color: colors.gray[9] }}>
+              {member.nickname}
+            </Typography>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            <Typography
+              variant="body3"
+              style={{ color: member.applicationStatus === '승인 완료' ? colors.gray[9] : colors.primary }}
+            >
+              {member.applicationStatus}
+            </Typography>
+            {member.applicationStatus === '승인 대기중' && (
+              <Icon name="arrow-right-outline" width={24} height={24} stroke={colors.gray[7]} />
+            )}
           </View>
         </Pressable>
       ))}

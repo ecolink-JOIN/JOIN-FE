@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View } from 'react-native';
+import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import { useRouter } from 'expo-router';
@@ -9,8 +9,6 @@ import { colors } from '@/theme';
 import { useStudyDetailsHeaderAnimation } from '@/hooks/useStudyDetailsHeaderAnimation';
 import Button from '../atoms/Button';
 import SafeAreaView from '../atoms/View/SafeAreaView';
-
-const HEADER_HEIGHT = 80;
 
 const Container = styled(SafeAreaView)`
   flex: 1;
@@ -31,11 +29,13 @@ const Content = styled(View)`
 `;
 
 const IconContainer = styled(Animated.View)`
+  flex: 1;
+  background-color: ${colors.primary};
   position: absolute;
-  top: 0;
+  top: -40px;
   left: 0;
   width: 100%;
-  padding: 8px 20px 8px 10px;
+  padding: 16px 20px 16px 10px;
   z-index: 10;
   align-items: flex-start;
 `;
@@ -45,15 +45,27 @@ const BackgroundContainer = styled(Animated.View)`
   top: 0;
   left: 0;
   width: 100%;
-  height: ${HEADER_HEIGHT + 100}px;
   z-index: -1;
 `;
 
-const ModalContainer = styled.View`
+const BodyContainer = styled(View)`
   flex: 1;
+  padding-top: 20px;
+  background-color: ${colors.primary};
+`;
+
+const ModalContainer = styled.Pressable`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   justify-content: flex-end;
   background-color: rgba(0, 0, 0, 0.8);
-  padding-horizontal: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 20px;
   gap: 8px;
   padding-bottom: 40px;
 `;
@@ -64,9 +76,10 @@ type Props = {
   leader: string;
   date: string;
   deadline: string;
+  studyToken: string;
 };
 
-const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, deadline }) => {
+const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, deadline, studyToken }) => {
   const router = useRouter();
   const [isModalVisible, setModalVisible] = useState(false);
   const {
@@ -94,22 +107,24 @@ const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, 
           <IconButtonGroup strokeColor={colors.black} onBackPress={() => router.back()} onEllipsisPress={toggleModal} />
         </Animated.View>
       </IconContainer>
-      <Animated.ScrollView scrollEventThrottle={16} onScroll={scrollHandler} style={[scrollViewBackgroundStyle]}>
-        <Header style={[headerAnimatedStyle]}>
-          <StudyHeaderInfo title={title} leader={leader} date={date} deadline={deadline} />
-        </Header>
-        <Content>{children}</Content>
-      </Animated.ScrollView>
+      <BodyContainer>
+        <Animated.ScrollView scrollEventThrottle={16} onScroll={scrollHandler} style={[scrollViewBackgroundStyle]}>
+          <Header style={[headerAnimatedStyle]}>
+            <StudyHeaderInfo title={title} leader={leader} date={date} deadline={deadline} />
+          </Header>
+          <Content>{children}</Content>
+        </Animated.ScrollView>
+      </BodyContainer>
 
-      <Modal visible={isModalVisible} transparent animationType="fade" onRequestClose={toggleModal}>
-        <ModalContainer>
+      {isModalVisible && (
+        <ModalContainer onPress={toggleModal}>
           <Button
             variant="contained"
             fullWidth
             size="large"
             onPress={() => {
               toggleModal();
-              router.push(`/(report)/${123456}`);
+              router.push(`/(report)/${studyToken}`);
             }}
           >
             신고하기
@@ -118,7 +133,7 @@ const StudyDetailsTemplate: React.FC<Props> = ({ children, title, leader, date, 
             취소
           </Button>
         </ModalContainer>
-      </Modal>
+      )}
     </Container>
   );
 };

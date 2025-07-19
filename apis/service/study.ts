@@ -7,8 +7,8 @@ export const StudyService = () => {
    * 스터디 상세 조회 - 인증 필수
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/getStudyDetails
    */
-  const detail = async (studyId: number) => {
-    const req = (await API.get(url, { params: { studyId } })) as StudyResponse.Detail;
+  const detail = async (studyToken: string) => {
+    const req = (await API.get(`${url}/${studyToken}`)) as StudyResponse.Detail;
     return req.data;
   };
 
@@ -16,8 +16,8 @@ export const StudyService = () => {
    * 스터디 검색 - 입력한 키워드가 제목에 포함된 스터디 목록을 반환
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/searchStudy
    */
-  const search = async (keyword?: number, pageNumber?: number, pageSize?: number) => {
-    const req = (await API.get(url, { params: { keyword, pageNumber, pageSize } })) as StudyResponse.Search;
+  const search = async (params: StudyRequest.Search) => {
+    const req = (await API.get(`${url}/search`, { params })) as StudyResponse.Search;
     return req.data;
   };
 
@@ -57,6 +57,16 @@ export const StudyService = () => {
     return req.data;
   };
 
+  const getRules = async (studyToken: string) => {
+    const req = (await API.get(`${url}/${studyToken}/rules`)) as StudyResponse.GetRule;
+    return req.data;
+  };
+
+  const patchRules = async (studyToken: string, body: StudyRequest.PatchRules) => {
+    const req = (await API.put(`${url}/${studyToken}/rules`, body)) as Shared.HttpResponse;
+    return req.data;
+  };
+
   /**
    * 스터디 추가 모집 - 인증 필수
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/reRecruitStudy
@@ -66,38 +76,35 @@ export const StudyService = () => {
     return req.data;
   };
 
-  return { detail, search, recommendation, popular, close, recruit, reRecruit };
-};
-
-export const ApplicationsService = () => {
-  const url = '/applications';
-
   /**
-   * 스터디 지원 - 인증 필수
-   * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/apply
+   * 스터디 멤버 조회 - 인증 필수
+   * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/getStudyMembers
    */
-  const post = async (body: StudyRequest.Recruit) => {
-    const req = (await API.post(`${url}/applications`, body)) as Shared.HttpResponse;
+  const getMember = async (studyToken: string) => {
+    const req = (await API.post(`${url}/${studyToken}/member`)) as StudyResponse.MemberResponse;
     return req.data;
   };
 
   /**
-   * 스터디 지원 - 인증 필수
-   * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/apply
+   * 스터디 모집 상태 변경 - 인증 필수
+   * @api-doc: http://ec2-43-200-168-20.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/toggleRecruitStatus
    */
-  const reject = async (applicationId: number, body: StudyRequest.Reject) => {
-    const req = (await API.patch(`${url}/${applicationId}/reject`, body)) as Shared.HttpResponse;
+  const toggleRecruitStatus = async (studyToken: string) => {
+    const req = (await API.patch(`${url}/${studyToken}/recruitment`)) as Shared.HttpResponse;
     return req.data;
   };
 
-  /**
-   * 스터디 지원 반려 - 인증 필수
-   * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/03.%20%EC%8A%A4%ED%84%B0%EB%94%94/rejectApplication
-   */
-  const accept = async (applicationId: number) => {
-    const req = (await API.patch(`${url}/${applicationId}/accept`)) as Shared.HttpResponse;
-    return req.data;
+  return {
+    detail,
+    search,
+    recommendation,
+    popular,
+    close,
+    recruit,
+    reRecruit,
+    getMember,
+    getRules,
+    patchRules,
+    toggleRecruitStatus,
   };
-
-  return { post, reject, accept };
 };

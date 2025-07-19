@@ -10,7 +10,7 @@ import RowView from '../View/RowView';
 
 interface CustomStepperProps {
   placeholder: string;
-  value: dayjs.Dayjs | null;
+  value: string | null;
   bottomSheetModalRef: React.RefObject<BottomSheetModal>;
 }
 
@@ -24,7 +24,9 @@ const CustomDatePicker: React.FC<CustomStepperProps> = ({ placeholder, value, bo
       <StepperView>
         <Calander color={colors.gray[7]} />
         <Typography variant="body2" style={{ color: colors.gray[9] }}>
-          {value ? value.format('YYYY-MM-DD') : placeholder}
+          {value !== undefined && value !== null && dayjs(value).isValid()
+            ? dayjs(value).format('YYYY-MM-DD')
+            : placeholder}
         </Typography>
       </StepperView>
     </Pressable>

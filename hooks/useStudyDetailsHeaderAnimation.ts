@@ -7,8 +7,8 @@ import {
 } from 'react-native-reanimated';
 import { colors } from '@/theme';
 
-const HEADER_HEIGHT = 130;
-const ICON_BUTTON_HEIGHT = 30;
+const HEADER_HEIGHT = 150;
+const ICON_BUTTON_HEIGHT = 50;
 const COVER_THRESHOLD = HEADER_HEIGHT - ICON_BUTTON_HEIGHT;
 
 export const useStudyDetailsHeaderAnimation = () => {
@@ -21,7 +21,7 @@ export const useStudyDetailsHeaderAnimation = () => {
   });
 
   const haderBackgroundStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(scrollY.value, [0, HEADER_HEIGHT], [colors.primary, colors.white]);
+    const backgroundColor = interpolateColor(scrollY.value, [100, HEADER_HEIGHT], [colors.primary, colors.white]);
 
     return {
       backgroundColor,
@@ -35,7 +35,7 @@ export const useStudyDetailsHeaderAnimation = () => {
       [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT],
     );
 
-    const backgroundColor = interpolateColor(scrollY.value, [0, HEADER_HEIGHT], [colors.primary, colors.white]);
+    const backgroundColor = interpolateColor(scrollY.value, [100, HEADER_HEIGHT], [colors.primary, colors.white]);
 
     return {
       transform: [{ translateY }],

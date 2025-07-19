@@ -20,7 +20,7 @@ const StudyHeaderInfo: React.FC<StudyHeaderInfoProps> = ({ title, leader, date, 
       </Typography>
       <View style={styles.infoContainer}>
         <Typography variant="body3" style={styles.leader}>
-          {leader}
+          {leader ?? '모집자 비공개'}
         </Typography>
         <Bar />
         <Typography variant="body3" style={styles.date}>

@@ -2,23 +2,23 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { RecoilRoot } from 'recoil';
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { toastConfig } from '@/components/atoms/Toast/CustomToast';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import '../reanimatedConfig';
+import { GlobalProvider } from '@/context/GlobalContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useReactQueryDevTools } from '@dev-plugins/react-query';
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
+const queryClient = new QueryClient();
 export const unstable_settings = {
   initialRouteName: '(tabs)/',
 };
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
+  useReactQueryDevTools(queryClient);
   const [loaded] = useFonts({
     'Pretendard-Black': require('@/assets/fonts/Pretendard-Black.ttf'),
     'Pretendard-Bold': require('@/assets/fonts/Pretendard-Bold.ttf'),
@@ -43,10 +43,10 @@ export default function RootLayout() {
 
   return (
     // <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-    <RecoilRoot>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <BottomSheetModalProvider>
-          <Stack initialRouteName="(tabs)">
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <GlobalProvider>
+          <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
@@ -54,10 +54,10 @@ export default function RootLayout() {
             <Stack.Screen name="(report)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
-        </BottomSheetModalProvider>
-      </GestureHandlerRootView>
-      <Toast config={toastConfig} />
-    </RecoilRoot>
+          <Toast config={toastConfig} />
+        </GlobalProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
     // </ThemeProvider>
   );
 }

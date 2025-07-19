@@ -2,10 +2,9 @@ import React from 'react';
 import Typography from '@/components/atoms/Typography';
 import FormModView from '@/components/atoms/View/FormMods';
 import { DatePicker } from '@/components/atoms/DatePicker';
-import dayjs from 'dayjs';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 interface EndDateProps {
-  value: dayjs.Dayjs | null;
+  value: string | null;
   bottomSheetModalRef: React.RefObject<BottomSheetModal>;
 }
 export const EndDate: React.FC<EndDateProps> = ({ value, bottomSheetModalRef }) => {

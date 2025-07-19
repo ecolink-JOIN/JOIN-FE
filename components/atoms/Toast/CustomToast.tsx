@@ -29,7 +29,7 @@ export const toastConfig: ToastConfig = {
 
 const StyledView = styled(RowView)`
   background-color: ${colors.gray[11]};
-  padding: 0 16px 0 8px;
+  padding: 0 22px 0 8px;
   border-radius: 4px;
   width: 100%;
   height: 48px;

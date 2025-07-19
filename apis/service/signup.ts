@@ -3,15 +3,6 @@ import FormData from 'form-data';
 
 export const AvatarsService = () => {
   const url = '/avatars';
-
-  /**
-   * 유저 정보 조회 API - 인증 필요
-   * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/02.%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85/getAvatarInfo
-   */
-  const base = async () => {
-    return (await API.get(url)) as Avatars.BaseDto;
-  };
-
   /**
    * 프로필 사진 변경 - 인증 필요, request 부분을 application/json 으로 설정해서 요청을 보내주세요.
    * @api-doc: http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/index.html#/02.%20%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85/changePhoto
@@ -48,7 +39,7 @@ export const AvatarsService = () => {
     return (await API.post(`/logout`)) as Shared.HttpResponse;
   };
 
-  return { base, photos, nickname, nicknameValid, logout };
+  return { photos, nickname, nicknameValid, logout };
 };
 
 export const TermsService = () => {

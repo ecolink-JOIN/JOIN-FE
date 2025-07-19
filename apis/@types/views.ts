@@ -6,4 +6,9 @@ declare namespace ViewsResponse {
   }
 }
 
-declare namespace ViewsRequest {}
+declare namespace ViewsRequest {
+  export interface GetViewsParams {
+    pageNumber?: number;
+    pageSize?: number;
+  }
+}

@@ -10,6 +10,7 @@ interface InfoViewProps {
 
 const InfoView = styled.View<InfoViewProps>`
   flex-direction: row;
+  width: 100%;
   justify-content: ${({ center }) => (center ? 'space-between' : 'flex-start')};
   align-items: center;
   padding: ${({ center }) => (center ? '16px 40px' : '16px 20px')};

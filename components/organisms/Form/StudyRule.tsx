@@ -7,23 +7,25 @@ import CustomCheckbox from '@/components/atoms/Checkbox/SquareCheckbox';
 import RowView from '@/components/atoms/View/RowView';
 
 interface StudyRuleProps {
-  value: number[];
-  onChange: (value: number[]) => void;
+  value: {
+    type: StudyRequest.RuleType;
+  }[];
+  onChange: (value: { type: StudyRequest.RuleType }[]) => void;
 }
 
-const rules = [
-  { id: 1, title: '벌금 있음' },
-  { id: 2, title: '강퇴 조건 있음' },
-  { id: 3, title: '사진 인증' },
-  { id: 4, title: '타이머 인증' },
+const rules: { type: StudyRequest.RuleType; title: string }[] = [
+  { type: 'FINE', title: '벌금 있음' },
+  { type: 'EXPULSION', title: '강퇴 조건 있음' },
+  { type: 'PHOTO_PROOF', title: '사진 인증' },
+  { type: 'TIMER_PROOF', title: '타이머 인증' },
 ];
 
 export default function StudyRule({ value, onChange }: StudyRuleProps) {
-  const handleSelect = (id: number) => {
-    if (value.includes(id)) {
-      onChange(value.filter((v) => v !== id));
+  const handleSelect = (type: StudyRequest.RuleType) => {
+    if (value.some((v) => v.type === type)) {
+      onChange(value.filter((v) => v.type !== type));
     } else {
-      onChange([...value, id]);
+      onChange([...value, { type }]);
     }
   };
 
@@ -37,12 +39,12 @@ export default function StudyRule({ value, onChange }: StudyRuleProps) {
       </RowView>
       <CheckBoxContainer>
         {rules.map((rule) => {
-          const isSelected = value.includes(rule.id);
+          const isSelected = value.some((v) => v.type === rule.type);
           return (
             <Pressable
-              key={rule.id}
+              key={rule.type}
               style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}
-              onPress={() => handleSelect(rule.id)}
+              onPress={() => handleSelect(rule.type)}
             >
               <CustomCheckbox selected={isSelected} />
               <Typography variant={'body3'} style={{ color: isSelected ? colors.black : colors.gray[7] }}>

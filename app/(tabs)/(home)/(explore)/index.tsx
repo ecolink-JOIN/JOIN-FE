@@ -1,4 +1,4 @@
-import { SafeAreaView } from 'react-native';
+import { RefreshControl, SafeAreaView } from 'react-native';
 import { ScrollView } from 'react-native';
 import Typography from '@/components/atoms/Typography';
 import styled from 'styled-components/native';
@@ -8,7 +8,9 @@ import { colors } from '@/theme';
 import studySections from '@/constants/StudySections';
 import RowView from '@/components/atoms/View/RowView';
 import FilterBottomSheet from '@/components/organisms/FilterBottomSheet';
-import { useEffect, useState } from 'react';
+import { useRecommendationContext } from '@/context/Recommendation';
+import { useGlobalContext } from '@/context/GlobalContext';
+import { useState } from 'react';
 
 const Container = styled(RowView)`
   justify-content: space-between;
@@ -17,19 +19,39 @@ const Container = styled(RowView)`
 `;
 
 function HomeScreen() {
-  const [searchData, setSearchData] = useState<StudyRequest.Recommendation>({});
+  const { searchData, setSearchData } = useRecommendationContext();
+  const { userinfo } = useGlobalContext();
+  const [key, setKey] = useState(new Date().getTime());
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    console.log('searchData', searchData);
-  }, [searchData]);
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setKey(new Date().getTime());
+    setRefreshing(false);
+  };
 
   return (
     <SafeAreaView>
-      <ScrollView style={{ backgroundColor: colors.white }}>
+      <ScrollView
+        style={{ backgroundColor: colors.white }}
+        key={key}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+      >
         <AdsCarousel />
 
-        <Container style={{ paddingVertical: 16, paddingHorizontal: 20 }}>
-          <Typography variant="subtitle1">(닉네임)님의 스터디 설정</Typography>
+        <Container
+          style={{
+            paddingVertical: 16,
+            paddingHorizontal: 20,
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: 12,
+          }}
+        >
+          <Typography variant="subtitle1">
+            {userinfo.nickname}
+            {'님에게\n딱 맞는 스터디를 찾았어요'}
+          </Typography>
           <FilterBottomSheet {...{ searchData, setSearchData }} />
         </Container>
 

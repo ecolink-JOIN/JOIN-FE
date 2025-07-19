@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import { Dimensions, View, ScrollView } from 'react-native';
 import Tabs from './Tabs';
 import { colors } from '@/theme';
-import Colors from '@/constants/Colors';
 
 interface Props {
   menus: string[];
@@ -32,6 +31,11 @@ const TabScreen = ({ menus, initTabIndex = 0, contents }: Props) => {
         ref={scrollViewRef}
         scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ width: windowWidth * menus.length }}
+        onScroll={(e) => {
+          const newIndex = Math.max(0, e.nativeEvent.contentOffset.x) / windowWidth;
+          setSelectedIndex(newIndex);
+        }}
         onMomentumScrollEnd={(e) => {
           const newIndex = Math.max(0, e.nativeEvent.contentOffset.x) / windowWidth;
           setSelectedIndex(newIndex);
@@ -40,10 +44,11 @@ const TabScreen = ({ menus, initTabIndex = 0, contents }: Props) => {
         {contents.map((content, index) => (
           <ScrollView
             key={index}
+            scrollEnabled={false}
             style={{
               width: windowWidth,
               padding: 20,
-              backgroundColor: colors.white,
+              backgroundColor: colors.gray[2],
             }}
           >
             <View style={{ paddingBottom: 50 }}>{content}</View>

@@ -17,13 +17,27 @@ const CustomStepper: React.FC<CustomStepperProps> = ({ active, step, stepConvert
   const color = active ? colors.gray[9] : colors.gray[6];
   return (
     <StepperView>
-      <PressableView onPress={() => stepConverter(step - 1)} disabled={!active}>
+      <PressableView
+        onPress={() => {
+          if (step > 1) {
+            stepConverter(step - 1);
+          }
+        }}
+        disabled={!active}
+      >
         <Minus color={color} />
       </PressableView>
       <Typography variant="body2" style={{ color: color }}>
         {step}
       </Typography>
-      <PressableView onPress={() => stepConverter(step + 1)} disabled={!active}>
+      <PressableView
+        onPress={() => {
+          if (step < 20) {
+            stepConverter(step + 1);
+          }
+        }}
+        disabled={!active}
+      >
         <Plus color={color} />
       </PressableView>
     </StepperView>

@@ -67,15 +67,15 @@ export const Body4 = styled.Text`
 `;
 
 export const Caption1 = styled.Text`
-  font: 400 13px/20px 'Pretendard-Regular';
+  font: 400 13px/20px 'Pretendard-Medium';
 `;
 
 export const Caption2 = styled.Text`
-  font: 400 12px/18px 'Pretendard-Regular';
+  font: 400 12px/18px 'Pretendard-Medium';
 `;
 
 export const Caption3 = styled.Text`
-  font: 400 10px/14px 'Pretendard-Regular';
+  font: 400 10px/14px 'Pretendard-Medium';
 `;
 
 export const Gnb = styled.Text`

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ManageList from '@/components/molecules/StudyInfoSection/ManageList';
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import NoList from '@/components/molecules/StudyInfoSection/NoList';
 import JoinedStatus from '../JoinedStatus';
+import { MyPageService } from '@/apis';
 
 const studyLinks: StudyLinkList[] = [
   {
@@ -19,14 +20,21 @@ const studyLinks: StudyLinkList[] = [
   },
 ];
 
-const StudyList: StudyList[] = [
-  { title: '직장인 영어 회화 스터디 💬', id: 1, active: true },
-  { title: '직장인 수학 스터디 💬', id: 2, active: false },
-  { title: '직장인 과학 스터디 💬', id: 3, active: true },
-];
-
 const JoinedStudy = () => {
-  return StudyList.length ? (
+  const [studyList, setStudyList] = useState<MyPageResponse.JoinStudyInfo[]>([]);
+  const [isloading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    MyPageService()
+      .getJoinStudy()
+      .then((data) => {
+        setStudyList(data.joinStudyInfos);
+        setIsLoading(false);
+      });
+  }, []);
+
+  return studyList.length ? (
     <View style={{ gap: 20 }}>
       <JoinedStatus
         {...{
@@ -34,26 +42,32 @@ const JoinedStudy = () => {
           completed: 1,
         }}
       />
-      {StudyList.map((study, idx) => (
+      {studyList.map((study, idx) => (
         <ManageList
           key={idx}
           {...{
-            title: study.title,
-            id: study.id,
+            title: study.name,
+            studyToken: study.studyToken,
             studyLinks,
-            active: study.active,
+            active: study.status !== 'COMPLETED',
           }}
         />
       ))}
     </View>
   ) : (
-    <NoList
-      {...{
-        desc: '가입한 스터디가 없습니다.',
-        buttonText: '스터디 둘러보기',
-        buttonHref: '(home)',
-      }}
-    />
+    <>
+      {isloading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <NoList
+          {...{
+            desc: '가입한 스터디가 없습니다.',
+            buttonText: '스터디 둘러보기',
+            buttonHref: '(home)',
+          }}
+        />
+      )}
+    </>
   );
 };
 
