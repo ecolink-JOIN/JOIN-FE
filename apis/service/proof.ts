@@ -1,7 +1,24 @@
 import { API } from '@/apis/axios';
+import FormData from 'form-data';
 
 export const ProofService = () => {
   const baseUrl = '/study';
+
+  /**
+   * 인증 이미지 업로드 - 인증 필수
+   * @api-doc: POST /api/v1/proof/files
+   * React Native와 Web 모두 지원
+   */
+  const uploadProofImage = async (formData: FormData) => {
+    const req = (await API.post('/proof/files', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      transformRequest: (data) => data,
+    })) as Shared.HttpResponse;
+
+    return req.data;
+  };
 
   /**
    * 회차 인증 조회 - 인증 필수
@@ -52,5 +69,5 @@ export const ProofService = () => {
     return req.data;
   };
 
-  return { getProof, getProofList, postProof, approveProof, rejectProof };
+  return { uploadProofImage, getProof, getProofList, postProof, approveProof, rejectProof };
 };

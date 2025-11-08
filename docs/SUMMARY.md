@@ -2,34 +2,33 @@
 
 > 최종 업데이트: 2025년 11월 9일
 
-## 🚨 중요 발견사항
+## 🎉 중요 발견사항 - 문제 해결!
 
-### 백엔드 API 문제 확인
+### 출석 상태 조회 API 엔드포인트 오타 발견
 **발견일:** 2025년 11월 9일
 
 **문제:**
+프론트엔드가 잘못된 엔드포인트를 호출하고 있었습니다!
+
 ```
-GET /study/{studyToken}/meetings/{meetingNo}/attendances
+❌ 기존 코드:
+GET /study/{studyToken}/meetings/{meetingNo}/attendances (복수형)
 → 500 Error: "Request method 'GET' is not supported"
+
+✅ 올바른 API:
+GET /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance (단수형)
+→ 200 OK
 ```
 
-**영향:**
-- 출석 상태 조회 불가능
-- 사용자가 출석을 완료했는지 확인할 수 없음
-- UI에 항상 "미완료"로 표시됨
-- 중복 출석 방지 불가
+**해결:**
+- `apis/service/attendance.ts` - 엔드포인트 수정 (`/attendances` → `/attendance`)
+- `app/(tabs)/(certified)/index.tsx` - 출석/인증 상태 조회 활성화
+- 실시간 상태 표시 기능 정상 작동 확인
 
-**대응:**
-- 프론트엔드에서 출석 상태 조회 코드 일시 비활성화
-- TODO 주석으로 백엔드 구현 필요 명시
-- docs/TODO.md에 상세 요구사항 문서화
-
-**인증 API는 정상 작동:**
-```
-GET /study/{studyToken}/meetings/{meetingNo}/proofs
-→ 200 OK: { proofStatusResponse: "NONE", provenTime: null }
-✅ 인증 상태 조회는 작동 중
-```
+**결론:**
+- ✅ 백엔드 API는 정상적으로 구현되어 있었음
+- ✅ 프론트엔드 오타 수정으로 모든 기능 정상 작동
+- ✅ 추가 백엔드 작업 불필요
 
 ---
 
@@ -37,46 +36,30 @@ GET /study/{studyToken}/meetings/{meetingNo}/proofs
 
 ### 1. 프론트엔드 개선 사항
 
-#### 1.1 백엔드 API 문제 대응
-**파일:** `app/(tabs)/(certified)/index.tsx`
+#### 1.1 출석/인증 상태 조회 기능 수정 및 활성화 ✅
+**파일:** `apis/service/attendance.ts`, `app/(tabs)/(certified)/index.tsx`
 
-**문제 발견:**
-- 출석 상태 조회 API가 GET 메서드를 지원하지 않음
-- 500 Error: "Request method 'GET' is not supported"
-
-**변경 사항:**
-```typescript
-// Before: API 호출 시도
-const { data: attendanceData } = useAttendance(studyToken, meetingNo);
-<Typography>{attendanceData?.hasAttendance ? '출석 완료' : '미완료'}</Typography>
-
-// After: API 호출 제거, 정적 표시
-// TODO: [백엔드 필요] 출석/인증 상태 조회 API 구현 필요
-// const { data: attendanceData } = useAttendance(...);
-<Typography style={{ color: colors.red[6] }}>미완료</Typography>
-```
-
-**인증 API 상태:**
-```typescript
-// ✅ 인증 조회는 정상 작동 (GET /proofs 지원)
-GET /study/{studyToken}/meetings/{meetingNo}/proofs
-→ 200 OK: { proofStatusResponse: "NONE", provenTime: null }
-```
-
----
-
-#### 1.2 출석/인증 모달 구현 (기존)
-**파일:** `app/(tabs)/(certified)/index.tsx`
+**문제 발견 및 해결:**
+- 엔드포인트 오타: `/attendances` (복수형) → `/attendance` (단수형)
+- 500 Error → 정상 작동
 
 **변경 사항:**
 ```typescript
-// Before: 하드코딩된 "미완료", "인증 전" 표시
-<Typography style={{ color: colors.red[6] }}>미완료</Typography>
+// apis/service/attendance.ts
+// Before: (❌ 오타)
+GET /study/{studyToken}/meetings/{meetingNo}/attendances
 
-// After: 실제 API 데이터 기반 동적 표시
+// After: (✅ 수정)
+GET /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance
+```
+
+```typescript
+// app/(tabs)/(certified)/index.tsx
+// 출석/인증 상태 조회 활성화
 const { data: attendanceData } = useAttendance(studyToken, meetingNo);
 const { data: proofData } = useProof(studyToken, meetingNo);
 
+// 실시간 상태 표시
 <Typography style={{ color: attendanceData?.hasAttendance ? colors.primary : colors.red[6] }}>
   {attendanceData?.hasAttendance ? '출석 완료' : '미완료'}
 </Typography>
@@ -92,6 +75,12 @@ const { data: proofData } = useProof(studyToken, meetingNo);
     : '미제출'}
 </Typography>
 ```
+
+**효과:**
+- ✅ 실시간 출석 상태 표시
+- ✅ 인증 승인/대기/반려 상태 구분
+- ✅ 색상으로 시각적 피드백
+- ✅ 백엔드 추가 작업 불필요
 
 ---
 
@@ -208,8 +197,9 @@ const { data: proofData } = useProof(studyToken, meetingNo);
 ### 수정된 파일
 | 파일 | 변경 사항 |
 |------|-----------|
-| `index.tsx` | ~~출석/인증 상태 조회 기능 추가~~ → 백엔드 API 문제로 제거 |
-| `imageUpload.ts` | TODO 주석 상세화 |
+| `apis/service/attendance.ts` | 출석 조회 엔드포인트 수정 (`/attendances` → `/attendance`) |
+| `index.tsx` | 출석/인증 상태 조회 기능 활성화 |
+| `imageUpload.ts` | TODO 주석 상세화 (S3 → proof/files) |
 | `member-detail.tsx` | TODO 주석 상세화 |
 
 ### 백엔드 API 상태 확인 (2025-11-09)
@@ -217,8 +207,9 @@ const { data: proofData } = useProof(studyToken, meetingNo);
 |-----|--------|------|------|
 | Meetings | GET | ✅ 정상 | 회차 데이터 조회 가능 |
 | Proof 조회 | GET | ✅ 정상 | 인증 상태 조회 가능 |
-| Attendance 조회 | GET | ❌ 미지원 | "Request method 'GET' is not supported" |
-| Upload | POST | ❌ 미구현 | S3 업로드 API 필요 |
+| **Attendance 조회** | GET | ✅ **정상** | **엔드포인트 오타 수정으로 해결** |
+| Proof 이미지 업로드 | POST | ✅ 정상 | POST /api/v1/proof/files |
+| 평가 API | POST | ✅ 정상 | POST /api/v1/evaluation |
 
 ### 생성된 문서
 | 문서 | 페이지 수 | 주요 내용 |
@@ -234,21 +225,23 @@ const { data: proofData } = useProof(studyToken, meetingNo);
 
 ## 🎯 주요 개선 사항
 
-### 1. 백엔드 API 문제 발견 및 대응
+### 1. 출석 상태 조회 API 오타 수정 ✅
 **문제:**
-```
-GET /study/{studyToken}/meetings/{meetingNo}/attendances
-→ 500 Error: "Request method 'GET' is not supported"
-```
-
-**대응:**
 ```typescript
-// 출석 상태 조회 코드 일시 비활성화
-// TODO: [백엔드 필요] 출석/인증 상태 조회 API 구현 필요
-// const { data: attendanceData } = useAttendance(...);
+// 프론트엔드가 잘못된 엔드포인트 호출
+GET /study/{studyToken}/meetings/{meetingNo}/attendances (복수형)
+→ 500 Error
+```
 
-// 정적 표시로 임시 대응
-<Typography style={{ color: colors.red[6] }}>미완료</Typography>
+**해결:**
+```typescript
+// 올바른 엔드포인트로 수정
+GET /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance (단수형)
+→ 200 OK
+
+// 실시간 상태 표시 활성화
+{attendanceData?.hasAttendance ? '출석 완료' : '미완료'}
+{proofData?.proofStatus === 'APPROVED' ? '인증 완료' : ...}
 ```
 
 ### 2. TODO 명확화
@@ -274,34 +267,37 @@ GET /study/{studyToken}/meetings/{meetingNo}/attendances
 
 ## 📋 백엔드 팀 액션 아이템
 
-### 긴급 (🔴 HIGH)
-1. **출석 상태 조회 API 구현** ⚠️ **신규 발견**
-   - 현상: GET /study/{studyToken}/meetings/{meetingNo}/attendances 미지원
-   - 에러: "Request method 'GET' is not supported"
-   - 영향: 출석 상태 확인 불가, 중복 출석 방지 불가
-   - 필요: GET 메서드 지원 또는 별도 조회 엔드포인트 추가
-   - 상세: `docs/TODO.md` 1.1번 항목 참고
+### ✅ 모두 완료!
+모든 필요한 백엔드 API가 이미 구현되어 있었습니다!
 
-### 확인 완료 (✅ DONE)
-2. **이미지 업로드 API**
-   - 상태: ✅ **이미 구현됨** (2025-11-09 확인)
+1. **출석 상태 조회 API**
+   - 상태: ✅ **구현 완료**
+   - API: `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance`
+   - 해결: 프론트엔드 엔드포인트 오타 수정
+
+2. **인증 이미지 업로드 API**
+   - 상태: ✅ **구현 완료**
    - API: `POST /api/v1/proof/files` (인증 이미지 저장)
-   - 액션: 프론트엔드에서 연동만 하면 됨
+   - 액션: 프론트엔드 연동 필요
 
-3. **Meetings API 데이터 반환**
-   - 상태: ✅ 정상 작동 중 (2025-11-09 확인)
-   - 로그 확인 결과 데이터 정상 반환됨
+3. **Meetings API**
+   - 상태: ✅ **정상 작동**
+   - 확인: 2025-11-09
 
-4. **평가 기능 API**
-   - 상태: ✅ **이미 구현됨**
+4. **인증 상태 조회 API**
+   - 상태: ✅ **정상 작동**
+   - API: `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs`
+
+5. **평가 기능 API**
+   - 상태: ✅ **구현 완료**
    - API: `POST /api/v1/evaluation` (스터디원 평가)
-   - 액션: 프론트엔드에서 연동만 하면 됨
+   - 액션: 프론트엔드 연동 필요
 
-### 중요 (🟡 MEDIUM)
-5. **출석 상태 API 응답 개선 (선택)**
+### 선택사항 (🟡 MEDIUM)
+1. **출석 상태 API 응답 개선**
    - 현재: { hasAttendance: boolean }
    - 제안: { hasAttendance, status: 'PRESENT'|'LATENESS'|'ABSENT' }
-   - 상세: `docs/TODO.md` 1.2번 항목 참고
+   - 상세: `docs/TODO.md` 1.1번 항목 참고
 
 ---
 
@@ -323,48 +319,53 @@ JOIN-FE/docs/
 
 ## 🔄 다음 스프린트 권장 사항
 
-### 1주차 (긴급 해결)
-- 🔴 백엔드: Meetings API 이슈 해결
-- 🔴 백엔드: 이미지 업로드 API 구현
+### 1주차 (핵심 기능)
+- 🔴 프론트: 이미지 업로드 API 연동 (POST /api/v1/proof/files)
 - 🟡 프론트: 이미지 압축 기능 구현
-
-### 2주차 (핵심 기능)
 - 🟡 프론트: 스터디 선택 기능
+
+### 2주차 (추가 기능)
 - 🟡 프론트: 관리자 기능 UI 연동
 - 🟡 프론트: 평가하기 페이지
+- 🟢 프론트: 에러 처리 개선
 
 ### 3주차 (개선 및 안정화)
-- 🟢 프론트: 에러 처리 개선
 - 🟢 프론트: 코드 리팩토링
 - 🟢 QA 테스트 및 버그 수정
+- 🟢 성능 최적화
 
 ---
 
 ## ✅ 체크리스트
 
 ### 프론트엔드
-- [x] ~~출석/인증 상태 조회 기능 추가~~ → 백엔드 API 미지원으로 보류
+- [x] ✅ **출석/인증 상태 조회 기능 수정 및 활성화**
 - [x] TODO 주석 체계화
 - [x] 문서 작성 (README, TODO, TECH_SPEC, SUMMARY)
 - [x] 백엔드 API 상태 확인 및 문서화
+- [x] ✅ **엔드포인트 오타 수정**
+- [ ] 이미지 업로드 API 연동 (POST /api/v1/proof/files)
 - [ ] 이미지 압축 기능 구현
 - [ ] 스터디 선택 기능 구현
 - [ ] 관리자 기능 UI 연동
+- [ ] 평가 페이지 제작
 
 ### 백엔드
-- [ ] ⚠️ **긴급**: 출석 상태 조회 API 구현 (GET 메서드 미지원)
-- [x] Meetings API 데이터 반환 (✅ 정상 작동 확인)
-- [ ] 이미지 업로드 API 구현
-- [ ] S3 버킷 설정
-- [ ] API 문서 업데이트
+- [x] ✅ **출석 상태 조회 API** (이미 구현됨)
+- [x] ✅ **Meetings API** (정상 작동)
+- [x] ✅ **인증 이미지 업로드 API** (이미 구현됨)
+- [x] ✅ **인증 상태 조회 API** (정상 작동)
+- [x] ✅ **평가 API** (이미 구현됨)
+- [ ] 출석 상태 API 응답 개선 (선택사항)
 
 ### 문서
-- [x] TODO.md 작성
+- [x] TODO.md 작성 및 업데이트
 - [x] TECH_SPEC.md 작성
 - [x] README.md 작성
 - [x] SUMMARY.md 작성 및 업데이트
 - [x] TODO 주석 정리
 - [x] 백엔드 API 상태 문서화
+- [x] ✅ **엔드포인트 오타 수정 문서화**
 
 ---
 
@@ -374,12 +375,15 @@ JOIN-FE/docs/
 |-----|------|------|
 | GET /study/{studyToken}/meetings | ✅ 정상 | 회차 데이터 반환 확인 |
 | GET /study/{studyToken}/meetings/{meetingNo}/proofs | ✅ 정상 | 인증 상태 조회 가능 |
-| GET /study/{studyToken}/meetings/{meetingNo}/attendance | ❌ 미지원 | GET 메서드 미지원 에러 |
-| POST /api/v1/proof/files | ✅ 정상 | 인증 이미지 업로드 API 구현됨 |
-| POST /api/v1/evaluation | ✅ 정상 | 스터디원 평가 API 구현됨 |
+| **GET /study/{studyToken}/meetings/{meetingNo}/attendance** | ✅ **정상** | **엔드포인트 오타 수정으로 해결** |
+| POST /api/v1/proof/files | ✅ 정상 | 인증 이미지 업로드 |
+| POST /api/v1/evaluation | ✅ 정상 | 스터디원 평가 |
+
+**결론: 모든 필수 백엔드 API가 정상 작동 중입니다!** 🎉
 
 ---
 
 **작성자:** Frontend Team  
 **검토자:** -  
+**승인자:** -  
 **승인자:** -

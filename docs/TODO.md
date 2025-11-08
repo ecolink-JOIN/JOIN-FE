@@ -11,61 +11,37 @@
 
 ## 1. 백엔드 작업 필요 항목 (Backend Required)
 
-### 1.1 출석/인증 상태 조회 API 구현 ⚠️ 긴급
-**우선순위:** 🔴 HIGH  
-**상태:** 백엔드 미구현 확인
+### 1.1 출석 상태 API 응답 개선 (선택사항)
+**우선순위:** � MEDIUM
 
-**문제 상황:**
+#### 현재 상태
+- ✅ `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance` - **이미 구현됨** (단수형)
+- ✅ `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs` - 이미 구현됨
+
+#### 해결됨! ⚠️ 중요 발견
+**프론트엔드가 잘못된 엔드포인트를 호출하고 있었습니다:**
+- ❌ 기존: `/attendances` (복수형) → 500 Error
+- ✅ 수정: `/attendance` (단수형) → 정상 작동
+
+#### 개선 제안 (선택사항)
+현재 출석 API가 단순히 `hasAttendance: boolean`만 반환한다면,  
+더 상세한 정보가 필요할 경우 다음 필드 추가를 고려해주세요:
+
+**출석 API 응답 개선안:**
+```json
+{
+  "data": {
+    "hasAttendance": true,
+    "attendanceTime": "2025-01-09T19:05:00",
+    "status": "PRESENT",  // 추가: PRESENT, LATENESS, ABSENT
+    "isLate": false       // 추가: 지각 여부
+  }
+}
 ```
-GET /study/{studyToken}/meetings/{meetingNo}/attendances
-→ 500 Error: "Request method 'GET' is not supported"
-```
-
-**현재:**
-- 백엔드에서 GET 메서드를 지원하지 않음
-- 프론트엔드는 POST(생성)만 가능하고 조회 불가
-- 출석/인증 상태를 실시간으로 확인할 수 없음
-
-**필요:**
-1. **출석 상태 조회 API**
-   ```typescript
-   // Option 1: GET 메서드 지원
-   GET /study/{studyToken}/meetings/{meetingNo}/attendances
-   Response: {
-     hasAttendance: boolean;
-     attendanceStatus: 'PRESENT' | 'LATENESS' | 'ABSENT' | null;
-     attendanceTime: string | null;
-   }
-
-   // Option 2: 별도 조회 엔드포인트
-   GET /study/{studyToken}/meetings/{meetingNo}/my-attendance
-   Response: 동일
-   ```
-
-2. **인증 상태 조회 API**
-   ```typescript
-   // 현재 동작하는 API
-   GET /study/{studyToken}/meetings/{meetingNo}/proofs
-   Response: {
-     proofStatusResponse: 'APPROVED' | 'PENDING' | 'REJECTED' | 'NONE';
-     provenTime: string | null;
-   }
-   ✅ 이미 작동 중
-   ```
-
-**영향:**
-- 사용자가 출석/인증을 완료했는지 확인 불가
-- UI에 항상 "미완료", "미제출"로 표시됨
-- 중복 출석/인증 방지 불가
-
-**프론트엔드 준비 상태:**
-- useAttendance Hook 구현 완료
-- 상태 표시 UI 구현 완료
-- 백엔드 API만 구현되면 즉시 연동 가능
 
 ---
 
-### 1.2 출석 상태 API 응답 개선 (선택사항)
+### 1.2 평가 기능 API 확인
 **우선순위:** � MEDIUM
 
 #### 현재 상태
@@ -90,7 +66,7 @@ GET /study/{studyToken}/meetings/{meetingNo}/attendances
 
 ---
 
-### 1.3 평가 기능 API 확인
+### 1.2 평가 기능 API 확인
 **우선순위:** 🟢 LOW
 
 #### 현재 상태
@@ -105,7 +81,23 @@ POST /api/v1/evaluation
 
 ## 2. 프론트엔드 작업 항목 (Frontend Tasks)
 
-### 1.3 Meetings API 데이터 반환 확인
+### 2.1 출석/인증 상태 조회 연동 ✅ **완료!**
+**우선순위:** 🔴 HIGH → ✅ **DONE**  
+**위치:** `apis/service/attendance.ts`, `app/(tabs)/(certified)/index.tsx`
+
+#### 문제 해결
+**엔드포인트 오타 수정:**
+- ❌ 기존: `GET /study/{studyToken}/meetings/{meetingNo}/attendances` (복수형)
+- ✅ 수정: `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance` (단수형)
+
+#### 완료 사항
+- ✅ `apis/service/attendance.ts` - 엔드포인트 수정
+- ✅ `app/(tabs)/(certified)/index.tsx` - 출석/인증 상태 표시 활성화
+- ✅ 실시간 상태 조회 기능 작동
+
+---
+
+### 2.2 이미지 업로드 API 연동 ⚠️ 긴급
 **우선순위:** � LOW  
 **위치:** Meetings API 관련
 
@@ -186,7 +178,7 @@ export const uploadProofImage = async (image: ImagePickerResult): Promise<string
 
 ---
 
-### 2.2 이미지 압축 기능 구현
+### 2.3 이미지 압축 기능 구현
 **우선순위:** 🟡 MEDIUM  
 **위치:** `utils/imageUpload.ts`
 
@@ -221,7 +213,7 @@ export const compressImage = async (uri: string, quality: number = 0.7): Promise
 
 ---
 
-### 2.3 평가하기 페이지 제작
+### 2.4 평가하기 페이지 제작
 **우선순위:** 🟡 MEDIUM  
 **위치:** `app/(tabs)/(my)/manage/[token]/evaluation.tsx` (신규 생성)
 
@@ -246,7 +238,7 @@ export const compressImage = async (uri: string, quality: number = 0.7): Promise
 
 ---
 
-### 2.4 스터디 선택 기능 구현
+### 2.5 스터디 선택 기능 구현
 **우선순위:** 🟡 MEDIUM  
 **위치:** `app/(tabs)/(certified)/index.tsx`
 
@@ -284,7 +276,7 @@ const handleStudySelect = (token: string) => {
 
 ---
 
-### 2.5 관리자 기능 UI 연동
+### 2.6 관리자 기능 UI 연동
 **우선순위:** 🟡 MEDIUM  
 **위치:** `app/(tabs)/(my)/manage/[token]/member-detail.tsx`
 
@@ -318,7 +310,7 @@ const handleUpdateAttendance = () => {
 
 ---
 
-### 2.6 에러 처리 개선
+### 2.7 에러 처리 개선
 **우선순위:** 🟢 LOW
 
 #### 개선 항목
@@ -336,7 +328,7 @@ const handleUpdateAttendance = () => {
 
 ---
 
-### 2.7 코드 정리 및 리팩토링
+### 2.8 코드 정리 및 리팩토링
 **우선순위:** 🟢 LOW
 
 #### 작업 항목

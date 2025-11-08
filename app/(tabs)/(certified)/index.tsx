@@ -8,10 +8,12 @@ import { useCurrentMeeting, useNextMeeting } from '@/hooks/useMeetings';
 import { useState } from 'react';
 import AttendanceModal from '@/components/molecules/AttendanceModal';
 import ProofModal from '@/components/molecules/ProofModal';
-import { usePostAttendance } from '@/hooks/useAttendance';
-import { usePostProof } from '@/hooks/useProof';
+import { usePostAttendance, useAttendance } from '@/hooks/useAttendance';
+import { usePostProof, useProof } from '@/hooks/useProof';
 import { getCurrentISOString } from '@/utils/dateFormatter';
 import { Alert } from 'react-native';
+import { ProofService } from '@/apis';
+import FormData from 'form-data';
 
 function CertifiedScreen() {
   // 참여 중인 스터디 목록 조회
@@ -41,12 +43,11 @@ function CertifiedScreen() {
   const displayMeeting = currentMeeting || nextMeeting;
   const meetingNo = displayMeeting?.meetingNo;
 
-  // TODO: [백엔드 필요] 출석/인증 상태 조회 API 구현 필요
-  // 현재: 백엔드에서 GET /study/{studyToken}/meetings/{meetingNo}/attendances 미지원
-  // 에러: "Request method 'GET' is not supported"
-  // 필요: GET 메서드 지원 또는 별도 조회 엔드포인트 추가
-  // const { data: attendanceData } = useAttendance(studyToken || '', meetingNo || 0, !!studyToken && !!meetingNo);
-  // const { data: proofData } = useProof(studyToken || '', meetingNo || 0, !!studyToken && !!meetingNo);
+  // 출석 상태 조회 (엔드포인트 수정: /attendances → /attendance)
+  const { data: attendanceData } = useAttendance(studyToken || '', meetingNo || 0, !!studyToken && !!meetingNo);
+
+  // 인증 상태 조회
+  const { data: proofData } = useProof(studyToken || '', meetingNo || 0, !!studyToken && !!meetingNo);
 
   // 모달 상태
   const [isAttendanceModalVisible, setIsAttendanceModalVisible] = useState(false);
@@ -96,38 +97,57 @@ function CertifiedScreen() {
   };
 
   // 인증 처리
-  const handleProofConfirm = (imageUri: string) => {
+  const handleProofConfirm = async (imageUri: string) => {
     if (!studyToken || !meetingNo) {
       Alert.alert('오류', '스터디 정보가 없습니다.');
       return;
     }
 
-    const provenDate = getCurrentISOString();
+    try {
+      // 이미지 파일 정보 생성 (account-info.tsx 패턴)
+      const fileName = `proof_${Date.now()}.jpg`;
+      const formData = new FormData();
+      
+      // React Native에서는 uri를 File로 변환
+      formData.append('file', {
+        uri: imageUri,
+        type: 'image/jpeg',
+        name: fileName,
+      } as any);
 
-    // TODO: [프론트엔드] 이미지 업로드 API 연동 필요
-    // 현재: 로컬 URI를 직접 전송 (임시)
-    // 필요: POST /api/v1/proof/files로 이미지를 먼저 업로드하고 URL을 받아야 함
-    // 참고: utils/imageUpload.ts의 uploadProofImage 함수 구현 필요
-    const photoUrl = imageUri;
+      // S3에 이미지 업로드 (ProofService 사용)
+      const uploadResult = await ProofService().uploadProofImage(formData);
+      const uploadedUrl = uploadResult?.url;
 
-    postProof.mutate(
-      {
-        studyToken,
-        meetingNo,
-        proofType: 'PHOTO',
-        proofPhotoUrl: photoUrl,
-        provenDate,
-      },
-      {
-        onSuccess: () => {
-          setIsProofModalVisible(false);
-          Alert.alert('인증 완료', '인증이 제출되었습니다. 스터디장의 승인을 기다려주세요.');
+      if (!uploadedUrl) {
+        throw new Error('업로드된 URL을 받지 못했습니다.');
+      }
+
+      const provenDate = getCurrentISOString();
+
+      // 업로드된 URL로 인증 제출
+      postProof.mutate(
+        {
+          studyToken,
+          meetingNo,
+          proofType: 'PHOTO',
+          proofPhotoUrl: uploadedUrl,
+          provenDate,
         },
-        onError: (error: any) => {
-          Alert.alert('인증 실패', error.response?.data?.message || '인증 제출에 실패했습니다.');
+        {
+          onSuccess: () => {
+            setIsProofModalVisible(false);
+            Alert.alert('인증 완료', '인증이 제출되었습니다. 스터디장의 승인을 기다려주세요.');
+          },
+          onError: (error: any) => {
+            Alert.alert('인증 실패', error.response?.data?.message || '인증 제출에 실패했습니다.');
+          },
         },
-      },
-    );
+      );
+    } catch (error) {
+      console.error('이미지 업로드 에러:', error);
+      Alert.alert('업로드 실패', '이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   // 현재 날짜/시간 포맷 (예: 07/11(목) 20:01)
@@ -224,8 +244,11 @@ function CertifiedScreen() {
               }}
             >
               <Typography variant="button">출석</Typography>
-              <Typography variant="button" style={{ color: colors.red[6] }}>
-                미완료
+              <Typography
+                variant="button"
+                style={{ color: attendanceData?.hasAttendance ? colors.primary : colors.red[6] }}
+              >
+                {attendanceData?.hasAttendance ? '출석 완료' : '미완료'}
               </Typography>
             </View>
             <View
@@ -250,8 +273,26 @@ function CertifiedScreen() {
                 <Typography variant="button" style={{ color: colors.gray[8] }}>
                   사진
                 </Typography>
-                <Typography variant="button" style={{ color: colors.red[6] }}>
-                  미제출
+                <Typography
+                  variant="button"
+                  style={{
+                    color:
+                      proofData?.proofStatus === 'APPROVED'
+                        ? colors.primary
+                        : proofData?.proofStatus === 'PENDING'
+                          ? colors.yellow[6]
+                          : proofData?.proofStatus === 'REJECTED'
+                            ? colors.red[6]
+                            : colors.red[6],
+                  }}
+                >
+                  {proofData?.proofStatus === 'APPROVED'
+                    ? '인증 완료'
+                    : proofData?.proofStatus === 'PENDING'
+                      ? '승인 대기'
+                      : proofData?.proofStatus === 'REJECTED'
+                        ? '반려'
+                        : '미제출'}
                 </Typography>
               </View>
             </View>

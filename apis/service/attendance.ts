@@ -9,7 +9,7 @@ export const AttendanceService = () => {
    */
   const getAttendance = async (studyToken: string, meetingNo: number) => {
     const req = (await API.get(
-      `${baseUrl}/${studyToken}/meetings/${meetingNo}/attendances`,
+      `${baseUrl}/${studyToken}/meetings/${meetingNo}/attendance`,
     )) as AttendanceResponse.GetAttendance;
     return req.data;
   };

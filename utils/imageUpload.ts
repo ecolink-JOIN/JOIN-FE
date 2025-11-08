@@ -143,30 +143,45 @@ export const compressImage = async (uri: string, quality: number = 0.7): Promise
  * POST /api/v1/proof/files 사용
  */
 export const uploadProofImage = async (image: ImagePickerResult): Promise<string> => {
-  // TODO: [프론트엔드] POST /api/v1/proof/files API 연동
-  //
-  // 백엔드 API (이미 구현됨):
-  // POST /api/v1/proof/files
-  // 인증 이미지 저장 - 인증 필수
-  //
-  // 프론트엔드 구현 예시:
-  // import { API } from '@/apis/axios';
-  //
-  // const formData = new FormData();
-  // formData.append('file', {
-  //   uri: image.uri,
-  //   type: 'image/jpeg',
-  //   name: image.name,
-  // } as any);
-  //
-  // const response = await API.post('/proof/files', formData, {
-  //   headers: { 'Content-Type': 'multipart/form-data' },
-  // });
-  // return response.data.url; // 업로드된 이미지 URL
-  //
-  // 임시 처리: Base64 URL 반환 (로컬 테스트용)
-  if (image.base64) {
-    return imageToBase64Url(image.base64);
+  try {
+    const FormData = require('form-data');
+    const { API } = require('@/apis/axios');
+
+    // FormData 생성 (account-info.tsx 참고)
+    const formData = new FormData();
+
+    // React Native의 이미지 파일 형식으로 추가
+    formData.append('file', {
+      uri: image.uri,
+      type: 'image/jpeg',
+      name: image.name || `proof_${Date.now()}.jpg`,
+    });
+
+    // API 호출
+    const response = await API.post('/proof/files', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      transformRequest: (data: any) => data,
+    });
+
+    // 응답에서 URL 추출
+    const uploadedUrl = response.data?.data?.url || response.data?.url;
+
+    if (uploadedUrl) {
+      return uploadedUrl;
+    }
+
+    throw new Error('업로드된 URL을 받지 못했습니다.');
+  } catch (error) {
+    console.error('이미지 업로드 실패:', error);
+
+    // 실패 시 Base64 URL로 폴백
+    if (image.base64) {
+      console.warn('이미지 업로드 실패, Base64 사용');
+      return imageToBase64Url(image.base64);
+    }
+
+    throw new Error('이미지 업로드 실패: ' + (error as Error).message);
   }
-  throw new Error('이미지 업로드 실패: Base64 데이터가 없습니다.');
 };
