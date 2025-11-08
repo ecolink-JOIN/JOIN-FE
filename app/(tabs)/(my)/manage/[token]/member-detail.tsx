@@ -112,7 +112,11 @@ const MemberDetail = () => {
             <Button
               variant="contained"
               onPress={() => {
-                // TODO: 평가하기 페이지 제작
+                // TODO: [프론트엔드] 평가하기 페이지 제작
+                // 1. /app/(tabs)/(my)/manage/[token]/evaluation.tsx 페이지 생성
+                // 2. 평가 항목 UI 구성 (별점, 코멘트 등)
+                // 3. 평가 제출 API 연동 필요 (백엔드 API 확인)
+                // router.push(`/(tabs)/(my)/manage/${token}/evaluation?avartarToken=${avartarToken}`);
               }}
             >
               평가하기

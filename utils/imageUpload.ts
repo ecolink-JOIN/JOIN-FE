@@ -130,20 +130,42 @@ export const imageToBase64Url = (base64: string, mimeType: string = 'image/jpeg'
  * 이미지 압축 및 리사이징 (옵션)
  */
 export const compressImage = async (uri: string, quality: number = 0.7): Promise<string> => {
-  // TODO: expo-image-manipulator 사용하여 구현
-  // 현재는 원본 URI 반환
+  // TODO: [프론트엔드] expo-image-manipulator 패키지 설치 및 구현
+  // 1. 패키지 설치: npx expo install expo-image-manipulator
+  // 2. 이미지 리사이징: manipulateAsync(uri, [{ resize: { width: 1024 } }])
+  // 3. 이미지 압축: compress 옵션으로 품질 조정
+  // 참고: https://docs.expo.dev/versions/latest/sdk/imagemanipulator/
   return uri;
 };
 
 /**
- * S3 업로드 함수 (추후 구현)
- * 현재는 Base64로 대체
+ * S3 업로드 함수
  */
 export const uploadToS3 = async (image: ImagePickerResult): Promise<string> => {
-  // TODO: AWS S3 또는 백엔드 파일 업로드 API 구현
-  // 임시로 Base64 URL 반환
+  // TODO: [백엔드 필요] 이미지 업로드 API 엔드포인트 구현 필요
+  //
+  // 백엔드에서 구현해야 할 사항:
+  // 1. POST /api/v1/upload 엔드포인트 생성
+  // 2. multipart/form-data 형식으로 이미지 수신
+  // 3. AWS S3에 이미지 업로드
+  // 4. S3 URL 반환
+  //
+  // 프론트엔드 구현 예시 (백엔드 완성 후):
+  // const formData = new FormData();
+  // formData.append('file', {
+  //   uri: image.uri,
+  //   type: 'image/jpeg',
+  //   name: image.name,
+  // } as any);
+  //
+  // const response = await API.post('/upload', formData, {
+  //   headers: { 'Content-Type': 'multipart/form-data' },
+  // });
+  // return response.data.url; // S3 URL
+  //
+  // 임시 처리: Base64 URL 반환 (로컬 테스트용)
   if (image.base64) {
     return imageToBase64Url(image.base64);
   }
-  throw new Error('이미지 업로드 실패');
+  throw new Error('이미지 업로드 실패: Base64 데이터가 없습니다.');
 };

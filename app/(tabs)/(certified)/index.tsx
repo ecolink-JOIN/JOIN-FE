@@ -41,6 +41,13 @@ function CertifiedScreen() {
   const displayMeeting = currentMeeting || nextMeeting;
   const meetingNo = displayMeeting?.meetingNo;
 
+  // TODO: [백엔드 필요] 출석/인증 상태 조회 API 구현 필요
+  // 현재: 백엔드에서 GET /study/{studyToken}/meetings/{meetingNo}/attendances 미지원
+  // 에러: "Request method 'GET' is not supported"
+  // 필요: GET 메서드 지원 또는 별도 조회 엔드포인트 추가
+  // const { data: attendanceData } = useAttendance(studyToken || '', meetingNo || 0, !!studyToken && !!meetingNo);
+  // const { data: proofData } = useProof(studyToken || '', meetingNo || 0, !!studyToken && !!meetingNo);
+
   // 모달 상태
   const [isAttendanceModalVisible, setIsAttendanceModalVisible] = useState(false);
   const [isProofModalVisible, setIsProofModalVisible] = useState(false);
@@ -97,7 +104,10 @@ function CertifiedScreen() {
 
     const provenDate = getCurrentISOString();
 
-    // TODO: S3 업로드 구현 필요
+    // TODO: [백엔드 필요] S3 이미지 업로드 API 구현 필요
+    // 현재: 로컬 URI를 직접 전송 (임시)
+    // 필요: POST /upload API로 이미지를 먼저 업로드하고 S3 URL을 받아야 함
+    // 참고: utils/imageUpload.ts의 uploadToS3 함수 구현 필요
     const photoUrl = imageUri;
 
     postProof.mutate(
@@ -240,13 +250,8 @@ function CertifiedScreen() {
                 <Typography variant="button" style={{ color: colors.gray[8] }}>
                   사진
                 </Typography>
-                <Typography
-                  variant="button"
-                  style={{
-                    color: colors.red[6],
-                  }}
-                >
-                  인증 전
+                <Typography variant="button" style={{ color: colors.red[6] }}>
+                  미제출
                 </Typography>
               </View>
             </View>
