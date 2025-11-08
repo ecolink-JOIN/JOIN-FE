@@ -107,7 +107,7 @@ function CertifiedScreen() {
       // 이미지 파일 정보 생성 (account-info.tsx 패턴)
       const fileName = `proof_${Date.now()}.jpg`;
       const formData = new FormData();
-      
+
       // React Native에서는 uri를 File로 변환
       formData.append('file', {
         uri: imageUri,
