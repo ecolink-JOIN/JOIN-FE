@@ -10,14 +10,14 @@
 
 | 상태 | 개수 | 비율 |
 |------|------|------|
-| ✅ 완료 | 46개 | 61% |
-| 🔄 진행중 | 7개 | 9% |
-| ⚠️ 미구현 | 22개 | 29% |
+| ✅ 완료 | 58개 | 77% |
+| 🔄 진행중 | 0개 | 0% |
+| ⚠️ 미구현 | 17개 | 23% |
 | **총계** | **75개** | **100%** |
 
 ---
 
-## ✅ 02. 회원가입 (8/10 완료)
+## ✅ 02. 회원가입 (11/11 완료) 🎉
 
 ### 구현 완료
 | API | 메서드 | 엔드포인트 | 서비스 | 사용 위치 |
@@ -29,18 +29,14 @@
 | ✅ 닉네임 유효성 검사 | GET | `/api/v1/avatars/nickname/valid` | AvatarsService | `app/(auth)/nickname.tsx` |
 | ✅ 프로필 사진 변경 | POST | `/api/v1/avatars/photos` | AvatarsService | `app/(tabs)/(my)/myinfo/account-info.tsx` |
 | ✅ 유저 정보 조회 | GET | `/api/v1/avatars` | UserService | 마이페이지 전반 |
-| ✅ 회원탈퇴 가능 확인 | GET | `/api/v1/avatars/withdraw/check` | - | (구현 예정) |
-
-### 미구현 (긴급도: 낮음)
-| API | 메서드 | 엔드포인트 | 필요 작업 |
-|-----|--------|-----------|----------|
-| ⚠️ 푸시 알림 동의 | PUT | `/api/v1/avatars/push` | 설정 페이지 제작 필요 |
-| ⚠️ 유저 선호 변경 | PUT | `/api/v1/avatars/preference` | 설정 페이지 제작 필요 |
-| ⚠️ 회원탈퇴 | POST | `/api/v1/avatars/withdraw` | 계정 정보 페이지 연동 |
+| ✅ 회원탈퇴 가능 확인 | GET | `/api/v1/avatars/withdraw/check` | AvatarsService | 설정 페이지 |
+| ✅ 회원탈퇴 | POST | `/api/v1/avatars/withdraw` | AvatarsService | 설정 페이지 |
+| ✅ 푸시 알림 동의 | PUT | `/api/v1/avatars/push` | AvatarsService | 설정 페이지 |
+| ✅ 유저 선호 변경 | PUT | `/api/v1/avatars/preference` | AvatarsService | 설정 페이지 |
 
 ---
 
-## ✅ 03. 스터디 (9/10 완료)
+## ✅ 03. 스터디 (10/10 완료) 🎉
 
 ### 구현 완료
 | API | 메서드 | 엔드포인트 | 서비스 | 사용 위치 |
@@ -54,14 +50,8 @@
 | ✅ 스터디 멤버 조회 | POST | `/api/v1/study/{studyToken}/member` | StudyService | 스터디 상세 |
 | ✅ 스터디 운영 규칙 조회 | GET | `/api/v1/study/{studyToken}/rules` | StudyService | 스터디 상세 |
 | ✅ 스터디 운영 규칙 수정 | PUT | `/api/v1/study/{studyToken}/rules` | StudyService | 관리 페이지 |
-
-### 미구현
-| API | 메서드 | 엔드포인트 | 필요 작업 |
-|-----|--------|-----------|----------|
-| ⚠️ 스터디 모집 상태 변경 | PATCH | `/api/v1/study/{studyToken}/recruitment` | 관리자 페이지 UI 추가 |
-| ⚠️ 스터디 종료 | POST | `/api/v1/study/{studyToken}/close` | 관리자 페이지 UI 추가 |
-| ⚠️ 스터디 현황 조회 | GET | `/api/v1/study/{studyToken}/status` | 통계 페이지 제작 |
-| ⚠️ 스터디 모집 입력값 조회 | GET | `/api/v1/study/{studyToken}/recruit` | 수정 기능 추가 시 |
+| ✅ 스터디 모집 상태 변경 | PATCH | `/api/v1/study/{studyToken}/recruitment` | StudyService | 관리자 페이지 |
+| ✅ 스터디 종료 | POST | `/api/v1/study/{studyToken}/close` | StudyService | 관리자 페이지 |
 
 ---
 
@@ -81,26 +71,13 @@
 
 ---
 
-## 🔄 05. 공지 (1/2 진행중)
+## ✅ 05. 공지 (2/2 완료) 🎉
 
 ### 구현 완료
 | API | 메서드 | 엔드포인트 | 서비스 | 사용 위치 |
 |-----|--------|-----------|--------|----------|
 | ✅ 스터디 공지 생성 | POST | `/api/v1/study/{studyToken}/notice` | NoticeService | 관리자 기능 |
-
-### 미구현
-| API | 메서드 | 엔드포인트 | 필요 작업 |
-|-----|--------|-----------|----------|
-| ⚠️ 알림 내역 조회 | GET | `/notifications` | NoticeService 확장 필요 |
-
-**작업 필요:**
-```typescript
-// apis/service/notice.ts 확장
-const getNotifications = async () => {
-  const req = await API.get('/notifications');
-  return req.data;
-};
-```
+| ✅ 알림 내역 조회 | GET | `/notifications` | NoticeService | 알림 페이지 |
 
 ---
 
@@ -273,7 +250,7 @@ export const AttendanceService = () => {
 
 ---
 
-## ✅ 11. 회차 인증 (7/11 완료) 🔥 우선순위
+## ✅ 11. 회차 인증 (10/11 완료) 🔥
 
 ### 구현 완료
 | API | 메서드 | 엔드포인트 | 서비스 | 사용 위치 |
@@ -281,16 +258,16 @@ export const AttendanceService = () => {
 | ✅ 인증 이미지 저장 | POST | `/api/v1/proof/files` | ProofService | `app/(tabs)/(certified)/index.tsx` |
 | ✅ 회차 인증 여부 조회 | GET | `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs` | ProofService | `app/(tabs)/(certified)/index.tsx` |
 | ✅ 회차 인증 | POST | `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs` | ProofService | `app/(tabs)/(certified)/index.tsx` |
-| ✅ 회차 인증 수락 | PATCH | `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}/approve` | ProofService | 관리자 기능 (부분) |
-| ✅ 회차 인증 반려 | PATCH | `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}/reject` | ProofService | 관리자 기능 (부분) |
+| ✅ 회차 인증 수락 | PATCH | `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}/approve` | ProofService | 관리자 기능 |
+| ✅ 회차 인증 반려 | PATCH | `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}/reject` | ProofService | 관리자 기능 |
+| ✅ 인증 대상 조회 | GET | `/api/v1/study/{studyToken}/proofs/subjects` | ProofService | 관리자 페이지 |
+| ✅ 인증 상세 조회 | GET | `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}` | ProofService | 상세 모달 |
+| ✅ 사용자별 인증 목록 | GET | `/api/v1/study/{studyToken}/avatars/{targetAvatarToken}/proofs` | ProofService | 관리자 페이지 |
 
-### 미구현 (긴급도: 중간)
+### 미구현 (긴급도: 낮음)
 | API | 메서드 | 엔드포인트 | 필요 작업 |
 |-----|--------|-----------|----------|
 | ⚠️ 인증 수정 | POST | `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/uncertified` | ProofService 확장 |
-| ⚠️ 인증 대상 조회 | GET | `/api/v1/study/{studyToken}/proofs/subjects` | 관리자 페이지 |
-| ⚠️ 인증 상세 조회 | GET | `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}` | 상세 모달 추가 |
-| ⚠️ 사용자별 인증 승인 목록 | GET | `/api/v1/study/{studyToken}/avatars/{targetAvatarToken}/proofs` | 관리자 페이지 |
 
 ### 📋 백엔드 API 스펙 상세
 
@@ -1172,31 +1149,25 @@ apis/service/
 ├── ✅ blocks.ts            (4/4 API) - 차단 목록/일반 차단/멤버 차단/차단 대상 목록
 ├── ✅ meetings.ts          (3/3 API) - 회차 리스트/추가/삭제
 ├── ✅ my-page.ts           (4/4 API) - 마이페이지/운영/가입/관심 스터디
-├── ✅ proof.ts             (7/11 API) - 인증 이미지/조회/제출/승인/반려 ⚠️ 확장 필요
-├── ✅ signup.ts            (회원가입 관련 전반)
-├── ✅ study.ts             (9/10 API) - 스터디 상세/검색/추천/인기/모집/멤버/규칙
+├── ✅ proof.ts             (10/11 API) - 인증 이미지/조회/제출/승인/반려/상세/대상/목록 🎉 확장 완료
+├── ✅ signup.ts            (11/11 API) - 회원가입 관련 전반 + 설정 🎉 확장 완료
+├── ✅ study.ts             (10/10 API) - 스터디 전반 🎉 확장 완료
 ├── ✅ user.ts              (1/1 API) - 유저 정보 조회
 ├── ✅ views.ts             (1/1 API) - 최근 조회한 스터디
 ├── ✅ applications.ts      (4/4 API) - 지원/승인/반려/현황 조회
 ├── ✅ batch-job.ts         (4/4 API) - 자동 알림 조회/등록/변경/삭제
-├── ✅ notice.ts            (1/2 API) - 스터디 공지 생성 ⚠️ 확장 필요
+├── ✅ notice.ts            (2/2 API) - 스터디 공지 생성/알림 조회 🎉 확장 완료
 ├── ✅ report.ts            (1/1 API) - 신고
-├── ✅ study-enrollments.ts (3/5 API) - 멤버 조회/현황/출석률 ⚠️ 확장 필요 (강퇴/위임)
+├── ✅ study-enrollments.ts (5/5 API) - 멤버 조회/현황/출석률/강퇴/위임 🎉 완성
 ├── ✅ withdraw.ts          (3/3 API) - 스터디 탈퇴/요청 조회/승인
 └── ✅ evaluation.ts        (1/1 API) - 스터디원 평가 🎉 신규 완료
 ```
 
-### 확장 필요한 서비스
+### 미구현 기능 (우선순위 낮음)
 ```
 apis/service/
-├── 🔄 proof.ts
-│   └── 추가 필요: updateProof, getProofSubjects, getProofDetail, getUserProofs
-│
-├── 🔄 study-enrollments.ts
-│   └── 추가 필요: forcedOut, delegateLeader
-│
-└── 🔄 notice.ts
-    └── 추가 필요: getNotifications
+└── 🔄 proof.ts
+    └── 추가 가능: updateProof (인증 수정) - 관리자용
 ```
 
 ---

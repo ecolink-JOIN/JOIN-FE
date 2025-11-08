@@ -94,6 +94,15 @@ export const StudyService = () => {
     return req.data;
   };
 
+  /**
+   * 스터디 종료 - 인증 필수
+   * @api-doc: POST /api/v1/study/{studyToken}/close
+   */
+  const closeStudy = async (studyToken: string, body: StudyRequest.CloseStudy) => {
+    const req = (await API.post(`${url}/${studyToken}/close`, body)) as Shared.HttpResponse;
+    return req.data;
+  };
+
   return {
     detail,
     search,
@@ -106,5 +115,6 @@ export const StudyService = () => {
     getRules,
     patchRules,
     toggleRecruitStatus,
+    closeStudy,
   };
 };

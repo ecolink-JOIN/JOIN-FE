@@ -32,6 +32,48 @@ declare namespace ProofResponse {
     };
   }
 
+  // 인증 상세 조회 응답
+  export interface ProofDetail extends Shared.HttpResponse {
+    data: {
+      proofId: number;
+      proofPhotoUrl: string;
+      provenTime: string; // ISO 8601 format
+    };
+  }
+
+  // 사용자별 인증 목록 응답
+  export interface UserProofs extends Shared.HttpResponse {
+    data: {
+      studyToken: string;
+      avatar: {
+        avatarToken: string;
+        nickname: string;
+        profileImageUrl: string;
+      };
+      proofs: {
+        proofId: number;
+        meetingNo: number;
+        proofType: ProofType;
+        proofStatus: ProofStatus;
+        proofPhotoUrl: string | null;
+        provenTime: string;
+      }[];
+    };
+  }
+
+  // 인증 대상 조회 응답
+  export interface ProofSubjects extends Shared.HttpResponse {
+    data: {
+      studyToken: string;
+      subjects: {
+        avatarToken: string;
+        nickname: string;
+        profileImageUrl: string;
+        hasProof: boolean;
+      }[];
+    };
+  }
+
   export type ProofType = 'PHOTO' | 'TIMER';
   export type ProofStatus =
     | 'PENDING' // 승인 대기

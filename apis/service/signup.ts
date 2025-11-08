@@ -39,7 +39,43 @@ export const AvatarsService = () => {
     return (await API.post(`/logout`)) as Shared.HttpResponse;
   };
 
-  return { photos, nickname, nicknameValid, logout };
+  /**
+   * 푸시 알림 동의 API - 인증 필요
+   * @api-doc: PUT /api/v1/avatars/push
+   */
+  const updatePushConsent = async (body: Avatars.PushConsentRequest) => {
+    const req = (await API.put(`${url}/push`, body)) as Shared.HttpResponse;
+    return req.data;
+  };
+
+  /**
+   * 유저 선호 변경 API - 인증 필요
+   * @api-doc: PUT /api/v1/avatars/preference
+   */
+  const updatePreference = async (body: Avatars.PreferenceRequest) => {
+    const req = (await API.put(`${url}/preference`, body)) as Shared.HttpResponse;
+    return req.data;
+  };
+
+  /**
+   * 회원탈퇴 가능 여부 확인 - 인증 필요
+   * @api-doc: GET /api/v1/avatars/withdraw/check
+   */
+  const checkWithdraw = async () => {
+    const req = (await API.get(`${url}/withdraw/check`)) as Shared.HttpResponse;
+    return req.data;
+  };
+
+  /**
+   * 회원탈퇴 - 인증 필요
+   * @api-doc: POST /api/v1/avatars/withdraw
+   */
+  const withdraw = async () => {
+    const req = (await API.post(`${url}/withdraw`)) as Shared.HttpResponse;
+    return req.data;
+  };
+
+  return { photos, nickname, nicknameValid, logout, updatePushConsent, updatePreference, checkWithdraw, withdraw };
 };
 
 export const TermsService = () => {

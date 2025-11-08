@@ -110,6 +110,11 @@ declare namespace StudyRequest {
   }
 
   export type RuleType = 'FINE' | 'EXPULSION' | 'PHOTO_PROOF' | 'TIMER_PROOF';
+
+  // 스터디 종료 요청
+  export interface CloseStudy {
+    actualEndDate: string;
+  }
   export interface Applications {
     introduction: string;
     appDate: Date;

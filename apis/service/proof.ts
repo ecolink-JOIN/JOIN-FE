@@ -69,5 +69,46 @@ export const ProofService = () => {
     return req.data;
   };
 
-  return { uploadProofImage, getProof, getProofList, postProof, approveProof, rejectProof };
+  /**
+   * 인증 상세 조회 - 인증 필수
+   * @api-doc: GET /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}
+   */
+  const getProofDetail = async (studyToken: string, meetingNo: number, proofId: number) => {
+    const req = (await API.get(
+      `${baseUrl}/${studyToken}/meetings/${meetingNo}/proofs/${proofId}`,
+    )) as ProofResponse.ProofDetail;
+    return req.data;
+  };
+
+  /**
+   * 사용자별 인증 목록 조회 - 인증 필수
+   * @api-doc: GET /api/v1/study/{studyToken}/avatars/{targetAvatarToken}/proofs
+   */
+  const getUserProofs = async (studyToken: string, targetAvatarToken: string) => {
+    const req = (await API.get(
+      `${baseUrl}/${studyToken}/avatars/${targetAvatarToken}/proofs`,
+    )) as ProofResponse.UserProofs;
+    return req.data;
+  };
+
+  /**
+   * 인증 대상 조회 - 인증 필수
+   * @api-doc: GET /api/v1/study/{studyToken}/proofs/subjects
+   */
+  const getProofSubjects = async (studyToken: string) => {
+    const req = (await API.get(`${baseUrl}/${studyToken}/proofs/subjects`)) as ProofResponse.ProofSubjects;
+    return req.data;
+  };
+
+  return {
+    uploadProofImage,
+    getProof,
+    getProofList,
+    postProof,
+    approveProof,
+    rejectProof,
+    getProofDetail,
+    getUserProofs,
+    getProofSubjects,
+  };
 };

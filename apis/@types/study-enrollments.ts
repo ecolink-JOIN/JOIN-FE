@@ -42,4 +42,14 @@ declare namespace StudyEnrollmentsResponse {
   }
 }
 
-declare namespace StudyEnrollmentRequest {}
+declare namespace StudyEnrollmentRequest {
+  // 강퇴 요청
+  export interface ForcedOut {
+    targetToken: string;
+  }
+
+  // 스터디장 위임 요청
+  export interface Delegate {
+    targetToken: string;
+  }
+}
