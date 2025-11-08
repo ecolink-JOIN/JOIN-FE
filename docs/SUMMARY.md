@@ -282,27 +282,26 @@ GET /study/{studyToken}/meetings/{meetingNo}/attendances
    - 필요: GET 메서드 지원 또는 별도 조회 엔드포인트 추가
    - 상세: `docs/TODO.md` 1.1번 항목 참고
 
-2. **이미지 업로드 API 구현**
-   - 엔드포인트: POST /api/v1/upload
-   - 요청: multipart/form-data
-   - 응답: { url: "s3-url" }
-   - 상세: `docs/TODO.md` 1.2번 항목 참고
-
 ### 확인 완료 (✅ DONE)
+2. **이미지 업로드 API**
+   - 상태: ✅ **이미 구현됨** (2025-11-09 확인)
+   - API: `POST /api/v1/proof/files` (인증 이미지 저장)
+   - 액션: 프론트엔드에서 연동만 하면 됨
+
 3. **Meetings API 데이터 반환**
    - 상태: ✅ 정상 작동 중 (2025-11-09 확인)
    - 로그 확인 결과 데이터 정상 반환됨
 
+4. **평가 기능 API**
+   - 상태: ✅ **이미 구현됨**
+   - API: `POST /api/v1/evaluation` (스터디원 평가)
+   - 액션: 프론트엔드에서 연동만 하면 됨
+
 ### 중요 (🟡 MEDIUM)
-4. **출석 상태 API 응답 개선 (선택)**
+5. **출석 상태 API 응답 개선 (선택)**
    - 현재: { hasAttendance: boolean }
    - 제안: { hasAttendance, status: 'PRESENT'|'LATENESS'|'ABSENT' }
-   - 상세: `docs/TODO.md` 참고
-
-5. **평가 기능 API (우선순위 낮음)**
-   - POST /study/{studyToken}/evaluations
-   - GET /study/{studyToken}/evaluations/{avartarToken}
-   - 상세: `docs/TODO.md` 1.4번 항목 참고
+   - 상세: `docs/TODO.md` 1.2번 항목 참고
 
 ---
 
@@ -375,8 +374,9 @@ JOIN-FE/docs/
 |-----|------|------|
 | GET /study/{studyToken}/meetings | ✅ 정상 | 회차 데이터 반환 확인 |
 | GET /study/{studyToken}/meetings/{meetingNo}/proofs | ✅ 정상 | 인증 상태 조회 가능 |
-| GET /study/{studyToken}/meetings/{meetingNo}/attendances | ❌ 미지원 | GET 메서드 미지원 에러 |
-| POST /api/v1/upload | ❌ 미구현 | S3 업로드 API 필요 |
+| GET /study/{studyToken}/meetings/{meetingNo}/attendance | ❌ 미지원 | GET 메서드 미지원 에러 |
+| POST /api/v1/proof/files | ✅ 정상 | 인증 이미지 업로드 API 구현됨 |
+| POST /api/v1/evaluation | ✅ 정상 | 스터디원 평가 API 구현됨 |
 
 ---
 

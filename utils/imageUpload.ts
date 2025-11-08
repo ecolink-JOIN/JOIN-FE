@@ -139,18 +139,19 @@ export const compressImage = async (uri: string, quality: number = 0.7): Promise
 };
 
 /**
- * S3 업로드 함수
+ * 이미지 업로드 함수
+ * POST /api/v1/proof/files 사용
  */
-export const uploadToS3 = async (image: ImagePickerResult): Promise<string> => {
-  // TODO: [백엔드 필요] 이미지 업로드 API 엔드포인트 구현 필요
+export const uploadProofImage = async (image: ImagePickerResult): Promise<string> => {
+  // TODO: [프론트엔드] POST /api/v1/proof/files API 연동
   //
-  // 백엔드에서 구현해야 할 사항:
-  // 1. POST /api/v1/upload 엔드포인트 생성
-  // 2. multipart/form-data 형식으로 이미지 수신
-  // 3. AWS S3에 이미지 업로드
-  // 4. S3 URL 반환
+  // 백엔드 API (이미 구현됨):
+  // POST /api/v1/proof/files
+  // 인증 이미지 저장 - 인증 필수
   //
-  // 프론트엔드 구현 예시 (백엔드 완성 후):
+  // 프론트엔드 구현 예시:
+  // import { API } from '@/apis/axios';
+  //
   // const formData = new FormData();
   // formData.append('file', {
   //   uri: image.uri,
@@ -158,10 +159,10 @@ export const uploadToS3 = async (image: ImagePickerResult): Promise<string> => {
   //   name: image.name,
   // } as any);
   //
-  // const response = await API.post('/upload', formData, {
+  // const response = await API.post('/proof/files', formData, {
   //   headers: { 'Content-Type': 'multipart/form-data' },
   // });
-  // return response.data.url; // S3 URL
+  // return response.data.url; // 업로드된 이미지 URL
   //
   // 임시 처리: Base64 URL 반환 (로컬 테스트용)
   if (image.base64) {

@@ -104,10 +104,10 @@ function CertifiedScreen() {
 
     const provenDate = getCurrentISOString();
 
-    // TODO: [백엔드 필요] S3 이미지 업로드 API 구현 필요
+    // TODO: [프론트엔드] 이미지 업로드 API 연동 필요
     // 현재: 로컬 URI를 직접 전송 (임시)
-    // 필요: POST /upload API로 이미지를 먼저 업로드하고 S3 URL을 받아야 함
-    // 참고: utils/imageUpload.ts의 uploadToS3 함수 구현 필요
+    // 필요: POST /api/v1/proof/files로 이미지를 먼저 업로드하고 URL을 받아야 함
+    // 참고: utils/imageUpload.ts의 uploadProofImage 함수 구현 필요
     const photoUrl = imageUri;
 
     postProof.mutate(

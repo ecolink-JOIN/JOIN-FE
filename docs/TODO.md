@@ -65,55 +65,45 @@ GET /study/{studyToken}/meetings/{meetingNo}/attendances
 
 ---
 
-### 1.2 이미지 업로드 API 구현
-**우선순위:** 🔴 HIGH  
-**위치:** `utils/imageUpload.ts` (uploadToS3 함수)
+### 1.2 출석 상태 API 응답 개선 (선택사항)
+**우선순위:** � MEDIUM
 
-#### 요구사항
-사진 인증 기능을 위한 이미지 업로드 API 엔드포인트가 필요합니다.
+#### 현재 상태
+- ✅ `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance` - 백엔드 구현 확인 필요
+- ✅ `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs` - 이미 구현됨
 
-#### 백엔드에서 구현해야 할 사항
-1. **엔드포인트 생성**
-   - `POST /api/v1/upload`
-   - multipart/form-data 형식으로 이미지 수신
+#### 개선 제안
+현재 출석 API가 단순히 `hasAttendance: boolean`만 반환한다면,  
+더 상세한 정보가 필요할 경우 다음 필드 추가를 고려해주세요:
 
-2. **AWS S3 업로드**
-   - S3 버킷에 이미지 저장
-   - 파일명 중복 방지 (UUID 또는 타임스탬프 사용)
-   - 이미지 용량 제한 설정 (권장: 10MB)
-
-3. **응답 형식**
+**출석 API 응답 개선안:**
 ```json
 {
-  "code": "SUCCESS",
-  "message": "이미지 업로드 성공",
   "data": {
-    "url": "https://s3.amazonaws.com/bucket-name/images/abc123.jpg"
+    "hasAttendance": true,
+    "attendanceTime": "2025-01-09T19:05:00",
+    "status": "PRESENT",  // 추가: PRESENT, LATENESS, ABSENT
+    "isLate": false       // 추가: 지각 여부
   }
 }
 ```
 
-#### 프론트엔드 구현 예정 코드
-```typescript
-// utils/imageUpload.ts의 uploadToS3 함수
-const formData = new FormData();
-formData.append('file', {
-  uri: image.uri,
-  type: 'image/jpeg',
-  name: image.name,
-} as any);
+---
 
-const response = await API.post('/upload', formData, {
-  headers: { 'Content-Type': 'multipart/form-data' },
-});
-return response.data.url; // S3 URL 반환
+### 1.3 평가 기능 API 확인
+**우선순위:** 🟢 LOW
+
+#### 현재 상태
+```
+POST /api/v1/evaluation
+스터디원 평가 API - 인증 필수
 ```
 
-#### 임시 처리 방안
-- 현재: Base64 URL을 사용 (로컬 테스트용)
-- Base64는 용량이 크고 비효율적이므로 운영 환경에서는 사용 불가
+✅ **API 구현 확인됨** - 프론트엔드에서 연동만 하면 됨
 
 ---
+
+## 2. 프론트엔드 작업 항목 (Frontend Tasks)
 
 ### 1.3 Meetings API 데이터 반환 확인
 **우선순위:** � LOW  
@@ -157,11 +147,48 @@ return response.data.url; // S3 URL 반환
 
 ---
 
-## 🔵 프론트엔드 작업 항목
+## 2. 프론트엔드 작업 항목 (Frontend Tasks)
 
-### 1. 이미지 압축 기능 구현 (프론트엔드 단독 작업)
+### 2.1 이미지 업로드 API 연동 ⚠️ 긴급
+**우선순위:** 🔴 HIGH  
+**위치:** `utils/imageUpload.ts`, `app/(tabs)/(certified)/index.tsx`
+
+#### 백엔드 API (✅ 이미 구현됨)
+```
+POST /api/v1/proof/files
+인증 이미지 저장 - 인증 필수
+```
+
+#### 프론트엔드 구현 필요
+```typescript
+// utils/imageUpload.ts
+import { API } from '@/apis/axios';
+
+export const uploadProofImage = async (image: ImagePickerResult): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', {
+    uri: image.uri,
+    type: 'image/jpeg',
+    name: image.name,
+  } as any);
+
+  const response = await API.post('/proof/files', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  
+  return response.data.url;
+};
+```
+
+#### 사용 위치
+- `app/(tabs)/(certified)/index.tsx`의 `handleProofConfirm`
+- 이미지 선택 → 업로드 → URL 받기 → 인증 제출
+
+---
+
+### 2.2 이미지 압축 기능 구현
 **우선순위:** 🟡 MEDIUM  
-**위치:** `utils/imageUpload.ts` (compressImage 함수)
+**위치:** `utils/imageUpload.ts`
 
 #### 작업 내용
 1. **패키지 설치**
@@ -194,7 +221,7 @@ export const compressImage = async (uri: string, quality: number = 0.7): Promise
 
 ---
 
-### 2. 평가하기 페이지 제작
+### 2.3 평가하기 페이지 제작
 **우선순위:** 🟡 MEDIUM  
 **위치:** `app/(tabs)/(my)/manage/[token]/evaluation.tsx` (신규 생성)
 
@@ -219,7 +246,7 @@ export const compressImage = async (uri: string, quality: number = 0.7): Promise
 
 ---
 
-### 3. 스터디 선택 기능 구현
+### 2.4 스터디 선택 기능 구현
 **우선순위:** 🟡 MEDIUM  
 **위치:** `app/(tabs)/(certified)/index.tsx`
 
@@ -255,7 +282,9 @@ const handleStudySelect = (token: string) => {
 
 ---
 
-### 4. 관리자 기능 - 출석/인증 승인/반려 UI 연동
+---
+
+### 2.5 관리자 기능 UI 연동
 **우선순위:** 🟡 MEDIUM  
 **위치:** `app/(tabs)/(my)/manage/[token]/member-detail.tsx`
 
@@ -289,7 +318,7 @@ const handleUpdateAttendance = () => {
 
 ---
 
-### 5. 에러 처리 개선
+### 2.6 에러 처리 개선
 **우선순위:** 🟢 LOW
 
 #### 개선 항목
@@ -307,7 +336,7 @@ const handleUpdateAttendance = () => {
 
 ---
 
-### 6. 코드 정리 및 리팩토링
+### 2.7 코드 정리 및 리팩토링
 **우선순위:** 🟢 LOW
 
 #### 작업 항목
