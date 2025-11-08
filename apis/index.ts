@@ -13,3 +13,4 @@ export { BatchJobService } from './service/batch-job';
 export { ApplicationsService } from './service/applications';
 export { StudyEnrollmentsService } from './service/study-enrollments';
 export { WithdrawService } from './service/withdraw';
+export { EvaluationService } from './service/evaluation';
