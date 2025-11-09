@@ -13,7 +13,7 @@ import Divider from '@/components/atoms/Divider';
 import Evaluator from '@/components/molecules/Evaluator';
 import Button from '@/components/atoms/Button';
 import FineOptions from '@/components/molecules/FineOption';
-import { ApplicationsService } from '@/apis';
+import { ApplicationsService, MyPageService } from '@/apis';
 
 // 스터디 모임 방법
 export const MeetingType = () => {
@@ -322,102 +322,149 @@ export const StudyEvaluation = () => {
   );
 };
 
-// 스터디 출석 및 인증 현황
-export const Attendance = () => {
-  const memberInfo = [
-    { name: '김지수', attendance: '100%', certification: '100%', profile: require('@/assets/images/profile.png') },
-    { name: '박지수', attendance: '100%', certification: '100%', profile: require('@/assets/images/profile.png') },
-    { name: '이지수', attendance: '100%', certification: '100%', profile: require('@/assets/images/profile.png') },
-    { name: '홍지수', attendance: '100%', certification: '100%', profile: require('@/assets/images/profile.png') },
-    { name: '미지수', attendance: '100%', certification: '100%', profile: require('@/assets/images/profile.png') },
-  ];
-  return (
-    <View style={{ marginVertical: 16 }}>
-      <InfoViewBox
-        InfoList={[
-          { title: '평균 출석률', value: '100%' },
-          { title: '평균 인증률', value: '97%' },
-        ]}
-      />
-      <View
-        style={{
-          justifyContent: 'space-between',
-          flexDirection: 'row',
-          marginTop: 24,
-          marginBottom: 8,
-          width: 130,
-          marginLeft: 'auto',
-        }}
-      >
-        <Badge value="출석" variant="outlined" />
-        <Badge value="인증" variant="outlined" />
+//출석 및 인증 현황
+export const Attendance = ({ studyToken }: { studyToken: string }) => {
+  const [studyInfo, setStudyInfo] = React.useState<MyPageResponse.StudyInfo | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        setLoading(true);
+        const response = await MyPageService().getManageStudy();
+        const currentStudy = response.find((study: MyPageResponse.StudyInfo) => study.studyToken === studyToken);
+        setStudyInfo(currentStudy || null);
+      } catch (error) {
+        console.error('Failed to fetch attendance:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAttendance();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <View style={{ padding: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          로딩 중...
+        </Typography>
       </View>
-      {memberInfo.map((member, index) => (
-        <View
-          key={index}
-          style={{ flexDirection: 'row', paddingVertical: 8, alignItems: 'center', justifyContent: 'space-between' }}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Image source={member.profile} style={{ width: 24, height: 24 }} />
-            <Typography variant="body3" style={{ color: colors.gray[9] }}>
-              {member.name}
-            </Typography>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: 130,
-              justifyContent: 'space-between',
-              paddingHorizontal: 5,
-            }}
-          >
-            <Typography variant="body3" style={{ color: colors.gray[9] }}>
-              {member.attendance}
-            </Typography>
-            <Typography variant="body3" style={{ color: colors.gray[9] }}>
-              {member.certification}
-            </Typography>
-          </View>
+    );
+  }
+
+  if (!studyInfo) {
+    return (
+      <View style={{ padding: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          출석 정보를 불러올 수 없습니다.
+        </Typography>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ gap: 16 }}>
+      <LineView>
+        <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+          <Typography variant="button">평균 출석률</Typography>
+          <Typography variant="caption1">{studyInfo.teamAverageAttendanceRate.toFixed(0)}%</Typography>
         </View>
+        <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+          <Typography variant="button">평균 인증률</Typography>
+          <Typography variant="caption1">{studyInfo.teamAverageProofRate.toFixed(0)}%</Typography>
+        </View>
+      </LineView>
+      {studyInfo.studyMembersInfos.map((member, index) => (
+        <LineView key={index}>
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+            <Image
+              source={require('@/assets/images/profile.png')}
+              style={{ width: 32, height: 32, borderRadius: 16 }}
+            />
+            <Typography variant="button">{member.nickname}</Typography>
+          </View>
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+            <Typography variant="caption1">{member.averageAttendanceRate.toFixed(0)}%</Typography>
+            <Typography variant="caption1">{member.averageProofRate.toFixed(0)}%</Typography>
+          </View>
+        </LineView>
       ))}
     </View>
   );
 };
 
 //스터디 인증 승인
-export const Approval = () => {
+export const Approval = ({ studyToken }: { studyToken: string }) => {
   const { id } = useLocalSearchParams();
-  const memberInfo = [
-    { name: '김지수', approve: false, profile: require('@/assets/images/profile.png'), user_id: 1 },
-    { name: '박지수', approve: true, profile: require('@/assets/images/profile.png'), user_id: 2 },
-    { name: '이지수', approve: false, profile: require('@/assets/images/profile.png'), user_id: 3 },
-    { name: '홍지수', approve: true, profile: require('@/assets/images/profile.png'), user_id: 4 },
-    { name: '미지수', approve: false, profile: require('@/assets/images/profile.png'), user_id: 5 },
-  ];
+  const [studyInfo, setStudyInfo] = React.useState<MyPageResponse.StudyInfo | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchApproval = async () => {
+      try {
+        setLoading(true);
+        const response = await MyPageService().getManageStudy();
+        const currentStudy = response.find((study: MyPageResponse.StudyInfo) => study.studyToken === studyToken);
+        setStudyInfo(currentStudy || null);
+      } catch (error) {
+        console.error('Failed to fetch approval:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApproval();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <View style={{ padding: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (!studyInfo) {
+    return (
+      <View style={{ padding: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          승인 정보를 불러올 수 없습니다.
+        </Typography>
+      </View>
+    );
+  }
+
   return (
     <View style={{ marginVertical: 8 }}>
-      {memberInfo.map((member, index) => (
+      {studyInfo.studyMembersInfos.map((member, index) => (
         <Pressable
           key={index}
-          style={{ flexDirection: 'row', paddingVertical: 8, alignItems: 'center', justifyContent: 'space-between' }}
-          onPress={() => router.push(`/manage/${id}/certify?user=${member.user_id}`)}
+          style={{
+            flexDirection: 'row',
+            paddingVertical: 8,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+          onPress={() => router.push(`/manage/${id}/certify?user=${member.nickname}`)}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Image source={member.profile} style={{ width: 24, height: 24 }} />
+            <Image source={require('@/assets/images/profile.png')} style={{ width: 24, height: 24 }} />
             <Typography variant="body3" style={{ color: colors.gray[9] }}>
-              {member.name}
+              {member.nickname}
             </Typography>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <Typography variant="body3" style={{ color: member.approve ? colors.gray[9] : colors.primary }}>
-              {member.approve ? '승인 완료' : '승인 미완료'}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Typography
+              variant="body3"
+              style={{
+                color: member.isFullyApproved ? colors.gray[9] : colors.primary,
+              }}
+            >
+              {member.isFullyApproved ? '승인 완료' : '승인 미완료'}
             </Typography>
             <Icon name="arrow-right-outline" width={24} height={24} stroke={colors.gray[7]} />
           </View>
@@ -427,7 +474,7 @@ export const Approval = () => {
   );
 };
 
-//스터디 인증 승인
+//스터디 신청 승인
 export const ApplicationApproval = () => {
   const { token } = useLocalSearchParams<{ token: string }>();
   const [applicationList, setApplicationList] = React.useState<ApplicationsResponse.GetApplicationsResult[]>([]);
@@ -484,10 +531,46 @@ export const ApplicationApproval = () => {
 };
 
 //스터디 카카오톡 링크
-export const KakaoLink = () => {
+export const KakaoLink = ({ studyToken }: { studyToken: string }) => {
+  const [studyInfo, setStudyInfo] = React.useState<MyPageResponse.StudyInfo | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchKakaoLink = async () => {
+      try {
+        setLoading(true);
+        const response = await MyPageService().getManageStudy();
+        const currentStudy = response.find((study: MyPageResponse.StudyInfo) => study.studyToken === studyToken);
+        setStudyInfo(currentStudy || null);
+      } catch (error) {
+        console.error('Failed to fetch kakao link:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchKakaoLink();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <Typography variant="button" style={{ marginVertical: 8 }}>
+        로딩 중...
+      </Typography>
+    );
+  }
+
+  if (!studyInfo || !studyInfo.kakaoUrl) {
+    return (
+      <Typography variant="button" style={{ marginVertical: 8, color: colors.gray[6] }}>
+        카카오톡 링크가 없습니다.
+      </Typography>
+    );
+  }
+
   return (
     <Typography variant="button" style={{ marginVertical: 8 }}>
-      https://open.kakao.com/dkfjadfksd
+      {studyInfo.kakaoUrl}
     </Typography>
   );
 };

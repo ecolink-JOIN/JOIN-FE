@@ -62,7 +62,7 @@ const StudyStatus = ({ id }: { id: string | string[] | undefined }) => {
           <MyAttendance id={_id} />
         </ManageBox>
         <ManageBox title="스터디 출석 및 인증 현황">
-          <Attendance />
+          <Attendance studyToken={typeof id === 'string' ? id : ''} />
         </ManageBox>
         <ManageBox title="스터디 스케쥴" icon="arrow-right" onPress={handlePresentM}>
           <StudySchedule />

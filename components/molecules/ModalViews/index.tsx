@@ -29,7 +29,9 @@ export const ModalWrapper = ({
     <Modal visible={isModalVisible} transparent animationType="fade" onRequestClose={toggleModal}>
       <Pressable style={{ flex: 1 }} onPress={toggleModal}>
         <ModalBackground pointerEvents="box-none">
-          <ModalBox>{children}</ModalBox>
+          <View pointerEvents="auto">
+            <ModalBox>{children}</ModalBox>
+          </View>
         </ModalBackground>
       </Pressable>
     </Modal>

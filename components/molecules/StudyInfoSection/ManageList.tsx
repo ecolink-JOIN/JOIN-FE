@@ -36,8 +36,11 @@ const ManageList: FC<ManageListProps> = ({
           key={idx}
           onPress={() => {
             if (list.href.includes('progress')) {
-              console.log(list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`);
-              router.push((list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`) as Href);
+              // ACTIVE 상태는 progress.tsx로, 나머지는 progress-{status}.tsx로 라우팅
+              const suffix = status === 'ACTIVE' ? '' : `-${status?.toLowerCase()}`;
+              const route = list.href.replace('[token]', studyToken.toString()) + suffix;
+              console.log('라우팅:', route, 'status:', status);
+              router.push(route as Href);
             } else {
               router.push(list.href.replace('[token]', studyToken.toString()) as Href);
             }
