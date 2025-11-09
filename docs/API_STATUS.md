@@ -20,8 +20,10 @@
 - **부가 기능 완료율:** 50% (검색 내역, 스터디 상태 조회 등)
 
 ### 📅 최근 업데이트
-- **2025-01-09**: 회원 탈퇴 기능 연동 완료
+- **2025-01-09**: 선호 설정 페이지 UI 개선 완료 (백엔드 API 정확 매칭)
+- **2025-01-09**: 설정 페이지 UI 연동 완료 (푸시 알림, 선호 설정)
 - **2025-01-09**: 앱 공지사항 조회 기능 추가 완료 (엔드포인트 수정: /notices)
+- **2025-01-09**: 회원 탈퇴 기능 연동 완료
 
 ---
 
@@ -38,12 +40,12 @@
 | ✅ 유저 정보 조회 | GET | `/api/v1/avatars` | UserService | 마이페이지 전반 |
 | ✅ 회원탈퇴 가능 확인 | GET | `/api/v1/avatars/withdraw/check` | AvatarsService | `app/(tabs)/(my)/myinfo/account-info.tsx` |
 | ✅ 회원탈퇴 | POST | `/api/v1/avatars/withdraw` | AvatarsService | `app/(tabs)/(my)/myinfo/account-info.tsx` |
-| ✅ 푸시 알림 동의 | PUT | `/api/v1/avatars/push` | AvatarsService | 설정 페이지 (코드 완료) |
-| ✅ 유저 선호 변경 | PUT | `/api/v1/avatars/preference` | AvatarsService | 설정 페이지 (코드 완료) |
+| ✅ 푸시 알림 동의 | PUT | `/api/v1/avatars/push` | AvatarsService | `app/(tabs)/(my)/myinfo/app-setting.tsx` ✅ |
+| ✅ 유저 선호 변경 | PUT | `/api/v1/avatars/preference` | AvatarsService | `app/(tabs)/(my)/myinfo/preference.tsx` ✅ |
 | ✅ 유효 약관 조회 | POST | `/api/v1/terms/all` | TermsService | 약관 페이지 |
 
-**상태:** ✅ 모든 API 구현 완료
-**최근 업데이트:** 회원 탈퇴 기능 UI 연동 완료 (2025-01-09)
+**상태:** ✅ 모든 API 구현 완료 및 UI 연동 완료
+**최근 업데이트:** 설정 페이지 UI 연동 완료 (2025-01-09)
 
 ---
 

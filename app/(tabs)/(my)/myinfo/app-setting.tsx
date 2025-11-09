@@ -6,8 +6,14 @@ import { colors } from '@/theme';
 import Icon from '@/components/atoms/Icon';
 import { Href, router } from 'expo-router';
 import { Switch } from '@/components/atoms/Switch';
+import { AvatarsService } from '@/apis';
+import { Alert, ActivityIndicator } from 'react-native';
 
 const list = [
+  {
+    title: '선호 설정',
+    href: '/myinfo/preference',
+  },
   {
     title: '공지사항',
     href: '/myinfo/announce',
@@ -19,13 +25,41 @@ const list = [
 ];
 const Index = () => {
   const [alarm, setAlarm] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handlePushToggle = async (value: boolean) => {
+    try {
+      setIsLoading(true);
+      const { updatePushConsent } = AvatarsService();
+
+      // FCM 토큰은 실제 구현에서 가져와야 하지만, 일단 빈 문자열로 처리
+      // TODO: FCM 토큰 가져오기 로직 추가
+      await updatePushConsent({
+        consent: value,
+        fcmToken: '', // FCM 토큰 필요
+      });
+
+      setAlarm(value);
+      Alert.alert('알림', value ? '시스템 알림이 활성화되었습니다.' : '시스템 알림이 비활성화되었습니다.');
+    } catch (error) {
+      console.error('푸시 알림 설정 실패:', error);
+      Alert.alert('오류', '푸시 알림 설정에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <ManageView>
       <Typography variant="heading3">앱 설정</Typography>
       <ManageBoxView style={shadowStyles.shadow}>
         <SystemAlarm>
           <Typography variant="button">시스템 알림</Typography>
-          <Switch value={alarm} onValueChange={() => setAlarm(!alarm)} />
+          {isLoading ? (
+            <ActivityIndicator size="small" color={colors.primary[5]} />
+          ) : (
+            <Switch value={alarm} onValueChange={handlePushToggle} />
+          )}
         </SystemAlarm>
         {list.map((item, index) => (
           <LinkView

@@ -26,9 +26,9 @@ declare namespace Avatars {
   // 유저 선호 변경 요청
   export interface PreferenceRequest {
     category: string;
-    form: 'ONLINE' | 'OFFLINE' | 'HYBRID';
-    possibleDays: ('MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY')[];
-    timeZone: 'MORNING' | 'AFTERNOON' | 'EVENING' | 'NIGHT';
+    form: 'ONLINE' | 'OFFLINE';
+    possibleDays: SharedStudy.PossibleDays[];
+    timeZone: SharedStudy.TimeZone;
     minParticipationCount: number;
     maxParticipationCount: number;
     province: string;
