@@ -1,6 +1,6 @@
 # JOIN 프로젝트 TODO 리스트
 
-> 마지막 업데이트: 2025년 1월 9일
+> 마지막 업데이트: 2025년 1월 10일
 
 ## 📋 목차
 - [백엔드 작업 필요 항목](#백엔드-작업-필요-항목)
@@ -11,8 +11,81 @@
 
 ## 1. 백엔드 작업 필요 항목 (Backend Required)
 
-### 1.1 출석 상태 API 응답 개선 (선택사항)
-**우선순위:** � MEDIUM
+### 1.1 개인 출석/인증률 조회 API ⚠️ 신규
+**우선순위:** 🟡 MEDIUM  
+**위치:** `components/organisms/MyPage/Manage.tsx` - MyAttendance 컴포넌트
+
+#### 필요한 API
+```
+GET /api/v1/study/{studyToken}/my-attendance
+개인의 출석률과 인증률을 조회
+```
+
+#### 요청/응답 스펙
+```typescript
+// Request
+GET /study/{studyToken}/my-attendance
+
+// Response
+{
+  "data": {
+    "myAttendanceRate": 100,      // 출석률 (%)
+    "myProofRate": 97              // 인증률 (%)
+  }
+}
+```
+
+#### 현재 상태
+- ❌ API 미구현
+- 🔄 Mock 데이터 사용 중
+- 📍 파일 위치: `components/organisms/MyPage/Manage.tsx` (Line 181-216)
+
+#### 구현 후 작업
+1. `apis/@types/my-page.ts`에 타입 추가
+2. `apis/service/my-page.ts`에 API 함수 추가
+3. MyAttendance 컴포넌트 API 연동
+
+---
+
+### 1.2 공지 조회 API ⚠️ 신규
+**우선순위:** 🟢 LOW  
+**위치:** `components/organisms/MyPage/Manage.tsx` - StudyAnnouncement 컴포넌트
+
+#### 필요한 API
+```
+GET /api/v1/study/{studyToken}/notice
+스터디 공지를 조회 (현재는 POST만 존재)
+```
+
+#### 요청/응답 스펙
+```typescript
+// Request
+GET /study/{studyToken}/notice
+
+// Response
+{
+  "data": {
+    "noticeId": 1,
+    "content": "오늘은 지난주에 공지드렸듯이...",
+    "createdAt": "2025-01-10T10:00:00"
+  }
+}
+```
+
+#### 현재 상태
+- ❌ API 미구현 (POST만 존재)
+- 🔄 Mock 데이터 사용 중
+- 📍 파일 위치: `components/organisms/MyPage/Manage.tsx` (Line 148-161)
+
+#### 구현 후 작업
+1. `apis/@types/notice.ts`에 타입 추가
+2. `apis/service/notice.ts`에 API 함수 추가 (또는 기존 파일 확장)
+3. StudyAnnouncement 컴포넌트 API 연동
+
+---
+
+### 1.3 출석 상태 API 응답 개선 (선택사항)
+**우선순위:** 🟢 LOW
 
 #### 현재 상태
 - ✅ `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance` - **이미 구현됨** (단수형)

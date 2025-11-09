@@ -145,6 +145,12 @@ export const StudyRuleDetails = ({ studyToken }: { studyToken: string }) => {
 };
 
 // 스터디 공지
+// TODO: 백엔드 API 추가 필요
+// API Endpoint: GET /study/{studyToken}/notice
+// Request: { studyToken: string }
+// Response: { noticeId: number, content: string, createdAt: string }
+// Priority: 낮음
+// Description: 스터디 공지를 조회하는 API (현재는 POST만 존재)
 export const StudyAnnouncement = () => {
   return (
     <View style={{ paddingTop: 16, paddingBottom: 12 }}>
@@ -181,6 +187,12 @@ export const Status = ({ value, onToggle }: { value: boolean; onToggle?: () => v
 interface MyAttendanceProps {
   id: string;
 }
+// TODO: 백엔드 API 추가 필요
+// API Endpoint: GET /study/{studyToken}/my-attendance
+// Request: { studyToken: string }
+// Response: { myAttendanceRate: number, myProofRate: number }
+// Priority: 중간
+// Description: 개인의 출석률과 인증률을 조회하는 API
 export const MyAttendance = ({ id }: MyAttendanceProps) => {
   const handlePress = () => {
     router.push(`/member/${id}/my-attendance` as Href);
