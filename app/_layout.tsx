@@ -11,6 +11,9 @@ import '../reanimatedConfig';
 import { GlobalProvider } from '@/context/GlobalContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useReactQueryDevTools } from '@dev-plugins/react-query';
+import { TokenStorage } from '@/apis/axios';
+import { UserService } from '@/apis';
+import { useUserStore } from '@/store';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -20,6 +23,8 @@ export const unstable_settings = {
 };
 export default function RootLayout() {
   useReactQueryDevTools(queryClient);
+  const { setUserInfo, avatarToken } = useUserStore();
+
   const [loaded] = useFonts({
     'Pretendard-Black': require('@/assets/fonts/Pretendard-Black.ttf'),
     'Pretendard-Bold': require('@/assets/fonts/Pretendard-Bold.ttf'),
@@ -31,6 +36,29 @@ export default function RootLayout() {
     'Pretendard-SemiBold': require('@/assets/fonts/Pretendard-SemiBold.ttf'),
     'Pretendard-Thin': require('@/assets/fonts/Pretendard-Thin.ttf'),
   });
+
+  // 앱 시작 시 로그인 상태 확인 및 사용자 정보 로드
+  useEffect(() => {
+    const initializeUser = async () => {
+      try {
+        const token = await TokenStorage.getToken();
+        if (token && !avatarToken) {
+          // 토큰은 있지만 avatarToken이 없는 경우 사용자 정보 불러오기
+          const userInfo = await UserService().avatars();
+          setUserInfo({
+            avatarToken: userInfo.avatarToken,
+            nickname: userInfo.nickname,
+            profileUrl: userInfo.image.url,
+          });
+          console.log('User info loaded on app start:', userInfo.avatarToken);
+        }
+      } catch (error) {
+        console.error('Failed to initialize user info:', error);
+      }
+    };
+
+    initializeUser();
+  }, []);
 
   useEffect(() => {
     if (loaded) {

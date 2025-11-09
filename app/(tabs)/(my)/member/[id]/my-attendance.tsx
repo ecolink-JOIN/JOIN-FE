@@ -8,33 +8,47 @@ import { useLocalSearchParams } from 'expo-router';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
 import { useQuery } from '@tanstack/react-query';
 import { StudyEnrollmentsService } from '@/apis';
+import { useUserStore } from '@/store';
 
 const RoundCheck = (id: string | string[] | undefined) => {
   const studyToken = typeof id === 'string' ? id : '';
+  const { avatarToken } = useUserStore();
 
   // 멤버 상세 정보 조회 (출석률, 인증률)
   const { data: memberDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ['memberDetail', studyToken],
+    queryKey: ['memberDetail', studyToken, avatarToken],
     queryFn: async () => {
-      // 현재 로그인한 사용자의 avatarToken은 어떻게 가져올까?
-      // 임시로 빈 문자열 사용 (실제로는 zustand나 context에서 가져와야 함)
-      const avatarToken = ''; // TODO: 실제 avatarToken 필요
+      if (!avatarToken) throw new Error('avatarToken이 없습니다');
       return StudyEnrollmentsService().getMemberDetail(avatarToken);
     },
-    enabled: !!studyToken,
+    enabled: !!studyToken && !!avatarToken,
   });
 
   // 출석 및 인증 현황 조회
   const { data: attendance, isLoading: isLoadingAttendance } = useQuery({
-    queryKey: ['memberAttendance', studyToken],
+    queryKey: ['memberAttendance', studyToken, avatarToken],
     queryFn: async () => {
-      const avatarToken = ''; // TODO: 실제 avatarToken 필요
+      if (!avatarToken) throw new Error('avatarToken이 없습니다');
       return StudyEnrollmentsService().getMemberAttendance(studyToken, avatarToken);
     },
-    enabled: !!studyToken,
+    enabled: !!studyToken && !!avatarToken,
   });
 
   const isLoading = isLoadingDetail || isLoadingAttendance;
+
+  // avatarToken이 없는 경우
+  if (!avatarToken) {
+    return (
+      <ManageView>
+        <Typography variant="heading3">나의 출석 및 인증 현황</Typography>
+        <View style={{ padding: 40, alignItems: 'center' }}>
+          <Typography variant="body3" style={{ color: colors.gray[7], textAlign: 'center' }}>
+            로그인 정보를 불러올 수 없습니다.{'\n'}다시 로그인해주세요.
+          </Typography>
+        </View>
+      </ManageView>
+    );
+  }
 
   if (isLoading) {
     return (

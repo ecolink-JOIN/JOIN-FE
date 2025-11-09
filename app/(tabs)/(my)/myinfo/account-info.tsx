@@ -10,9 +10,11 @@ import { Pressable, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
 import { useRouter } from 'expo-router';
+import { useUserStore } from '@/store';
 
 const Index = () => {
   const router = useRouter();
+  const { clearUser } = useUserStore();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newImage, setImage] = useState<File | null>(null);
   const [profileImage, setProfileImage] = useState('');
@@ -61,6 +63,8 @@ const Index = () => {
             AvatarsService()
               .logout()
               .finally(() => {
+                // Zustand store 초기화
+                clearUser();
                 router.replace('/(auth)');
               });
           },

@@ -5,10 +5,13 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 // import CookieManager from '@react-native-cookies/cookies';
 import Typography from '@/components/atoms/Typography';
 import { TokenStorage } from '@/apis/axios';
+import { UserService } from '@/apis';
+import { useUserStore } from '@/store';
 
 const WebViewOauthScreen = () => {
   const { provider } = useLocalSearchParams();
   const router = useRouter();
+  const { setUserInfo } = useUserStore();
 
   // NOTE: https 여야 정상 동작합니다.
 
@@ -35,6 +38,20 @@ const WebViewOauthScreen = () => {
       if (sessionId) {
         await TokenStorage.setToken(sessionId);
         // console.log('Session ID saved:', sessionId);
+
+        // 사용자 정보 가져오기
+        try {
+          const userInfo = await UserService().avatars();
+          setUserInfo({
+            avatarToken: userInfo.avatarToken,
+            nickname: userInfo.nickname,
+            profileUrl: userInfo.image.url,
+          });
+          console.log('User info saved to store:', userInfo.avatarToken);
+        } catch (error) {
+          console.error('Failed to fetch user info:', error);
+        }
+
         // TODO: 로그인 성공 시 처리
         if (parsedData.data.new_user) {
           router.replace('/(auth)/terms');
