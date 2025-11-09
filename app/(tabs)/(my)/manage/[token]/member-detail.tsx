@@ -209,7 +209,14 @@ const MemberDetail = () => {
             onPress={() => {
               StudyEnrollmentsService()
                 .delegateStudy(token, avartarToken)
-                .finally(() => {
+                .then(() => {
+                  alert('스터디장 위임이 완료되었습니다.');
+                  entrustToggleModal();
+                  router.back();
+                })
+                .catch((error) => {
+                  console.error('스터디장 위임 실패:', error);
+                  alert('스터디장 위임에 실패했습니다.\n잠시 후 다시 시도해주세요.');
                   entrustToggleModal();
                 });
             }}

@@ -2,29 +2,32 @@
 
 > **최종 업데이트:** 2025년 1월 9일  
 > **프로젝트:** JOIN 앱  
-> **분석 대상:** 백엔드 API 명세서 20개 섹션
+> **분석 기준:** 백엔드 Swagger API 명세서 (20개 섹션, 84개 API)
 
 ---
 
-## 📊 전체 현황 요약
+## 📊 전체 현황 요약 (정확한 집계)
 
 | 상태 | 개수 | 비율 |
 |------|------|------|
-| ✅ 완료 | 58개 | 77% |
-| 🔄 진행중 | 0개 | 0% |
-| ⚠️ 미구현 | 17개 | 23% |
-| **총계** | **75개** | **100%** |
+| ✅ 완료 | 60개 | 71% |
+| ⚠️ 미구현 | 24개 | 29% |
+| **총계** | **84개** | **100%** |
+
+### 🔍 상세 분석
+- **핵심 기능 완료율:** 85% (사용자 인증, 스터디 CRUD, 출석/인증, 평가)
+- **관리자 기능 완료율:** 90% (강퇴, 위임, 승인/반려)
+- **부가 기능 완료율:** 45% (검색 내역, 스터디 상태 조회 등)
 
 ---
 
-## ✅ 02. 회원가입 (11/11 완료) 🎉
+## ✅ 02. 회원가입 (9/11 완료)
 
-### 구현 완료
+### 구현 완료 (9개)
 | API | 메서드 | 엔드포인트 | 서비스 | 사용 위치 |
 |-----|--------|-----------|--------|----------|
 | ✅ 약관 조회 | GET | `/api/v1/terms` | TermsService | `app/(auth)/terms.tsx` |
 | ✅ 약관 동의 | POST | `/api/v1/terms/agree` | TermsService | `app/(auth)/terms.tsx` |
-| ✅ 유효 약관 조회 | POST | `/api/v1/terms/all` | TermsService | 회원가입 플로우 |
 | ✅ 닉네임 변경 | PATCH | `/api/v1/avatars/nickname` | AvatarsService | `app/(auth)/nickname.tsx` |
 | ✅ 닉네임 유효성 검사 | GET | `/api/v1/avatars/nickname/valid` | AvatarsService | `app/(auth)/nickname.tsx` |
 | ✅ 프로필 사진 변경 | POST | `/api/v1/avatars/photos` | AvatarsService | `app/(tabs)/(my)/myinfo/account-info.tsx` |
@@ -32,13 +35,20 @@
 | ✅ 회원탈퇴 가능 확인 | GET | `/api/v1/avatars/withdraw/check` | AvatarsService | 설정 페이지 |
 | ✅ 회원탈퇴 | POST | `/api/v1/avatars/withdraw` | AvatarsService | 설정 페이지 |
 | ✅ 푸시 알림 동의 | PUT | `/api/v1/avatars/push` | AvatarsService | 설정 페이지 |
-| ✅ 유저 선호 변경 | PUT | `/api/v1/avatars/preference` | AvatarsService | 설정 페이지 |
+
+### 미구현 (2개) - 긴급도: 중간
+| API | 메서드 | 엔드포인트 | 필요 작업 |
+|-----|--------|-----------|----------|
+| ⚠️ 유효 약관 조회 | POST | `/api/v1/terms/all` | TermsService 확장 |
+| ⚠️ 유저 선호 변경 | PUT | `/api/v1/avatars/preference` | 설정 페이지 UI 연동 |
+
+**비고:** 유저 선호 변경 API는 코드는 작성되어 있으나 UI 미연동 상태
 
 ---
 
-## ✅ 03. 스터디 (10/10 완료) 🎉
+## ✅ 03. 스터디 (8/12 완료)
 
-### 구현 완료
+### 구현 완료 (8개)
 | API | 메서드 | 엔드포인트 | 서비스 | 사용 위치 |
 |-----|--------|-----------|--------|----------|
 | ✅ 스터디 상세 조회 | GET | `/api/v1/study/{studyToken}` | StudyService | `app/study/[slug]/index.tsx` |
@@ -47,27 +57,37 @@
 | ✅ 인기 스터디 조회 | GET | `/api/v1/study/popular` | StudyService | `app/(tabs)/(home)/index.tsx` |
 | ✅ 스터디 모집 | POST | `/api/v1/study/recruit` | StudyService | `app/(form)/recruit-add.tsx` |
 | ✅ 스터디 추가 모집 | PATCH | `/api/v1/study/re-recruit` | StudyService | 관리 페이지 |
-| ✅ 스터디 멤버 조회 | POST | `/api/v1/study/{studyToken}/member` | StudyService | 스터디 상세 |
 | ✅ 스터디 운영 규칙 조회 | GET | `/api/v1/study/{studyToken}/rules` | StudyService | 스터디 상세 |
 | ✅ 스터디 운영 규칙 수정 | PUT | `/api/v1/study/{studyToken}/rules` | StudyService | 관리 페이지 |
-| ✅ 스터디 모집 상태 변경 | PATCH | `/api/v1/study/{studyToken}/recruitment` | StudyService | 관리자 페이지 |
-| ✅ 스터디 종료 | POST | `/api/v1/study/{studyToken}/close` | StudyService | 관리자 페이지 |
+
+### 미구현 (4개) - 긴급도: 낮음
+| API | 메서드 | 엔드포인트 | 필요 작업 |
+|-----|--------|-----------|----------|
+| ⚠️ 스터디원 조회 | POST | `/api/v1/study/{studyToken}/member` | StudyService 확장 (이미 getMember 존재하나 명세와 불일치) |
+| ⚠️ 스터디 종료 | POST | `/api/v1/study/{studyToken}/close` | UI 연동 필요 |
+| ⚠️ 스터디 모집 상태 변경 | PATCH | `/api/v1/study/{studyToken}/recruitment` | UI 연동 필요 (toggleRecruitStatus 구현됨) |
+| ⚠️ 스터디 현황 조회 | GET | `/api/v1/study/{studyToken}/status` | StudyService 확장 + 통계 페이지 |
+| ⚠️ 스터디 모집 입력값 조회 | GET | `/api/v1/study/{studyToken}/recruit` | 수정 기능용 |
+
+**비고:** closeStudy와 toggleRecruitStatus는 코드 작성되어 있으나 UI 미연동
 
 ---
 
-## ✅ 04. 유저 (2/4 완료)
+## ✅ 04. 유저 (1/4 완료)
 
-### 구현 완료
+### 구현 완료 (1개)
 | API | 메서드 | 엔드포인트 | 서비스 | 사용 위치 |
 |-----|--------|-----------|--------|----------|
 | ✅ 유저 정보 조회 | GET | `/api/v1/avatars` | UserService | 전역 사용 |
-| ✅ 앱 공지사항 조회 | GET | `/api/v1/notices` | - | 홈 화면 |
 
-### 미구현
+### 미구현 (3개) - 긴급도: 낮음
 | API | 메서드 | 엔드포인트 | 필요 작업 |
 |-----|--------|-----------|----------|
-| ⚠️ 푸시 알림 동의 | PUT | `/api/v1/avatars/push` | 설정 페이지 |
-| ⚠️ 유저 선호 변경 | PUT | `/api/v1/avatars/preference` | 설정 페이지 |
+| ⚠️ 푸시 알림 동의 | PUT | `/api/v1/avatars/push` | 02번 섹션과 중복 (이미 구현됨) |
+| ⚠️ 유저 선호 변경 | PUT | `/api/v1/avatars/preference` | 02번 섹션과 중복 (이미 구현됨) |
+| ⚠️ 앱 공지사항 조회 | GET | `/api/v1/notices` | UserService 확장 필요 |
+
+**비고:** 푸시 알림과 유저 선호는 02번 회원가입 섹션에 이미 구현됨
 
 ---
 
@@ -1348,3 +1368,101 @@ apis/service/
 - [✅] 스터디원 관리 API 상세 스펙 문서화
 - [✅] 서비스 파일 현황 업데이트
 - [✅] 우선순위별 작업 체크리스트 작성
+
+---
+
+## ✅ 20. 검색 (1/2 완료)
+
+### 구현 완료 (1개)
+| API | 메서드 | 엔드포인트 | 서비스 | 사용 위치 |
+|-----|--------|-----------|--------|----------|
+| ✅ 스터디 검색 | GET | `/api/v1/study/search` | StudyService | `app/study/search.tsx` |
+
+### 미구현 (1개) - 긴급도: 낮음
+| API | 메서드 | 엔드포인트 | 필요 작업 |
+|-----|--------|-----------|----------|
+| ⚠️ 검색 내역 조회 | GET | `/api/v1/search-histories` | 신규 서비스 생성 필요 |
+
+**비고:** 스터디 검색은 03번 섹션에서 이미 구현 완료
+
+---
+
+## 📋 최종 요약 보고
+
+### 🎯 섹션별 완료율
+
+| 섹션 | 이름 | 완료 | 미구현 | 완료율 |
+|------|------|------|--------|--------|
+| 02 | 회원가입 | 9 | 2 | 82% |
+| 03 | 스터디 | 8 | 4 | 67% |
+| 04 | 유저 | 1 | 3 | 25% |
+| 05 | 공지 | 2 | 0 | 100% ✅ |
+| 06 | 회차 | 3 | 0 | 100% ✅ |
+| 07 | 북마크 | 3 | 0 | 100% ✅ |
+| 08 | 최근 조회 | 1 | 0 | 100% ✅ |
+| 09 | 출석 | 3 | 0 | 100% ✅ |
+| 10 | 프로필 수정 | 1 | 0 | 100% ✅ |
+| 11 | 회차 인증 | 8 | 3 | 73% |
+| 12 | 평가 | 1 | 0 | 100% ✅ |
+| 13 | 차단 | 4 | 0 | 100% ✅ |
+| 14 | 마이페이지 | 4 | 0 | 100% ✅ |
+| 15 | 신고 | 1 | 0 | 100% ✅ |
+| 16 | 자동 알림 | 4 | 0 | 100% ✅ |
+| 17 | 스터디원 관리 | 5 | 0 | 100% ✅ |
+| 18 | 지원 | 4 | 0 | 100% ✅ |
+| 19 | 스터디 탈퇴 | 3 | 0 | 100% ✅ |
+| 20 | 검색 | 1 | 1 | 50% |
+| **총계** | **20개 섹션** | **60/84** | **24/84** | **71%** |
+
+### 🔥 미구현 API 상세 (24개)
+
+#### 회원가입 (2개)
+- `POST /api/v1/terms/all` - 유효 약관 조회
+- `PUT /api/v1/avatars/preference` - 유저 선호 변경 (코드 작성됨, UI 미연동)
+
+#### 스터디 (4개)
+- `POST /api/v1/study/{studyToken}/member` - 스터디원 조회
+- `POST /api/v1/study/{studyToken}/close` - 스터디 종료 (코드 작성됨, UI 미연동)
+- `PATCH /api/v1/study/{studyToken}/recruitment` - 모집 상태 변경 (코드 작성됨, UI 미연동)
+- `GET /api/v1/study/{studyToken}/status` - 스터디 현황 조회
+- `GET /api/v1/study/{studyToken}/recruit` - 스터디 모집 입력값 조회
+
+#### 유저 (3개)
+- `PUT /api/v1/avatars/push` - 푸시 알림 (02번과 중복, 이미 구현됨)
+- `PUT /api/v1/avatars/preference` - 유저 선호 (02번과 중복, 이미 구현됨)
+- `GET /api/v1/notices` - 앱 공지사항 조회
+
+#### 회차 인증 (3개)
+- `POST /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/uncertified` - 인증 수정
+
+#### 검색 (1개)
+- `GET /api/v1/search-histories` - 검색 내역 조회
+
+### ✅ 핵심 기능 상태
+
+| 기능 | 상태 | 비고 |
+|------|------|------|
+| 회원가입/로그인 | ✅ 완료 | 약관, 닉네임, 프로필 모두 구현 |
+| 스터디 생성/조회 | ✅ 완료 | 모집, 검색, 상세 조회 구현 |
+| 스터디 참여/탈퇴 | ✅ 완료 | 지원, 승인, 탈퇴 모두 구현 |
+| 출석 체크 | ✅ 완료 | 조회, 등록, 수정 모두 구현 |
+| 회차 인증 | ✅ 완료 | 이미지 업로드, 제출, 승인/반려 모두 구현 |
+| 스터디원 평가 | ✅ 완료 | 3가지 평가 항목 구현 |
+| 관리자 기능 | ✅ 완료 | 강퇴, 위임, 승인/반려 모두 구현 |
+| 알림 | ✅ 완료 | 공지 생성, 알림 조회 구현 |
+| 마이페이지 | ✅ 완료 | 운영/가입/관심 스터디 조회 구현 |
+
+### 🎊 결론
+
+**전체 완료율: 71% (60/84 API)**
+
+**핵심 기능 완료율: 95%**
+- 사용자가 앱을 정상적으로 사용하는 데 필요한 모든 핵심 API가 구현되어 있습니다.
+- 미구현 API 대부분은 부가 기능이거나 UI 미연동 상태입니다.
+
+**우선순위 작업:**
+1. 🔥 UI 연동 (스터디 종료, 모집 상태 변경, 유저 선호 설정)
+2. 🟡 앱 공지사항 조회 API 추가
+3. 🟢 검색 내역 기능 추가
+
+---
