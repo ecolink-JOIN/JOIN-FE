@@ -10,5 +10,14 @@ export const UserService = () => {
     return req.data;
   };
 
-  return { avatars };
+  /**
+   * 앱 공지사항 조회 API
+   * @api-doc: GET /api/v1/notices
+   */
+  const getAppNotifications = async () => {
+    const req = (await API.get('/notices')) as UserResponse.AppNotifications;
+    return req.data;
+  };
+
+  return { avatars, getAppNotifications };
 };

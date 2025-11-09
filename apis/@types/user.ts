@@ -15,6 +15,17 @@ declare namespace UserResponse {
     };
   }
 
+  export interface AppNotifications extends Shared.HttpResponse {
+    data: AppNotification[];
+  }
+
+  export interface AppNotification {
+    id: number;
+    title: string;
+    content: string;
+    createdAt: string;
+  }
+
   interface Image {
     url: string;
     width: number;
