@@ -44,10 +44,7 @@ const Index = () => {
             await fetchBlockList();
           } catch (error) {
             console.error('차단 해제 실패:', error);
-            Alert.alert(
-              '알림',
-              '차단 해제 기능은 백엔드 API 개발 대기 중입니다.\n잠시 후 다시 시도해주세요.',
-            );
+            Alert.alert('알림', '차단 해제 기능은 백엔드 API 개발 대기 중입니다.\n잠시 후 다시 시도해주세요.');
           } finally {
             setIsUnblocking(null);
           }
@@ -83,10 +80,7 @@ const Index = () => {
               <Typography variant="body3" style={{ marginLeft: 10 }}>
                 {item.nickname}
               </Typography>
-              <ButtonView
-                onPress={() => handleUnblock(item.id, item.nickname)}
-                disabled={isUnblocking === item.id}
-              >
+              <ButtonView onPress={() => handleUnblock(item.id, item.nickname)} disabled={isUnblocking === item.id}>
                 {isUnblocking === item.id ? (
                   <ActivityIndicator size="small" color={colors.primary[5]} />
                 ) : (

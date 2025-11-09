@@ -49,11 +49,7 @@ const Index = () => {
     }
   };
 
-  const handleBlockPress = (
-    member: BlocksResponse.Member,
-    studyToken: string,
-    isActive: boolean,
-  ) => {
+  const handleBlockPress = (member: BlocksResponse.Member, studyToken: string, isActive: boolean) => {
     setSelectedMember({
       avatarToken: member.avatarToken,
       nickname: member.nickname,
@@ -131,11 +127,7 @@ const Index = () => {
         <SearchWrapper>
           <SearchBox>
             <SearchImg name="search" />
-            <SearchInput
-              placeholder="스터디 또는 닉네임 검색"
-              value={search}
-              onChangeText={setSearch}
-            />
+            <SearchInput placeholder="스터디 또는 닉네임 검색" value={search} onChangeText={setSearch} />
           </SearchBox>
           <Button variant="contained" onPress={() => setSearch(search)}>
             검색
@@ -164,11 +156,7 @@ const Index = () => {
               {study.members.map((member, memberIndex) => (
                 <Profiles key={memberIndex}>
                   <Image
-                    source={
-                      member.profileUrl
-                        ? { uri: member.profileUrl }
-                        : require('@/assets/images/profile.png')
-                    }
+                    source={member.profileUrl ? { uri: member.profileUrl } : require('@/assets/images/profile.png')}
                     style={{ width: 24, height: 24, borderRadius: 100 }}
                   />
                   <Typography variant="body3" style={{ marginLeft: 10 }}>
@@ -190,9 +178,7 @@ const Index = () => {
         <ModalContents>
           <Image
             source={
-              selectedMember?.profileUrl
-                ? { uri: selectedMember.profileUrl }
-                : require('@/assets/images/profile.png')
+              selectedMember?.profileUrl ? { uri: selectedMember.profileUrl } : require('@/assets/images/profile.png')
             }
             style={{ width: 80, height: 80, borderRadius: 40, marginHorizontal: 'auto' }}
           />

@@ -22,6 +22,8 @@ const studyLinks: StudyLinkList[] = [
 
 const JoinedStudy = () => {
   const [studyList, setStudyList] = useState<MyPageResponse.JoinStudyInfo[]>([]);
+  const [ongoingCount, setOngoingCount] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
   const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -30,6 +32,8 @@ const JoinedStudy = () => {
       .getJoinStudy()
       .then((data) => {
         setStudyList(data.joinStudyInfos);
+        setOngoingCount(data.ongoingStudyCount);
+        setCompletedCount(data.completedStudyCount);
         setIsLoading(false);
       });
   }, []);
@@ -38,8 +42,8 @@ const JoinedStudy = () => {
     <View style={{ gap: 20 }}>
       <JoinedStatus
         {...{
-          ongoing: 2,
-          completed: 1,
+          ongoing: ongoingCount,
+          completed: completedCount,
         }}
       />
       {studyList.map((study, idx) => (

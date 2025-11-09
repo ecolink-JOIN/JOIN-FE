@@ -40,7 +40,7 @@ export const BlocksService = () => {
   /**
    * 차단 해제
    * @param blockId 차단 ID (차단 목록 조회 시 받은 id)
-   * 
+   *
    * TODO: 백엔드 API 스펙 확인 필요
    * - 현재: DELETE /api/v1/blocks/{blockId}
    * - 확인 필요: 파라미터가 id인지 avatarToken인지
