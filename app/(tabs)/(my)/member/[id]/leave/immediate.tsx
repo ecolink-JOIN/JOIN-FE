@@ -1,15 +1,44 @@
 import React, { useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import { ManageView, ManageBox } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import Button from '@/components/atoms/Button';
 import { View } from 'react-native';
+import { WithdrawService } from '@/apis';
+import Toast from 'react-native-toast-message';
 
 const LeaveImmediate = () => {
-  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const toggleDeleteModal = () => {
-    setDeleteModalVisible(!isDeleteModalVisible);
+  const handleWithdraw = async () => {
+    try {
+      setIsSubmitting(true);
+      await WithdrawService().postWithdraw(id, {
+        withdraw_type: 'SELF_WITHDRAW',
+        reason: '임의 탈퇴',
+      });
+
+      Toast.show({
+        type: 'success',
+        text1: '스터디에서 탈퇴되었습니다.',
+        text2: '출석률과 인증률의 50%만 반영됩니다.',
+      });
+
+      // 이전 페이지로 이동
+      router.back();
+      router.back(); // 두 번 back (leave 페이지 거쳐서 member 페이지로)
+    } catch (error) {
+      console.error('Failed to withdraw:', error);
+      Toast.show({
+        type: 'error',
+        text1: '탈퇴 실패',
+        text2: '잠시 후 다시 시도해주세요.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -49,8 +78,14 @@ const LeaveImmediate = () => {
             marginBottom: 24,
           }}
         >
-          <Button variant="contained" onPress={toggleDeleteModal} size="small" style={{ marginHorizontal: 'auto' }}>
-            탈퇴하기
+          <Button
+            variant="contained"
+            onPress={handleWithdraw}
+            disabled={isSubmitting}
+            size="small"
+            style={{ marginHorizontal: 'auto' }}
+          >
+            {isSubmitting ? '탈퇴 중...' : '탈퇴하기'}
           </Button>
         </View>
       </ManageBox>

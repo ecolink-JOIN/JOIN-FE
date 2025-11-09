@@ -140,7 +140,7 @@ GET /study/{studyToken}/notice
 ---
 
 ### 1.2 평가 기능 API 확인
-**우선순위:** 🟢 LOW
+**우선순위:** � MEDIUM
 
 #### 현재 상태
 ```
@@ -150,11 +150,55 @@ POST /api/v1/evaluation
 
 ✅ **API 구현 확인됨** - 프론트엔드에서 연동만 하면 됨
 
+#### 추가 필요 API (member/[id] 폴더)
+
+**1️⃣ 평가 대상 회원 정보 조회**
+```
+GET /api/v1/avatars/{avatarToken}
+Request: { avatarToken: string }
+Response: {
+  "data": {
+    "avatarToken": "string",
+    "nickname": "김지수",
+    "profileUrl": "https://...",
+    "attendanceRate": 95,
+    "proofRate": 100
+  }
+}
+```
+- 📍 위치: `Manage.tsx` - MemberEvaluation 컴포넌트
+- 현재 상태: 닉네임("닉네임"), 출석률("95%"), 인증률("100%") 하드코딩
+
+**2️⃣ 평가 가능한 스터디원 목록 조회**
+```
+GET /api/v1/study/{studyToken}/enrollments/members
+Request: { studyToken: string }
+Response: {
+  "data": {
+    "members": [
+      {
+        "avatarToken": "string",
+        "nickname": "김지수",
+        "profileUrl": "https://...",
+        "isLeader": true
+      }
+    ]
+  }
+}
+```
+- 📍 위치: `Manage.tsx` - StudyEvaluation 컴포넌트
+- 현재 상태: Mock 데이터 5명 하드코딩 (김지수, 박지수, 이지수, 홍지수, 미지수)
+
+**3️⃣ 공지 조회 API (중복 - 위의 1.2 참고)**
+```
+GET /api/v1/study/{studyToken}/notice
+```
+- 📍 위치: `member/[id]/notice.tsx`
+- 현재 상태: 하드코딩된 공지 내용
+
 ---
 
-## 2. 프론트엔드 작업 항목 (Frontend Tasks)
-
-### 2.1 출석/인증 상태 조회 연동 ✅ **완료!**
+### 1.3 출석 상태 API 응답 개선 (선택사항)
 **우선순위:** 🔴 HIGH → ✅ **DONE**  
 **위치:** `apis/service/attendance.ts`, `app/(tabs)/(certified)/index.tsx`
 
