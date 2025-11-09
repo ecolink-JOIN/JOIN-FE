@@ -14,3 +14,4 @@ export { ApplicationsService } from './service/applications';
 export { StudyEnrollmentsService } from './service/study-enrollments';
 export { WithdrawService } from './service/withdraw';
 export { EvaluationService } from './service/evaluation';
+export { BlocksService } from './service/blocks';

@@ -11,7 +11,48 @@
 
 ## 1. 백엔드 작업 필요 항목 (Backend Required)
 
-### 1.1 개인 출석/인증률 조회 API ⚠️ 신규
+### 1.1 차단 해제 API ⚠️ 긴급
+**우선순위:** 🔴 HIGH  
+**위치:** `app/(tabs)/(my)/myinfo/block-manage.tsx`
+
+#### 필요한 API
+```
+DELETE /api/v1/blocks/{???}
+차단 해제 - 파라미터 타입 확인 필요
+```
+
+#### 확인 필요 사항
+1. **엔드포인트 파라미터 타입**
+   - `DELETE /api/v1/blocks/{id}` (차단 ID) ← 추천
+   - `DELETE /api/v1/blocks/{avatarToken}` (아바타 토큰)
+   - 또는 다른 방식?
+
+2. **차단 목록 조회 응답에 id 필드 있음**
+   ```typescript
+   {
+     id: number;           // 이 값으로 삭제?
+     avatarToken: string;  // 아니면 이 값?
+     nickname: string;
+     profileUrl: string;
+   }
+   ```
+
+#### 현재 상태
+- ❌ API 엔드포인트 미확인
+- 🔄 프론트엔드 구현 완료 (blockId 사용)
+- ⚠️ 500 에러 발생 중: "No static resource"
+- 📍 파일 위치: 
+  - `apis/service/blocks.ts` (Line 43-51)
+  - `app/(tabs)/(my)/myinfo/block-manage.tsx` (Line 29-53)
+
+#### 구현 후 작업
+1. API 스펙 확인 후 `apis/service/blocks.ts` 수정
+2. 필요시 타입 정의 수정
+3. 에러 처리 Alert 메시지 정상화
+
+---
+
+### 1.2 개인 출석/인증률 조회 API ⚠️ 신규
 **우선순위:** 🟡 MEDIUM  
 **위치:** `components/organisms/MyPage/Manage.tsx` - MyAttendance 컴포넌트
 
