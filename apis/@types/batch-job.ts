@@ -24,6 +24,7 @@ declare namespace BatchJobResponse {
   }
 
   export interface Job {
+    batchJobId: number;
     content: string;
     day: string;
     time: string;

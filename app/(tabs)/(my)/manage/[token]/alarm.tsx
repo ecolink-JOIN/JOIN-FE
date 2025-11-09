@@ -24,7 +24,7 @@ const Alarm = () => {
     <ManageBox>
       <ListComponent
         title={item.day}
-        href={`/manage/${token}/alarm-edit?day=${item.day}&time=${item.time}&message=${item.content}`}
+        href={`/manage/${token}/alarm-edit?batchJobId=${item.batchJobId}&day=${item.day}&time=${item.time}&message=${item.content}`}
       >
         <Typography variant="body2" style={{ color: colors.gray[7] }}>
           {item.time}

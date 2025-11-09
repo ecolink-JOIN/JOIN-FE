@@ -12,7 +12,7 @@ import styled from 'styled-components/native';
 import { colors } from '@/theme';
 
 const ReCruiting = ({ bottomSheetModalRef }: { bottomSheetModalRef: React.RefObject<BottomSheetModalMethods> }) => {
-  // const { token } = useLocalSearchParams<{ token: string }>();
+  const { token } = useLocalSearchParams<{ token: string }>();
   const [isModalVisible, setIsModalVisible] = React.useState(false);
 
   const toggleModal = () => {
@@ -26,7 +26,7 @@ const ReCruiting = ({ bottomSheetModalRef }: { bottomSheetModalRef: React.RefObj
         <Status value={false} />
       </ManageBox>
       <ManageBox title="스터디 인증 승인">
-        <Approval />
+        <Approval studyToken={token || ''} />
       </ManageBox>
       <ModalWrapper isModalVisible={isModalVisible} toggleModal={toggleModal}>
         <ModalContents>

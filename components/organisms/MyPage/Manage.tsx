@@ -13,35 +13,104 @@ import Divider from '@/components/atoms/Divider';
 import Evaluator from '@/components/molecules/Evaluator';
 import Button from '@/components/atoms/Button';
 import FineOptions from '@/components/molecules/FineOption';
-import { ApplicationsService, MyPageService } from '@/apis';
+import { ApplicationsService, MyPageService, StudyService } from '@/apis';
 
 // 스터디 모임 방법
-export const MeetingType = () => {
+export const MeetingType = ({ studyToken }: { studyToken: string }) => {
+  const [form, setForm] = React.useState<SharedStudy.Form | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchMeetingType = async () => {
+      try {
+        setLoading(true);
+        const response = await StudyService().getRules(studyToken);
+        setForm(response.form);
+      } catch (error) {
+        console.error('Failed to fetch meeting type:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMeetingType();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <View style={{ paddingTop: 16, paddingBottom: 12 }}>
+        <Typography variant="caption1" style={{ textAlign: 'left' }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
   return (
     <View style={{ paddingTop: 16, paddingBottom: 12 }}>
       <Typography variant="button" numberOfLines={4} ellipsizeMode="tail" style={{ textAlign: 'left' }}>
-        온라인
+        {form === 'ONLINE' ? '온라인' : form === 'OFFLINE' ? '오프라인' : '정보 없음'}
       </Typography>
     </View>
   );
 };
 
 // 스터디 운영 상세 규칙
-export const StudyRuleDetails = () => {
+export const StudyRuleDetails = ({ studyToken }: { studyToken: string }) => {
+  const [ruleData, setRuleData] = React.useState<StudyResponse.Rule | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchRuleDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await StudyService().getRules(studyToken);
+        setRuleData(response);
+      } catch (error) {
+        console.error('Failed to fetch rule details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRuleDetails();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <View style={{ paddingTop: 16, paddingBottom: 12 }}>
+        <Typography variant="caption1" style={{ textAlign: 'left' }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (!ruleData) {
+    return (
+      <View style={{ paddingTop: 16, paddingBottom: 12 }}>
+        <Typography variant="caption1" style={{ textAlign: 'left' }}>
+          규칙 정보를 불러올 수 없습니다.
+        </Typography>
+      </View>
+    );
+  }
+
   const options = [
     {
       name: '지각',
-      fine: 1000,
+      fine: ruleData.fineReasonAmounts.tardiness || 0,
     },
     {
       name: '결석',
-      fine: 2000,
+      fine: ruleData.fineReasonAmounts.absence || 0,
     },
     {
       name: '미인증',
-      fine: 1000,
+      fine: ruleData.fineReasonAmounts.nonProof || 0,
     },
   ];
+
   return (
     <View style={{ paddingTop: 16, paddingBottom: 12 }}>
       <Typography variant="button" numberOfLines={4} ellipsizeMode="tail" style={{ textAlign: 'left' }}>
@@ -69,7 +138,7 @@ export const StudyRuleDetails = () => {
           gap: 10,
         }}
       >
-        <Typography variant="button">지각하지 마세요</Typography>
+        <Typography variant="button">{ruleData.ruleExp || '규칙 안내 메시지가 없습니다.'}</Typography>
       </View>
     </View>
   );
@@ -139,34 +208,86 @@ export const MyAttendance = ({ id }: MyAttendanceProps) => {
 };
 
 // 스터디 스케쥴
-export const StudySchedule = () => {
+export const StudySchedule = ({ studyToken }: { studyToken: string }) => {
+  const [ruleData, setRuleData] = React.useState<StudyResponse.Rule | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  const WeekofDay: Record<SharedStudy.PossibleDays, string> = {
+    MON: '월요일',
+    TUE: '화요일',
+    WED: '수요일',
+    THU: '목요일',
+    FRI: '금요일',
+    SAT: '토요일',
+    SUN: '일요일',
+  };
+
+  React.useEffect(() => {
+    const fetchSchedule = async () => {
+      try {
+        setLoading(true);
+        const response = await StudyService().getRules(studyToken);
+        setRuleData(response);
+      } catch (error) {
+        console.error('Failed to fetch schedule:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchedule();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <View style={{ marginVertical: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (!ruleData) {
+    return (
+      <View style={{ marginVertical: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          스케줄 정보를 불러올 수 없습니다.
+        </Typography>
+      </View>
+    );
+  }
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.');
+  };
+
+  const formatTime = (timeStr: string) => {
+    return timeStr.replace(/:\d{2}$/, ''); // 초 제거
+  };
+
   return (
     <View style={{ marginVertical: 16 }}>
       <RowView style={{ justifyContent: 'space-between' }}>
         <Typography variant="button">스터디 기간</Typography>
         <Typography variant="button" style={{ color: colors.gray[8] }}>
-          2024.06.04 - 2024.10.31
+          {formatDate(ruleData.startDate)} - {formatDate(ruleData.endDate)}
         </Typography>
       </RowView>
       <Divider style={{ height: 2, marginHorizontal: -20, width: 'auto', marginTop: 16 }} />
       <View style={{ paddingTop: 16, gap: 16 }}>
         <Typography variant="button">진행 요일 및 시간</Typography>
-        <LineView>
-          <Typography variant="button" style={{ color: colors.gray[8] }}>
-            화요일
-          </Typography>
-          <Typography variant="button" style={{ color: colors.gray[8] }}>
-            20:00 - 22:00
-          </Typography>
-        </LineView>
-        <RowView style={{ justifyContent: 'space-between' }}>
-          <Typography variant="button" style={{ color: colors.gray[8] }}>
-            목요일
-          </Typography>
-          <Typography variant="button" style={{ color: colors.gray[8] }}>
-            20:00 - 22:00
-          </Typography>
-        </RowView>
+        {ruleData.schedules.map((schedule, index) => (
+          <LineView key={index}>
+            <Typography variant="button" style={{ color: colors.gray[8] }}>
+              {WeekofDay[schedule.weekOfDay]}
+            </Typography>
+            <Typography variant="button" style={{ color: colors.gray[8] }}>
+              {formatTime(schedule.stTime)} - {formatTime(schedule.endTime)}
+            </Typography>
+          </LineView>
+        ))}
       </View>
     </View>
   );

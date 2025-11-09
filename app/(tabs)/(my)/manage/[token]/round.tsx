@@ -12,6 +12,8 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import Button from '@/components/atoms/Button';
 import { Modal, Text } from 'react-native';
 import Icon from '@/components/atoms/Icon';
+import { MeetingsService } from '@/apis';
+import Toast from 'react-native-toast-message';
 
 interface DurationProps {
   start: dayjs.Dayjs | null;
@@ -19,11 +21,12 @@ interface DurationProps {
 }
 
 const Round = () => {
-  const { id } = useLocalSearchParams();
+  const { id, token } = useLocalSearchParams<{ id: string; token: string }>();
   const [auto, setAuto] = useState(true);
   const [duration, setDuration] = useState<DateType[]>([]);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -111,9 +114,56 @@ const Round = () => {
             <Button
               variant="contained"
               style={{ marginHorizontal: 'auto' }}
-              onPress={() => bottomSheetModalRef.current?.dismiss()}
+              disabled={isAdding}
+              onPress={async () => {
+                if (!duration || duration.length === 0) {
+                  Toast.show({
+                    type: 'form',
+                    text1: '추가할 회차 날짜를 선택해주세요.',
+                    position: 'bottom',
+                    visibilityTime: 2000,
+                  });
+                  return;
+                }
+
+                setIsAdding(true);
+                try {
+                  // 선택된 날짜들을 순회하며 회차 추가
+                  for (const date of duration) {
+                    if (!date) continue; // null/undefined 체크
+                    const dateObj = new Date(date.toString());
+                    const studyDate = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
+
+                    // 기본 시간 설정 (09:00 - 10:00)
+                    await MeetingsService().postMeeting(token as string, {
+                      studyDate,
+                      stTime: '09:00',
+                      endTime: '10:00',
+                    });
+                  }
+
+                  Toast.show({
+                    type: 'formNoButton',
+                    text1: `${duration.length}개의 회차가 추가되었습니다.`,
+                    position: 'bottom',
+                    visibilityTime: 2000,
+                  });
+                  setDuration([]);
+                  bottomSheetModalRef.current?.dismiss();
+                } catch (error) {
+                  console.error('회차 추가 실패:', error);
+                  Toast.show({
+                    type: 'form',
+                    text1: '회차 추가 중 오류가 발생했습니다.',
+                    position: 'bottom',
+                    visibilityTime: 2000,
+                  });
+                } finally {
+                  setIsAdding(false);
+                }
+              }}
             >
-              회차 추가하기
+              {isAdding ? '추가 중...' : '회차 추가하기'}
             </Button>
           </DateView>
         }
