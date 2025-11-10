@@ -10,7 +10,8 @@ import RowView from '@/components/atoms/View/RowView';
 import FilterBottomSheet from '@/components/organisms/FilterBottomSheet';
 import { useRecommendationContext } from '@/context/Recommendation';
 import { useGlobalContext } from '@/context/GlobalContext';
-import { useState } from 'react';
+import { useNotificationContext } from '@/context/NotificationContext';
+import { useState, useEffect } from 'react';
 
 const Container = styled(RowView)`
   justify-content: space-between;
@@ -21,12 +22,20 @@ const Container = styled(RowView)`
 function HomeScreen() {
   const { searchData, setSearchData } = useRecommendationContext();
   const { userinfo } = useGlobalContext();
+  const { refreshUnreadCount } = useNotificationContext();
   const [key, setKey] = useState(new Date().getTime());
   const [refreshing, setRefreshing] = useState(false);
+
+  // 홈 화면 진입 시 알림 개수 조회
+  useEffect(() => {
+    refreshUnreadCount();
+  }, []);
 
   const handleRefresh = () => {
     setRefreshing(true);
     setKey(new Date().getTime());
+    // 새로고침 시 알림 개수도 함께 갱신
+    refreshUnreadCount();
     setRefreshing(false);
   };
 

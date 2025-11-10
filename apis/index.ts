@@ -3,6 +3,7 @@ export { StudyService } from './service/study';
 export { UserService } from './service/user';
 export { MeetingsService } from './service/meetings';
 export { NoticeService } from './service/notice';
+export { NotificationService } from './service/notifications';
 export { ProofService } from './service/proof';
 export { AttendanceService } from './service/attendance';
 export { BookmarksService } from './service/bookmarks';

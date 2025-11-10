@@ -11,7 +11,39 @@
 
 ## 1. 백엔드 작업 필요 항목 (Backend Required)
 
-### 1.1 차단 해제 API ⚠️ 긴급
+### 1.1 알림 API 경로 수정 ⚠️ 신규
+**우선순위:** 🟡 MEDIUM  
+**위치:** `JOIN-BE/src/main/java/com/join/core/notification/controller/NotificationReadController.java`
+
+#### 문제점
+NotificationReadController만 `api.prefix`가 적용되지 않음:
+```java
+@RequestMapping("/notifications")  // ❌ 다른 컨트롤러와 다름
+```
+
+#### 수정 필요
+```java
+@RequestMapping("${api.prefix}/notifications")  // ✅ 다른 컨트롤러와 통일
+```
+
+#### 현재 상태
+- ⚠️ 프론트엔드에서 예외 처리 중 (`NotificationService`에서 baseURL 직접 조작)
+- 🔄 백엔드 수정 시 프론트엔드 예외 처리 코드 제거 필요
+- 📍 영향받는 파일:
+  - 백엔드: `NotificationReadController.java` (Line 20)
+  - 프론트엔드: `apis/service/notifications.ts` (Line 4-6)
+
+#### 수정 후 작업
+1. 백엔드 `@RequestMapping("${api.prefix}/notifications")` 수정
+2. 프론트엔드 `notifications.ts`에서 예외 처리 코드 제거:
+   ```typescript
+   // 제거: const baseURL = process.env.EXPO_PUBLIC_API_URL?.replace('/api/v1', '') || '';
+   // 수정: const url = '/notifications';  // 일반 API처럼 간단하게
+   ```
+
+---
+
+### 1.2 차단 해제 API ⚠️ 긴급
 **우선순위:** 🔴 HIGH  
 **위치:** `app/(tabs)/(my)/myinfo/block-manage.tsx`
 

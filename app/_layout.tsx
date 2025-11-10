@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message';
 import { toastConfig } from '@/components/atoms/Toast/CustomToast';
 import '../reanimatedConfig';
 import { GlobalProvider } from '@/context/GlobalContext';
+import { NotificationProvider } from '@/context/NotificationContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useReactQueryDevTools } from '@dev-plugins/react-query';
 import { TokenStorage } from '@/apis/axios';
@@ -75,17 +76,19 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <GlobalProvider>
-          <BottomSheetModalProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-              <Stack.Screen name="(form)" options={{ headerShown: false }} />
-              <Stack.Screen name="(report)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-            <Toast config={toastConfig} />
-          </BottomSheetModalProvider>
+          <NotificationProvider>
+            <BottomSheetModalProvider>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+                <Stack.Screen name="(form)" options={{ headerShown: false }} />
+                <Stack.Screen name="(report)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+              <Toast config={toastConfig} />
+            </BottomSheetModalProvider>
+          </NotificationProvider>
         </GlobalProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

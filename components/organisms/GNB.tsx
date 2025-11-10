@@ -4,8 +4,11 @@ import { colors } from '@/theme';
 import Icon from '@/components/atoms/Icon';
 import Typography from '../atoms/Typography';
 import { SafeAreaView } from 'react-native';
+import { useNotificationContext } from '@/context/NotificationContext';
 
 function GNB() {
+  const { unreadCount } = useNotificationContext();
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Tabs
@@ -39,6 +42,7 @@ function GNB() {
           name="(home)"
           options={{
             title: '홈',
+            tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
             tabBarIcon: ({ focused }) => <Icon name={focused ? 'home' : 'home-outline'} />,
           }}
         />
@@ -46,6 +50,7 @@ function GNB() {
           name="(certified)"
           options={{
             title: '인증',
+            tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
             tabBarIcon: ({ focused }) => <Icon name={focused ? 'verify' : 'verify-outline'} />,
           }}
         />
@@ -53,6 +58,7 @@ function GNB() {
           name="(my)"
           options={{
             title: '마이',
+            tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
             tabBarIcon: ({ focused }) => <Icon name={focused ? 'mypage' : 'mypage-outline'} />,
           }}
         />

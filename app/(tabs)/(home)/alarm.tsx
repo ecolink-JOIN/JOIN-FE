@@ -3,9 +3,8 @@ import { ScrollView, RefreshControl } from 'react-native';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
-
-// TODO: 백엔드 알림 API 구현 대기 중
-// GET /notifications - 알림 내역 조회
+import { NotificationService } from '@/apis';
+import { useNotificationContext } from '@/context/NotificationContext';
 
 const Container = styled.View`
   flex: 1;
@@ -33,28 +32,41 @@ const NotificationHeader = styled.View`
   margin-bottom: 8px;
 `;
 
-const NotificationBadge = styled.View<{ type: string }>`
+const NotificationBadge = styled.View<{ type: NotificationResponse.Notification['type'] }>`
   padding: 4px 8px;
   border-radius: 4px;
-  background-color: ${({ type }) =>
-    type === 'study' ? colors.primary : type === 'system' ? colors.gray[5] : colors.gray[7]};
+  background-color: ${({ type }) => {
+    switch (type) {
+      case 'STUDY_ANNOUNCEMENT':
+        return colors.primary;
+      case 'ATTENDANCE_CHECK':
+        return colors.gray[5];
+      case 'PROOF':
+        return colors.gray[6];
+      case 'OTHER':
+      default:
+        return colors.gray[7];
+    }
+  }};
 `;
 
 const AlarmScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<NotificationResponse.Notification[]>([]);
+  const { refreshUnreadCount } = useNotificationContext();
 
-  // TODO: API 연동
   const fetchNotifications = async () => {
     try {
-      // const data = await NotificationService().getNotifications();
-      // setNotifications(data);
-
-      // Mock 데이터 (임시)
+      const data = await NotificationService().getNotifications();
+      setNotifications(data);
+      // 알림 목록을 가져온 후 배지 개수 갱신
+      refreshUnreadCount();
+    } catch (error: any) {
+      // 알림이 없거나 에러 발생 시 빈 배열로 설정
+      console.log('알림 조회 실패 또는 알림 없음:', error?.response?.status);
       setNotifications([]);
-    } catch (error) {
-      console.error('알림 조회 실패:', error);
-      setNotifications([]);
+      // 에러 발생 시에도 배지 개수는 0으로 갱신
+      refreshUnreadCount();
     }
   };
 
@@ -68,27 +80,46 @@ const AlarmScreen = () => {
     setRefreshing(false);
   };
 
-  const handleNotificationPress = (notification: any) => {
+  const handleNotificationPress = (notification: NotificationResponse.Notification) => {
     // TODO: 알림 타입별 라우팅 처리
     console.log('알림 클릭:', notification);
   };
 
-  const getNotificationTypeLabel = (type: string) => {
+  const getNotificationTypeLabel = (type: NotificationResponse.Notification['type']) => {
     switch (type) {
-      case 'study':
-        return '스터디';
-      case 'system':
-        return '시스템';
-      case 'notice':
-        return '공지';
+      case 'STUDY_ANNOUNCEMENT':
+        return '스터디 공지';
+      case 'ATTENDANCE_CHECK':
+        return '출석 체크';
+      case 'PROOF':
+        return '인증';
+      case 'OTHER':
+        return '알림';
       default:
         return '알림';
     }
   };
 
-  const formatTimeAgo = (date: string) => {
-    // TODO: 시간 포맷팅 로직
-    return '방금 전';
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffSecs < 60) {
+      return '방금 전';
+    } else if (diffMins < 60) {
+      return `${diffMins}분 전`;
+    } else if (diffHours < 24) {
+      return `${diffHours}시간 전`;
+    } else if (diffDays < 7) {
+      return `${diffDays}일 전`;
+    } else {
+      return date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+    }
   };
 
   if (notifications.length === 0) {
@@ -114,8 +145,8 @@ const AlarmScreen = () => {
   return (
     <Container>
       <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-        {notifications.map((notification, index) => (
-          <NotificationItem key={index} onPress={() => handleNotificationPress(notification)}>
+        {notifications.map((notification) => (
+          <NotificationItem key={notification.notificationId} onPress={() => handleNotificationPress(notification)}>
             <NotificationHeader>
               <NotificationBadge type={notification.type}>
                 <Typography variant="body4" style={{ color: colors.white }}>
@@ -126,9 +157,11 @@ const AlarmScreen = () => {
                 {formatTimeAgo(notification.createdAt)}
               </Typography>
             </NotificationHeader>
-            <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
-              {notification.title}
-            </Typography>
+            {notification.title && (
+              <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
+                {notification.title}
+              </Typography>
+            )}
             <Typography variant="body3" style={{ color: colors.gray[7] }}>
               {notification.content}
             </Typography>

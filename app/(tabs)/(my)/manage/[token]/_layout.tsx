@@ -3,9 +3,11 @@ import { SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import Icon from '@/components/atoms/Icon';
 import { colors } from '@/theme';
+import { useNotificationContext } from '@/context/NotificationContext';
 
 function ManageLayout() {
   const router = useRouter();
+  const { unreadCount } = useNotificationContext();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -31,7 +33,7 @@ function ManageLayout() {
               <Icon name="arrow-left" onPress={() => router.back()} />
               <View style={{ flexDirection: 'row', gap: 12 }}>
                 <TouchableOpacity onPress={() => router.push('/alarm')}>
-                  <Icon name="alarm-unread" />
+                  <Icon name={unreadCount > 0 ? 'alarm-unread' : 'alarm'} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => router.push('/study/search')}>
                   <Icon name="search" />
