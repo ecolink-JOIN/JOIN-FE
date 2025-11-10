@@ -21,7 +21,7 @@ interface DurationProps {
 }
 
 const Round = () => {
-  const { id, token } = useLocalSearchParams<{ id: string; token: string }>();
+  const { token } = useLocalSearchParams<{ token: string }>();
   const [auto, setAuto] = useState(true);
   const [duration, setDuration] = useState<DateType[]>([]);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -63,7 +63,7 @@ const Round = () => {
           </RadioGroup>
         </ManageBox>
         <ManageBox>
-          <ListComponent title="스터디 회차 확인" href={`/manage/${id}/round-check`} />
+          <ListComponent title="스터디 회차 확인" href={`/manage/${token}/round-check`} />
         </ManageBox>
         <ManageBox>
           <ListComponent title="회차 추가 및 제외" onPress={handlePresentModalPress} />
