@@ -12,6 +12,7 @@ import { ModalWrapper } from '@/components/molecules/ModalViews';
 import { StudyEnrollmentsService } from '@/apis';
 import { useQuery } from '@tanstack/react-query';
 import { useGlobalContext } from '@/context/GlobalContext';
+import { useAvatarDetail } from '@/hooks/useAvatar';
 
 const MemberDetail = () => {
   const router = useRouter();
@@ -25,10 +26,9 @@ const MemberDetail = () => {
   const [isForcedOutModalVisible, setIsForcedOutModalVisible] = React.useState(false);
   const [evaluationModalVisible, setEvaluationModalVisible] = React.useState(false);
 
-  const { data: memberDetail } = useQuery({
-    queryKey: ['member', avartarToken],
-    queryFn: () => StudyEnrollmentsService().getMemberDetail(avartarToken),
-  });
+  // 아바타 상세 정보 조회 (새로운 API 사용)
+  const { data: memberDetail } = useAvatarDetail(avartarToken || '');
+
   const { data: memberAttendance } = useQuery({
     queryKey: ['memberAttendance', avartarToken],
     queryFn: () => StudyEnrollmentsService().getMemberAttendance(token, avartarToken),
