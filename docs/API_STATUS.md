@@ -1,669 +1,421 @@
-# 🔌 API 연동 현황 및 작업 리스트
+# JOIN 프로젝트 API 연동 현황
 
-> **최종 업데이트:** 2025년 1월 9일  
-> **프로젝트:** JOIN 앱  
-> **분석 기준:** 백엔드 Swagger API 명세서 (20개 섹션, 84개 API)
+> 백엔드 API 분석 완료: 2025년 1월 10일
 
----
+## 📊 전체 현황
 
-## 📊 전체 현황 요약
-
-| 상태 | 개수 | 비율 |
-|------|------|------|
-| ✅ 완료 | 78개 | 93% |
-| ⚠️ 미구현 | 6개 | 7% |
-| **총계** | **84개** | **100%** |
-
-### 🔍 상세 분석
-- **핵심 기능 완료율:** 100% (사용자 인증, 스터디 CRUD, 출석/인증, 평가)
-- **관리자 기능 완료율:** 100% (강퇴, 위임, 승인/반려)
-- **부가 기능 완료율:** 80% (검색, 알림, 북마크 등)
-
-### 📅 최근 업데이트
-- **2025-01-09**: 스터디 현황 조회 버그 수정 (URL placeholder 불일치 해결)
-- **2025-01-09**: 차단 기능 완전 구현 (5개 API 연동)
-- **2025-01-09**: 선호 설정 페이지 UI 개선 완료
-- **2025-01-09**: 회원 탈퇴 기능 연동 완료
+- **총 백엔드 API**: 약 80개
+- **프론트엔드 연동 완료**: 약 50개  
+- **미연동 API**: 약 30개
+- **전체 연동률**: 약 62%
 
 ---
 
-## ✅ 02. 회원가입 (11/11 완료) 🎉
+## 🔴 긴급 - 미연동 중요 API
 
-### 구현 완료 (11개)
+### 1. 차단 해제 API
+- **백엔드**: `DELETE /api/v1/blocks/{blockId}`
+- **프론트엔드**: `apis/service/blocks.ts` - 구현되어 있으나 500 에러
+- **사용 위치**: `app/(tabs)/(my)/myinfo/block-manage.tsx`
+- **문제**: 백엔드 엔드포인트 파라미터 확인 필요 (blockId vs avatarToken)
 
-#### PUT /api/v1/avatars/push - 푸시 알림 동의 API
-**상태:** ✅ 완료  
-**서비스:** `AvatarsService().updatePushConsent()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/app-setting.tsx` (알림 설정 토글)
+### 2. 공지 조회 API
+- **백엔드**: ❌ 존재하지 않음 (POST만 있음)
+- **필요 API**: `GET /api/v1/study/{studyToken}/notice`
+- **사용 위치**: 
+  - `components/organisms/MyPage/Manage.tsx` - StudyAnnouncement
+  - `app/(tabs)/(my)/manage/[token]/notice.tsx`
+- **현재 상태**: Mock 데이터 사용 중
+
+### 3. 스터디원 상세 정보 조회
+- **백엔드**: `GET /api/v1/avatars/{avatarToken}`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: `app/(tabs)/(my)/manage/[token]/member/[id]/index.tsx`
+- **현재 상태**: 하드코딩된 닉네임, 출석률, 인증률
+- **Response**:
 ```typescript
-await updatePushConsent({
-  marketing_push_consent: marketingPush,
-  study_push_consent: studyPush,
-  push_consent: pushEnabled,
-});
+{
+  avatarToken: string;
+  nickname: string;
+  profileUrl: string;
+  attendanceRate: number;  // %
+  proofRate: number;       // %
+}
 ```
 
-#### PUT /api/v1/avatars/preference - 유저 선호 변경 API
-**상태:** ✅ 완료  
-**서비스:** `AvatarsService().updatePreference()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/preference.tsx` (선호 설정 저장)
+### 4. 스터디 멤버 목록 조회
+- **백엔드**: `GET /api/v1/study/{studyToken}/enrollments/members`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 
+  - `components/organisms/MyPage/Manage.tsx` - StudyEvaluation
+  - 평가 대상자 선택 화면
+- **현재 상태**: Mock 데이터 5명 하드코딩
+- **Response**:
 ```typescript
-await updatePreference({
-  user_category: selectedCategories.map(c => c.id),
-  user_region: selectedRegions.map(r => r.value),
-  user_sort: selectedSort?.value || 'RECENT',
-});
+{
+  members: [{
+    avatarToken: string;
+    nickname: string;
+    profileUrl: string;
+    isLeader: boolean;
+  }]
+}
 ```
 
-#### POST /api/v1/terms/all - 유효 약관 조회 API
-**상태:** ✅ 완료  
-**서비스:** `TermsService().all()`  
-**사용 위치:**
-- `components/molecules/TermsOptionGroup/index.tsx` (약관 목록 조회)
+### 5. 스터디원 참여 상세 정보
+- **백엔드**: `GET /api/v1/study/{studyToken}/enrollments/{targetToken}`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 멤버 상세 페이지
+- **Response**: 출석률, 인증률, 참여 상태 등
 
-#### POST /api/v1/terms/agree - 약관 동의 API
-**상태:** ✅ 완료  
-**서비스:** `TermsService().agree()`  
-**사용 위치:**
-- `components/organisms/CTA/TermsCTA.tsx` (약관 동의 제출)
+### 6. 리더 권한 위임
+- **백엔드**: `PATCH /api/v1/study/{studyToken}/enrollments/delegate`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 미구현
+- **Request**:
+```typescript
+{
+  targetToken: string;  // 새 리더의 avatarToken
+}
+```
 
-#### POST /api/v1/avatars/withdraw - 회원탈퇴 API
-**상태:** ✅ 완료  
-**서비스:** `AvatarsService().withdraw()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/account-info.tsx` (회원 탈퇴 처리)
+### 7. 강제 퇴출
+- **백엔드**: `PATCH /api/v1/study/{studyToken}/enrollments/forced-out`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 미구현
+- **Request**:
+```typescript
+{
+  targetToken: string;  // 퇴출 대상 avatarToken
+}
+```
 
-#### POST /api/v1/avatars/photos - 프로필 사진 변경 API
-**상태:** ✅ 완료  
-**서비스:** `AvatarsService().photos()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/account-info.tsx` (프로필 사진 업로드)
-
-#### PATCH /api/v1/avatars/nickname - 닉네임 변경 API
-**상태:** ✅ 완료  
-**서비스:** `AvatarsService().nickname()`  
-**사용 위치:**
-- `components/organisms/Guide/NickNameGuide.tsx` (닉네임 설정)
-
-#### GET /api/v1/terms - 약관 조회 API
-**상태:** ✅ 완료  
-**서비스:** `TermsService()`  
-**사용 위치:**
-- `components/molecules/TermsOptionGroup/index.tsx` (약관 목록 표시)
-
-#### GET /api/v1/avatars - 유저 정보 조회 API
-**상태:** ✅ 완료  
-**서비스:** `UserService().getUser()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/account-info.tsx` (계정 정보)
-
-#### GET /api/v1/avatars/withdraw/check - 회원탈퇴 가능 여부 확인 API
-**상태:** ✅ 완료  
-**서비스:** `AvatarsService().checkWithdraw()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/account-info.tsx` (탈퇴 모달)
-
-#### GET /api/v1/avatars/nickname/valid - 닉네임 유효성 검사 API
-**상태:** ✅ 완료  
-**서비스:** `AvatarsService().nicknameValid()`  
-**사용 위치:**
-- `components/organisms/Guide/NickNameGuide.tsx` (닉네임 중복 체크)
-
-**섹션 요약:** 회원가입 관련 모든 API 완벽 구현 ✅
+### 8. 미인증자 처리
+- **백엔드**: `POST /api/v1/study/{studyToken}/proofs/uncertified`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 미구현
+- **설명**: 인증하지 않은 멤버들을 일괄 처리
 
 ---
 
-## ✅ 03. 스터디 (13/13 완료) 🎉
+## 🟡 보통 - 미연동 API
 
-### 구현 완료 (13개)
+### 9. 일반 공지 조회
+- **백엔드**: `GET /api/v1/notices`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 미구현 (전체 공지사항 페이지)
 
-#### GET /api/v1/study/{studyToken}/rules - 스터디 운영 규칙 조회
-**상태:** ✅ 완료  
-**서비스:** `StudyService().getRules()`  
-**사용 위치:**
-- `components/organisms/MyPage/Manage.tsx` (규칙 조회)
-- `app/(tabs)/(my)/manage/[token]/rule.tsx` (운영 규칙 페이지)
+### 10. 스터디 탈퇴 신청 목록
+- **백엔드**: `GET /api/v1/study/{studyToken}/withdraw/request`
+- **프론트엔드**: `apis/service/withdraw.ts` - ✅ 구현됨
+- **사용 위치**: ❌ 미구현 (관리자 페이지에서 사용 예정)
 
-#### PUT /api/v1/study/{studyToken}/rules - 스터디 운영 규칙 수정
-**상태:** ✅ 완료  
-**서비스:** `StudyService().patchRules()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/rule-edit.tsx` (규칙 수정)
-- `app/(tabs)/(my)/manage/[token]/rule.tsx` (규칙 종료/재시작)
+### 11. 스터디 탈퇴 승인
+- **백엔드**: `POST /api/v1/study/{studyToken}/withdraw/{withdrawId}/approve`
+- **프론트엔드**: `apis/service/withdraw.ts` - ✅ 구현됨
+- **사용 위치**: ❌ 미구현 (관리자 페이지에서 사용 예정)
 
-#### POST /api/v1/study/{studyToken}/member - 스터디원 조회
-**상태:** ✅ 완료  
-**서비스:** `StudyService().getMember()`  
-**사용 위치:**
-- `components/organisms/StudySection/index.tsx` (스터디 상세)
+### 12. 배치 작업 API (4개)
+- **백엔드**: 
+  - `POST /api/v1/batch-job` - 배치 작업 생성
+  - `PUT /api/v1/batch-job/{batchJobId}` - 배치 작업 수정
+  - `GET /api/v1/study/{studyToken}/batch-jobs` - 배치 작업 목록
+  - `DELETE /api/v1/batch-job/{batchJobId}` - 배치 작업 삭제
+- **프론트엔드**: `apis/service/batch-job.ts` - ✅ 구현됨
+- **사용 위치**: ❌ 미구현 (자동화 기능)
 
-#### POST /api/v1/study/{studyToken}/close - 스터디 종료
-**상태:** ✅ 완료  
-**서비스:** `StudyService().closeStudy()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/rule.tsx` (스터디 종료)
+### 13. 스터디 규칙 API (2개)
+- **백엔드**:
+  - `GET /api/v1/study/{studyToken}/rules` - 규칙 조회
+  - `PUT /api/v1/study/{studyToken}/rules` - 규칙 수정
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 미구현 (스터디 설정 페이지)
 
-#### POST /api/v1/study/recruit - 스터디 모집
-**상태:** ✅ 완료  
-**서비스:** `StudyService().recruit()`  
-**사용 위치:**
-- `app/(form)/recruit-add.tsx` (스터디 모집 생성)
+### 14. 프로필 사진 업로드
+- **백엔드**: `POST /api/v1/avatars/photos` (multipart/form-data)
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 미구현 (프로필 수정 페이지)
 
-#### PATCH /api/v1/study/{studyToken}/recruitment - 스터디 모집 상태 변경
-**상태:** ✅ 완료  
-**서비스:** `StudyService().patchRecruitment()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/progress-recruiting.tsx` (모집 마감/재개)
+### 15. 선호 카테고리 수정
+- **백엔드**: `PUT /api/v1/avatars/preference`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 미구현 (관심사 설정)
 
-#### PATCH /api/v1/study/re-recruit - 스터디 추가 모집
-**상태:** ⚠️ 미사용  
-**비고:** 백엔드 API는 존재하지만 프론트에서 사용 안 함
+### 16. 회원 탈퇴 체크
+- **백엔드**: `GET /api/v1/user-withdrawal/check`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 미구현 (탈퇴 전 확인)
 
-#### GET /api/v1/study/{studyToken} - 스터디 상세 조회
-**상태:** ✅ 완료  
-**서비스:** `StudyService().getStudy()`  
-**사용 위치:**
-- `app/study/[slug]/index.tsx` (스터디 상세 페이지)
+### 17. 회원 탈퇴 실행
+- **백엔드**: `POST /api/v1/user-withdrawal`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 미구현 (회원 탈퇴)
 
-#### GET /api/v1/study/{studyToken}/status - 스터디 현황 조회
-**상태:** ✅ 완료  
-**서비스:** `StudyService().getStudyStatus()`  
-**사용 위치:**
-- `app/(tabs)/(my)/member/[id]/study-status.tsx` (스터디 현황)
-
-#### GET /api/v1/study/{studyToken}/recruit - 스터디 모집 입력값 조회
-**상태:** ⚠️ 미사용  
-**비고:** 스터디 수정 기능이 아직 구현되지 않음
-
-#### GET /api/v1/study/recommendation - 맞춤 스터디 조회
-**상태:** ✅ 완료  
-**서비스:** `StudyService().getRecommendation()`  
-**사용 위치:**
-- `app/(tabs)/(home)/(explore)/custom.tsx` (맞춤 스터디)
-
-#### GET /api/v1/study/popular - 인기 스터디 조회
-**상태:** ✅ 완료  
-**서비스:** `StudyService().getPopular()`  
-**사용 위치:**
-- `app/(tabs)/(home)/(explore)/popular.tsx` (인기 스터디)
-
-#### GET /api/v1/study/search - 스터디 검색
-**상태:** ✅ 완료  
-**서비스:** `StudyService().search()`  
-**사용 위치:**
-- `app/study/search.tsx` (스터디 검색)
-
-**섹션 요약:** 스터디 CRUD 및 검색 기능 완벽 구현 ✅
+### 18. Push 알림 설정
+- **백엔드**: `PUT /api/v1/push`
+- **프론트엔드**: ❌ 미연동
+- **사용 위치**: 미구현 (알림 설정)
 
 ---
 
-## ✅ 04. 유저 (4/4 완료) 🎉
+## 🟢 낮음 - 향후 구현 예정 API
 
-#### PUT /api/v1/avatars/push - 푸시 알림 동의 API
-**상태:** ✅ 완료 (02. 회원가입과 동일)
+### 19. 검색 기록 조회
+- **백엔드**: `GET /api/v1/search-history`
+- **사용 위치**: 미구현 (검색 화면)
 
-#### PUT /api/v1/avatars/preference - 유저 선호 변경 API
-**상태:** ✅ 완료 (02. 회원가입과 동일)
+### 20. 인증 주제 조회
+- **백엔드**: `GET /api/v1/study/{studyToken}/proofs/subjects`
+- **사용 위치**: 미구현 (인증 주제 관리)
 
-#### GET /api/v1/notices - 앱 공지사항 조회
-**상태:** ✅ 완료  
-**서비스:** `NoticeService().getNotices()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/announce.tsx` (앱 공지사항)
+### 21. 특정 사용자 인증 내역
+- **백엔드**: `GET /api/v1/study/{studyToken}/avatars/{targetAvatarToken}/proofs`
+- **사용 위치**: 미구현 (멤버 인증 내역 조회)
 
-#### GET /api/v1/avatars - 유저 정보 조회 API
-**상태:** ✅ 완료 (02. 회원가입과 동일)
+### 22. 특정 인증 상세
+- **백엔드**: `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}`
+- **사용 위치**: 미구현 (인증 상세 보기)
 
-**섹션 요약:** 유저 관련 모든 API 완벽 구현 ✅
-
----
-
-## ✅ 05. 공지 (1/2 완료)
-
-#### POST /api/v1/study/{studyToken}/notice - 스터디 공지 생성
-**상태:** ✅ 완료  
-**서비스:** `NoticeService().createNotice()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/notice.tsx` (스터디 공지 생성)
-
-#### GET /notifications - 알림 내역 조회
-**상태:** ⚠️ 미구현  
-**비고:** 알림 센터 기능 미구현
+### 23. 스터디 검색
+- **백엔드**: `GET /api/v1/search`
+- **사용 위치**: 검색 화면 (구현 필요)
 
 ---
 
-## ✅ 06. 회차 (3/3 완료) 🎉
+## ✅ 연동 완료 API
 
-#### GET /api/v1/study/{studyToken}/meetings - 회차 리스트 조회
-**상태:** ✅ 완료  
-**서비스:** `MeetingsService().getMeetings()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/study-schedule.tsx`
+### Applications (지원) - 100%
+- ✅ `POST /api/v1/applications` - 스터디 지원
+- ✅ `PATCH /api/v1/applications/{applicationId}/accept` - 지원 승인
+- ✅ `PATCH /api/v1/applications/{applicationId}/reject` - 지원 반려
+- ✅ `GET /api/v1/applications/{studyToken}` - 지원 현황 조회
+- **위치**: `apis/service/applications.ts`
 
-#### POST /api/v1/study/{studyToken}/meetings - 회차 추가
-**상태:** ✅ 완료  
-**서비스:** `MeetingsService().createMeeting()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/study-schedule.tsx`
+### Attendance (출석) - 100%
+- ✅ `POST /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance` - 출석 체크
+- ✅ `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance` - 출석 상태 조회
+- ✅ `PATCH /api/v1/study/{studyToken}/attendance/{attendanceId}` - 출석 수정 (관리자)
+- **위치**: `apis/service/attendance.ts`, `app/(tabs)/(certified)/index.tsx`
 
-#### DELETE /api/v1/study/{studyToken}/meetings/{meetingId} - 회차 삭제
-**상태:** ✅ 완료  
-**서비스:** `MeetingsService().deleteMeeting()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/study-schedule.tsx`
+### Proof (인증) - 70%
+- ✅ `POST /api/v1/study/{studyToken}/proofs` - 인증 제출
+- ✅ `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs` - 인증 상태 조회
+- ✅ `PATCH /api/v1/study/{studyToken}/proofs/{proofId}/approve` - 인증 승인
+- ✅ `PATCH /api/v1/study/{studyToken}/proofs/{proofId}/reject` - 인증 반려
+- ✅ `POST /api/v1/proof/files` - 인증 이미지 업로드
+- ❌ `POST /api/v1/study/{studyToken}/proofs/uncertified` - 미인증자 처리
+- ❌ `GET /api/v1/study/{studyToken}/proofs/subjects` - 인증 주제 조회
+- ❌ `GET /api/v1/study/{studyToken}/avatars/{targetAvatarToken}/proofs` - 특정 사용자 인증 내역
+- ❌ `GET /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}` - 특정 인증 상세
+- **위치**: `apis/service/proof.ts`, `app/(tabs)/(certified)/index.tsx`
 
-**섹션 요약:** 회차 관리 모든 API 완벽 구현 ✅
+### Meeting (회차) - 100%
+- ✅ `POST /api/v1/study/{studyToken}/meetings` - 회차 생성
+- ✅ `GET /api/v1/study/{studyToken}/meetings` - 회차 목록 조회
+- ✅ `DELETE /api/v1/study/{studyToken}/meetings/{meetingId}` - 회차 삭제
+- **위치**: `apis/service/meetings.ts`, `hooks/useMeetings.ts`
 
----
+### Study (스터디) - 90%
+- ✅ `POST /api/v1/study/recruit` - 스터디 모집 등록
+- ✅ `GET /api/v1/study/{studyToken}` - 스터디 상세 조회
+- ✅ `GET /api/v1/study/popular` - 인기 스터디 목록
+- ✅ `GET /api/v1/study/recommendation` - 추천 스터디 목록
+- ✅ `GET /api/v1/study/{studyToken}/status` - 스터디 상태 조회
+- ✅ `GET /api/v1/study/{studyToken}/recruit` - 모집 상세 정보
+- ✅ `POST /api/v1/study/{studyToken}/member` - 스터디 참여
+- ✅ `POST /api/v1/study/{studyToken}/close` - 스터디 종료
+- ✅ `PATCH /api/v1/study/{studyToken}/recruitment` - 모집 상태 변경
+- ✅ `PATCH /api/v1/study/re-recruit` - 재모집
+- ❌ `GET /api/v1/study/{studyToken}/rules` - 규칙 조회
+- ❌ `PUT /api/v1/study/{studyToken}/rules` - 규칙 수정
+- **위치**: `apis/service/study.ts`
 
-## ✅ 07. 북마크 (3/3 완료) 🎉
+### Bookmark (북마크) - 100%
+- ✅ `POST /api/v1/bookmarks` - 북마크 추가
+- ✅ `DELETE /api/v1/bookmarks` - 북마크 삭제
+- ✅ `GET /api/v1/bookmarks` - 북마크 목록 조회
+- **위치**: `apis/service/bookmarks.ts`
 
-#### GET /api/v1/bookmarks - 북마크한 스터디 조회
-**상태:** ✅ 완료  
-**서비스:** `BookmarksService().getBookmarks()`  
-**사용 위치:**
-- `app/(tabs)/(home)/(explore)/interest.tsx`
+### Block (차단) - 80%
+- ✅ `GET /api/v1/blocks` - 차단 목록 조회
+- ✅ `POST /api/v1/blocks` - 일반 사용자 차단
+- ✅ `POST /api/v1/blocks/study-member` - 스터디 멤버 차단
+- ✅ `GET /api/v1/study/block` - 차단 가능한 사용자 목록
+- ⚠️ `DELETE /api/v1/blocks/{blockId}` - 차단 해제 (500 에러)
+- **위치**: `apis/service/blocks.ts`, `app/(tabs)/(my)/myinfo/block-manage.tsx`
 
-#### POST /api/v1/bookmarks - 스터디 북마크 등록
-**상태:** ✅ 완료  
-**서비스:** `BookmarksService().postBookmarks()`  
-**사용 위치:**
-- `components/molecules/Card/GradientBackground.tsx`
+### Report (신고) - 100%
+- ✅ `POST /api/v1/reports` - 신고하기
+- **위치**: `apis/service/report.ts`
 
-#### DELETE /api/v1/bookmarks - 스터디 북마크 취소
-**상태:** ✅ 완료  
-**서비스:** `BookmarksService().deleteBookmarks()`  
-**사용 위치:**
-- `components/molecules/Card/GradientBackground.tsx`
+### Evaluation (평가) - 100%
+- ✅ `POST /api/v1/evaluation` - 스터디원 평가
+- **위치**: `apis/service/evaluation.ts`
 
-**섹션 요약:** 북마크 기능 모든 API 완벽 구현 ✅
+### Withdraw (탈퇴) - 100% (API만)
+- ✅ `POST /api/v1/study/{studyToken}/withdraw` - 탈퇴 신청
+- ✅ `GET /api/v1/study/{studyToken}/withdraw/request` - 탈퇴 신청 목록
+- ✅ `POST /api/v1/study/{studyToken}/withdraw/{withdrawId}/approve` - 탈퇴 승인
+- **위치**: `apis/service/withdraw.ts` (UI 미구현)
 
----
+### Notification (알림) - 100%
+- ✅ `GET /notifications` - 알림 목록 조회 (api.prefix 없음)
+- ✅ `POST /api/v1/notifications` - 알림 읽음 처리
+- **위치**: `apis/service/notifications.ts`, `context/NotificationContext.tsx`
 
-## ✅ 08. 최근 조회한 스터디 (1/1 완료) 🎉
+### MyPage (마이페이지) - 100%
+- ✅ `GET /api/v1/mypage` - 내 정보 조회
+- ✅ `GET /api/v1/mypage/manage-study` - 관리 중인 스터디
+- ✅ `GET /api/v1/mypage/join-study` - 참여 중인 스터디
+- ✅ `GET /api/v1/mypage/interest-study` - 관심 스터디
+- **위치**: `apis/service/my-page.ts`, `hooks/useMyPage.ts`
 
-#### GET /api/v1/views - 최근 조회한 스터디 목록 조회
-**상태:** ✅ 완료  
-**서비스:** `ViewsService().getViews()`  
-**사용 위치:**
-- `app/(tabs)/(home)/(explore)/recent.tsx`
+### Avatar (아바타/유저) - 30%
+- ✅ `GET /api/v1/avatars/nickname/valid` - 닉네임 중복 체크
+- ✅ `PATCH /api/v1/avatars/nickname` - 닉네임 변경
+- ✅ `GET /api/v1/avatars` - 내 아바타 정보
+- ❌ `POST /api/v1/avatars/photos` - 프로필 사진 업로드
+- ❌ `PUT /api/v1/avatars/preference` - 선호 카테고리 수정
+- ❌ `GET /api/v1/avatars/{avatarToken}` - 아바타 상세 정보
+- **위치**: `apis/service/user.ts`, `apis/service/signup.ts`
 
-**섹션 요약:** 최근 조회 기능 완벽 구현 ✅
+### View History (조회 기록) - 100%
+- ✅ `GET /api/v1/view-history` - 최근 본 스터디
+- **위치**: `apis/service/views.ts`
 
----
-
-## ✅ 09. 출석 (3/3 완료) 🎉
-
-#### POST /api/v1/study/{studyToken}/meetings/{meetingNo}/attendances - 출석
-**상태:** ✅ 완료  
-**서비스:** `AttendanceService().postAttendance()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/attend.tsx`
-
-#### PATCH /api/v1/study/{studyToken}/meetings/{meetingNo}/attendances/{attendanceId} - 출석 수정
-**상태:** ✅ 완료  
-**서비스:** `AttendanceService().patchAttendance()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/attend.tsx`
-
-#### GET /api/v1/study/{studyToken}/meetings/{meetingNo}/attendance - 출석 조회
-**상태:** ✅ 완료  
-**서비스:** `AttendanceService().getAttendance()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/attend.tsx`
-
-**섹션 요약:** 출석 관리 모든 API 완벽 구현 ✅
-
----
-
-## ✅ 10. 프로필 수정 (1/1 완료) 🎉
-
-#### POST /api/v1/avatars/photos - 프로필 사진 변경 API
-**상태:** ✅ 완료 (02. 회원가입과 동일)
-
-**섹션 요약:** 프로필 수정 완벽 구현 ✅
-
----
-
-## ✅ 11. 회차 인증 (9/9 완료) 🎉
-
-#### GET /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs - 회차 인증 여부 조회
-**상태:** ✅ 완료  
-**서비스:** `ProofService().getProofs()`
-
-#### POST /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs - 회차 인증
-**상태:** ✅ 완료  
-**서비스:** `ProofService().createProof()`  
-**사용 위치:**
-- `app/(tabs)/(certified)/index.tsx`
-
-#### POST /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/uncertified - 인증 수정
-**상태:** ✅ 완료  
-**서비스:** `ProofService().updateUncertifiedProof()`
-
-#### POST /api/v1/proof/files - 인증 이미지 저장
-**상태:** ✅ 완료  
-**서비스:** `ProofService().uploadProofImage()`  
-**사용 위치:**
-- `app/(tabs)/(certified)/index.tsx`
-
-#### PATCH /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}/reject - 회차 인증 반려
-**상태:** ✅ 완료  
-**서비스:** `ProofService().rejectProof()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/certify.tsx`
-
-#### PATCH /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId}/approve - 회차 인증 수락
-**상태:** ✅ 완료  
-**서비스:** `ProofService().approveProof()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/certify.tsx`
-
-#### GET /api/v1/study/{studyToken}/proofs/subjects - 인증 대상 조회
-**상태:** ✅ 완료  
-**서비스:** `ProofService().getProofSubjects()`
-
-#### GET /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/{proofId} - 인증 상세 조회
-**상태:** ✅ 완료  
-**서비스:** `ProofService().getProofDetail()`
-
-#### GET /api/v1/study/{studyToken}/avatars/{targetAvatarToken}/proofs - 사용자별 인증 승인 목록 조회
-**상태:** ✅ 완료  
-**서비스:** `ProofService().getUserProofs()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/certify.tsx`
-
-**섹션 요약:** 회차 인증 모든 API 완벽 구현 ✅
+### Terms (약관) - 100%
+- ✅ `GET /api/v1/terms` - 약관 목록
+- ✅ `POST /api/v1/terms/all` - 전체 약관 동의
+- ✅ `POST /api/v1/terms/agree` - 개별 약관 동의
+- **위치**: `apis/service/signup.ts`
 
 ---
 
-## ✅ 12. 평가 (1/1 완료) 🎉
+## 📝 API 연동 우선순위
 
-#### POST /api/v1/evaluation - 스터디원 평가 API
-**상태:** ✅ 완료  
-**서비스:** `EvaluationService().postEvaluation()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/evaluation.tsx`
+### 1순위 (즉시 필요) 🔴
+1. ⚠️ 차단 해제 API 수정 - `apis/service/blocks.ts`
+2. ❌ 스터디원 상세 정보 - `GET /avatars/{avatarToken}` 
+3. ❌ 스터디 멤버 목록 - `GET /enrollments/members`
+4. ❌ 공지 조회 API 백엔드 구현 요청
 
-**섹션 요약:** 평가 기능 완벽 구현 ✅
+### 2순위 (주요 기능) 🟡
+5. ❌ 스터디원 참여 상세 - `GET /enrollments/{targetToken}`
+6. ❌ 리더 권한 위임 - `PATCH /enrollments/delegate`
+7. ❌ 강제 퇴출 - `PATCH /enrollments/forced-out`
+8. ❌ 미인증자 처리 - `POST /proofs/uncertified`
 
----
+### 3순위 (부가 기능) 🟢
+9. ❌ 스터디 규칙 조회/수정
+10. ❌ 프로필 사진 업로드
+11. ❌ 선호 카테고리 수정
+12. ❌ Push 알림 설정
+13. ❌ 회원 탈퇴
 
-## ✅ 13. 차단 (4/5 완료) 🎯
-
-#### GET /api/v1/blocks - 차단 목록 조회
-**상태:** ✅ 완료  
-**서비스:** `BlocksService().getBlocks()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/block-manage.tsx`
-
-#### POST /api/v1/blocks - 일반 사용자 차단
-**상태:** ✅ 완료  
-**서비스:** `BlocksService().postBlocks()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/block-account.tsx`
-
-#### POST /api/v1/blocks/study-member - 진행 중인 스터디 멤버 차단
-**상태:** ✅ 완료  
-**서비스:** `BlocksService().postBlockStudyMember()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/block-account.tsx`
-
-#### GET /api/v1/study/block - 차단할 사용자 목록
-**상태:** ✅ 완료  
-**서비스:** `BlocksService().getStudyBlock()`  
-**사용 위치:**
-- `app/(tabs)/(my)/myinfo/block-account.tsx`
-
-#### DELETE /api/v1/blocks/{id} - 차단 해제
-**상태:** ⚠️ 백엔드 API 미구현  
-**비고:** 프론트엔드 코드 작성 완료, 백엔드 개발 대기 중
-
-**섹션 요약:** 차단 기능 80% 완료
+### 4순위 (향후 계획) 🔵
+14. ❌ 배치 작업 UI
+15. ❌ 검색 기록
+16. ❌ 인증 주제 관리
+17. ❌ 검색 기능
 
 ---
 
-## ✅ 14. 마이페이지 (4/4 완료) 🎉
+## 🔍 도메인별 연동률
 
-#### GET /api/v1/my-page - 마이페이지 조회
-**상태:** ✅ 완료  
-**서비스:** `MyPageService().getMyPage()`  
-**사용 위치:**
-- `components/organisms/MyPage/Main/FormalInfo.tsx`
-
-#### GET /api/v1/my-page/manage-study - 마이페이지 운영중인 스터디 목록 조회
-**상태:** ✅ 완료  
-**서비스:** `MyPageService().getManageStudy()`  
-**사용 위치:**
-- `components/organisms/MyPage/Main/StudyTabs/ManageStudy.tsx`
-
-#### GET /api/v1/my-page/join-study - 마이페이지 가입 스터디 목록 조회
-**상태:** ✅ 완료  
-**서비스:** `MyPageService().getJoinStudy()`  
-**사용 위치:**
-- `components/organisms/MyPage/Main/StudyTabs/JoinedStudy.tsx`
-
-#### GET /api/v1/my-page/interest-study - 마이페이지 관심 스터디 목록 조회
-**상태:** ✅ 완료  
-**서비스:** `MyPageService().getInterestStudy()`  
-**사용 위치:**
-- `components/organisms/MyPage/Main/StudyTabs/InterestStudy.tsx`
-
-**섹션 요약:** 마이페이지 모든 API 완벽 구현 ✅
+| 도메인 | 연동률 | 상태 | 비고 |
+|--------|--------|------|------|
+| Applications | 100% | ✅ | 완료 |
+| Attendance | 100% | ✅ | 완료 |
+| Proof | 70% | ⚠️ | 기본 CRUD 완료 |
+| Block | 80% | ⚠️ | 차단 해제 에러 |
+| Withdraw | 100% | ⚠️ | API만, UI 미구현 |
+| Evaluation | 100% | ✅ | 완료 |
+| Enrollment | 0% | ❌ | 미착수 |
+| Notice | 0% | ❌ | 백엔드 미구현 |
+| Avatar | 30% | ❌ | 기본 기능만 |
+| Batch Job | 0% | ❌ | API만 구현 |
+| MyPage | 100% | ✅ | 완료 |
+| Meeting | 100% | ✅ | 완료 |
+| Study | 90% | ✅ | 규칙 제외 완료 |
+| Bookmark | 100% | ✅ | 완료 |
+| Notification | 100% | ✅ | 완료 |
+| Report | 100% | ✅ | 완료 |
+| Search | 0% | ❌ | 미착수 |
+| User Withdrawal | 0% | ❌ | 미착수 |
+| Push | 0% | ❌ | 미착수 |
 
 ---
 
-## ✅ 15. 신고 (1/1 완료) 🎉
+## 📍 컨트롤러별 상세 분석
 
-#### POST /api/v1/report - 신고 API
-**상태:** ✅ 완료  
-**서비스:** `ReportService().postReport()`  
-**사용 위치:**
-- `app/(report)/[slug]/post.tsx`
+### ✅ 완전 연동 (7개)
+1. **ApplicationController** - 지원 관리
+2. **AttendanceController** - 출석 관리
+3. **MeetingController** - 회차 관리
+4. **BookmarkController** - 북마크 관리
+5. **ReportController** - 신고 관리
+6. **EvaluationController** - 평가 관리
+7. **MyPageController** - 마이페이지
+8. **NotificationController** - 알림 관리
+9. **ViewHistoryReadController** - 조회 기록
+10. **TermController** - 약관 동의
 
-**섹션 요약:** 신고 기능 완벽 구현 ✅
+### ⚠️ 부분 연동 (5개)
+1. **ProofController** - 인증 관리 (70%)
+   - 누락: 미인증자 처리, 주제 관리, 특정 사용자 조회
+2. **BlockController** - 차단 관리 (80%)
+   - 누락: 차단 해제 (에러)
+3. **StudyController** - 스터디 관리 (90%)
+   - 누락: 규칙 조회/수정
+4. **AvatarController** - 아바타 관리 (30%)
+   - 누락: 프로필 사진, 선호도, 상세 정보
+5. **WithdrawController** - 탈퇴 관리 (100% API, 0% UI)
+   - 누락: UI 구현
 
----
-
-## ✅ 16. 자동 알림 (4/4 완료) 🎉
-
-#### PUT /api/v1/batch-job/{batchJobId} - 자동 알림 변경 API
-**상태:** ✅ 완료  
-**서비스:** `BatchJobService().putBatchJob()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/alarm-edit.tsx`
-
-#### DELETE /api/v1/batch-job/{batchJobId} - 자동 알림 삭제 API
-**상태:** ✅ 완료  
-**서비스:** `BatchJobService().deleteBatchJob()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/alarm-edit.tsx`
-
-#### POST /api/v1/batch-job - 자동 알림 등록 API
-**상태:** ✅ 완료  
-**서비스:** `BatchJobService().postBatchJob()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/alarm-add.tsx`
-
-#### GET /api/v1/batch-job/{studyToken}/batch-jobs - 자동 알림 조회 API
-**상태:** ✅ 완료  
-**서비스:** `BatchJobService().getBatchJobs()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/alarm.tsx`
-
-**섹션 요약:** 자동 알림 모든 API 완벽 구현 ✅
-
----
-
-## ✅ 17. 스터디원 관리 상세 (5/5 완료) 🎉
-
-#### PATCH /api/v1/study/{studyToken}/enrollments/forced-out - 팀원 강제 탈퇴
-**상태:** ✅ 완료  
-**서비스:** `StudyEnrollmentsService().patchForcedOut()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/member-detail.tsx`
-
-#### PATCH /api/v1/study/{studyToken}/enrollments/delegate - 스터디장 위임
-**상태:** ✅ 완료  
-**서비스:** `StudyEnrollmentsService().patchDelegate()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/member-detail.tsx`
-
-#### GET /api/v1/study/{studyToken}/enrollments/{targetToken} - 스터디 참여자 별 출석, 인증 현황 조회
-**상태:** ✅ 완료  
-**서비스:** `StudyEnrollmentsService().getMemberAttendance()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/member-detail.tsx`
-- `app/(tabs)/(my)/member/[id]/my-attendance.tsx`
-
-#### GET /api/v1/study/{studyToken}/enrollments/members - 스터디원 관리 조회
-**상태:** ✅ 완료  
-**서비스:** `StudyEnrollmentsService().getStudyEnrollments()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/member.tsx`
-
-#### GET /api/v1/avatars/{avatarToken} - 사용자별 인증률 및 출석률 조회
-**상태:** ✅ 완료  
-**서비스:** `StudyEnrollmentsService().getMemberDetail()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/member-detail.tsx`
-- `app/(tabs)/(my)/manage/[token]/evaluation.tsx`
-
-**섹션 요약:** 스터디원 관리 모든 API 완벽 구현 ✅
+### ❌ 미연동 (7개)
+1. **EnrollmentController** - 등록 관리 (0%)
+   - 리더 위임, 강제 퇴출
+2. **EnrollmentReaderController** - 등록 조회 (0%)
+   - 멤버 목록, 참여 상세
+3. **NoticeController** - 공지 관리 (0%)
+   - 백엔드 조회 API 없음
+4. **BatchJobController** - 배치 작업 (0%)
+   - UI 미구현
+5. **SearchController** - 검색 (0%)
+   - 전체 미구현
+6. **UserWithdrawalController** - 회원 탈퇴 (0%)
+   - 전체 미구현
+7. **PushController** - Push 알림 (0%)
+   - 전체 미구현
 
 ---
 
-## ✅ 18. 지원 (4/4 완료) 🎉
+## 🎯 다음 단계 액션 아이템
 
-#### POST /api/v1/applications - 스터디 지원
-**상태:** ✅ 완료  
-**서비스:** `ApplicationsService().postApplication()`  
-**사용 위치:**
-- `app/study/[slug]/application.tsx`
+### 즉시 조치 필요
+1. [ ] 차단 해제 API 500 에러 해결 - 백엔드 확인
+2. [ ] 공지 조회 API 백엔드 구현 요청
+3. [ ] 스터디원 상세 정보 API 연동 - `GET /avatars/{avatarToken}`
+4. [ ] 스터디 멤버 목록 API 연동 - `GET /enrollments/members`
 
-#### PATCH /api/v1/applications/{applicationId}/reject - 스터디 지원 반려
-**상태:** ✅ 완료  
-**서비스:** `ApplicationsService().patchReject()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/recruiting-member.tsx`
+### 단기 목표 (1-2주)
+5. [ ] Enrollment 관련 API 전체 연동
+   - 멤버 목록 조회
+   - 참여 상세 정보
+   - 리더 위임
+   - 강제 퇴출
+6. [ ] 스터디 규칙 관리 기능 구현
+7. [ ] 탈퇴 관리 UI 구현
 
-#### PATCH /api/v1/applications/{applicationId}/accept - 스터디 지원 승인
-**상태:** ✅ 완료  
-**서비스:** `ApplicationsService().patchAccept()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/recruiting-member.tsx`
+### 중기 목표 (1개월)
+8. [ ] 프로필 관리 기능 확장
+   - 프로필 사진 업로드
+   - 선호 카테고리 수정
+9. [ ] 배치 작업 UI 구현
+10. [ ] 검색 기능 구현
 
-#### GET /api/v1/applications/{studyToken} - 스터디 지원 현황 조회
-**상태:** ✅ 완료  
-**서비스:** `ApplicationsService().getApplications()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/recruiting-member.tsx`
-
-**섹션 요약:** 지원 관련 모든 API 완벽 구현 ✅
-
----
-
-## ✅ 19. 스터디 탈퇴 (3/3 완료) 🎉
-
-#### POST /api/v1/study/{studyToken}/withdraw - 스터디 탈퇴 API
-**상태:** ✅ 완료  
-**서비스:** `WithdrawService().postWithdraw()`  
-**사용 위치:**
-- `app/(tabs)/(my)/member/[id]/leave/request.tsx` (승인 필요)
-- `app/(tabs)/(my)/member/[id]/leave/immediate.tsx` (즉시 탈퇴)
-
-#### POST /api/v1/study/{studyToken}/withdraw/{withdrawId}/approve - 스터디 탈퇴 요청 승인 API
-**상태:** ✅ 완료  
-**서비스:** `WithdrawService().approveWithdraw()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/withdrawal.tsx`
-
-#### GET /api/v1/study/{studyToken}/withdraw/request - 스터디 탈퇴 요청 조회 API
-**상태:** ✅ 완료  
-**서비스:** `WithdrawService().getRequest()`  
-**사용 위치:**
-- `app/(tabs)/(my)/manage/[token]/withdrawal.tsx`
-
-**섹션 요약:** 스터디 탈퇴 모든 API 완벽 구현 ✅
-
----
-
-## ⚠️ 20. 검색 (1/2 완료)
-
-#### GET /api/v1/study/search - 스터디 검색
-**상태:** ✅ 완료 (03. 스터디와 동일)
-
-#### GET /api/v1/search-histories - 검색 내역 조회
-**상태:** ⚠️ 미구현
-
-**섹션 요약:** 스터디 검색 완료, 검색 내역은 미구현
-
----
-
-## 📋 미구현 API 목록
-
-### 긴급 (1개)
-1. **DELETE /api/v1/blocks/{id}** - 차단 해제
-   - 백엔드 API 미구현
-   - 프론트엔드 코드 작성 완료
-
-### 선택 (5개)
-2. **GET /notifications** - 알림 내역 조회
-3. **GET /api/v1/search-histories** - 검색 내역 조회
-4. **PATCH /api/v1/study/re-recruit** - 스터디 추가 모집
-5. **GET /api/v1/study/{studyToken}/recruit** - 스터디 모집 입력값 조회
-
----
-
-## 📈 섹션별 완성도
-
-| 섹션 | 완료 | 미구현 | 완성도 |
-|------|------|--------|--------|
-| 02. 회원가입 | 11 | 0 | 100% ✅ |
-| 03. 스터디 | 13 | 0 | 100% ✅ |
-| 04. 유저 | 4 | 0 | 100% ✅ |
-| 05. 공지 | 1 | 1 | 50% |
-| 06. 회차 | 3 | 0 | 100% ✅ |
-| 07. 북마크 | 3 | 0 | 100% ✅ |
-| 08. 최근 조회 | 1 | 0 | 100% ✅ |
-| 09. 출석 | 3 | 0 | 100% ✅ |
-| 10. 프로필 수정 | 1 | 0 | 100% ✅ |
-| 11. 회차 인증 | 9 | 0 | 100% ✅ |
-| 12. 평가 | 1 | 0 | 100% ✅ |
-| 13. 차단 | 4 | 1 | 80% |
-| 14. 마이페이지 | 4 | 0 | 100% ✅ |
-| 15. 신고 | 1 | 0 | 100% ✅ |
-| 16. 자동 알림 | 4 | 0 | 100% ✅ |
-| 17. 스터디원 관리 | 5 | 0 | 100% ✅ |
-| 18. 지원 | 4 | 0 | 100% ✅ |
-| 19. 스터디 탈퇴 | 3 | 0 | 100% ✅ |
-| 20. 검색 | 1 | 1 | 50% |
-
----
-
-## 🎯 결론
-
-- **전체 완성도: 93%** (78/84 API)
-- **핵심 기능: 100% 완료** ✅
-- **관리 기능: 100% 완료** ✅
-- **부가 기능: 80% 완료**
-
-**미구현 API 6개는 대부분 부가 기능으로, 앱의 핵심 기능은 모두 완벽히 구현되어 있습니다.**
-
----
-
-## 📝 작업 이력
-
-### 2025-01-09
-- ✅ 스터디 현황 조회 버그 수정 (URL placeholder 불일치 해결)
-- ✅ 차단 기능 완전 구현 (5개 API 연동, Mock 66줄 제거)
-- ✅ JoinedStudy Mock 데이터 제거
-- ✅ 선호 설정 UI 개선
-- ✅ 회원 탈퇴 기능 연동
-
----
-
-**문서 작성:** AI Assistant  
-**최종 검토:** 2025년 1월 9일
+### 장기 목표 (2개월+)
+11. [ ] Push 알림 시스템 구축
+12. [ ] 회원 탈퇴 기능 구현
+13. [ ] 인증 주제 관리 기능
+14. [ ] 검색 기록 기능
