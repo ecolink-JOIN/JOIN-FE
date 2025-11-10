@@ -8,8 +8,8 @@ import Icon, { IconTypes } from '../../atoms/Icon';
 
 export const ManageView = styled.View`
   background-color: ${colors.gray[2]};
-  height: 100%;
-  padding: 25px 20px;
+  flex: 1;
+  padding: 25px 20px 0px 20px;
   gap: 20px;
 `;
 

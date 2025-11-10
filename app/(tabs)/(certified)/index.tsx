@@ -52,7 +52,7 @@ function CertifiedScreen() {
 
   return (
     <ManageView>
-      <ScrollView contentContainerStyle={{ gap: 16, paddingBottom: 20 }}>
+      <ScrollView contentContainerStyle={{ gap: 16 }} showsVerticalScrollIndicator={false}>
         {joinedStudies.map((study) => (
           <StudyCard key={study.studyToken} study={study} />
         ))}
