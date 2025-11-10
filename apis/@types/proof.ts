@@ -48,7 +48,7 @@ declare namespace ProofResponse {
       avatar: {
         avatarToken: string;
         nickname: string;
-        profileImageUrl: string;
+        profileUrl: string;
       };
       proofs: {
         proofId: number;

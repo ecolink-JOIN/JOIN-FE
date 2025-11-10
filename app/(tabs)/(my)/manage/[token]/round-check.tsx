@@ -1,6 +1,6 @@
 import React from 'react';
 import Typography from '@/components/atoms/Typography';
-import { FlatList, View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { ManageView, ManageBoxView, shadowStyles } from '@/components/molecules/MyMolecules/ManageView';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
@@ -29,7 +29,9 @@ const formatDate = (dateStr: string): string => {
   return dateStr.replace(/-/g, '.');
 };
 
-const RoundCheck = (id: string | string[] | undefined, token: string) => {
+const RoundCheck = () => {
+  const { token } = useLocalSearchParams<{ token: string }>();
+
   const {
     data: meetings,
     isLoading,
@@ -64,7 +66,7 @@ const RoundCheck = (id: string | string[] | undefined, token: string) => {
     );
   }
 
-  if (!meetings?.data || meetings.data.length === 0) {
+  if (!meetings || meetings.length === 0) {
     return (
       <ManageView>
         <Typography variant="heading3">스터디 회차 확인</Typography>
@@ -81,7 +83,7 @@ const RoundCheck = (id: string | string[] | undefined, token: string) => {
     <ManageView>
       <Typography variant="heading3">스터디 회차 확인</Typography>
       <ListView style={shadowStyles.shadow}>
-        {meetings.data.map((meeting: MeetingsResponse.Meeting) => (
+        {meetings.map((meeting: MeetingsResponse.Meeting) => (
           <RoundBox key={meeting.id}>
             <RoundNumber variant="body3">{meeting.meetingNo}회차</RoundNumber>
             <RoundStatus variant="body3" status={getStatusLabel(meeting.status)} date>
@@ -97,12 +99,7 @@ const RoundCheck = (id: string | string[] | undefined, token: string) => {
   );
 };
 
-const RoundCheckWrapper = () => {
-  const { id, token } = useLocalSearchParams<{ id: string; token: string }>();
-  return <FlatList data={[null]} renderItem={() => RoundCheck(id, token)} />;
-};
-
-export default RoundCheckWrapper;
+export default RoundCheck;
 
 const ListView = styled(ManageBoxView)`
   gap: 14px;

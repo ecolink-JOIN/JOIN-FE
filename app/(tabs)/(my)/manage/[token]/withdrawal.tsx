@@ -9,38 +9,6 @@ import Button from '@/components/atoms/Button';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
 import { WithdrawService } from '@/apis';
 import { useQuery } from '@tanstack/react-query';
-const users = [
-  {
-    id: 1,
-    profile: require('@/assets/images/profile.png'),
-    name: '닉네임1',
-  },
-  {
-    id: 2,
-    profile: require('@/assets/images/profile.png'),
-    name: '닉네임2',
-  },
-  {
-    id: 3,
-    profile: require('@/assets/images/profile.png'),
-    name: '닉네임3',
-  },
-  {
-    id: 4,
-    profile: require('@/assets/images/profile.png'),
-    name: '닉네임4',
-  },
-  {
-    id: 5,
-    profile: require('@/assets/images/profile.png'),
-    name: '닉네임5',
-  },
-  {
-    id: 6,
-    profile: require('@/assets/images/profile.png'),
-    name: '닉네임6',
-  },
-];
 
 const WidthDrawal = () => {
   const { token } = useLocalSearchParams<{ token: string }>();
@@ -78,7 +46,10 @@ const WidthDrawal = () => {
             {requestList && requestList.length > 0 ? (
               requestList.map((user) => (
                 <Contents key={user.withdrawId}>
-                  {/* <ProfileImage source={{ uri: user.profileUrl }} style={{ width: 28, height: 28, borderRadius: 100 }} /> */}
+                  <ProfileImage
+                    source={{ uri: user.profileImage?.url }}
+                    style={{ width: 28, height: 28, borderRadius: 100 }}
+                  />
                   <Typography variant="body3">{user.nickname}</Typography>
                   <ApproveButton onPress={() => setSelectedWithdrawId(user.withdrawId)}>
                     <Typography variant="body3" style={{ color: colors.primary }}>

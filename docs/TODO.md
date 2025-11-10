@@ -37,56 +37,7 @@
 
 ### 🔴 긴급 (1순위)
 
-#### 1. 스터디원 상세 정보 연동
-**API**: `GET /api/v1/avatars/{avatarToken}`
-**위치**: `app/(tabs)/(my)/manage/[token]/member/[id]/index.tsx`
-**현재**: 하드코딩 (닉네임, 출석률, 인증률)
-**작업**:
-```typescript
-// 1. apis/@types/user.ts에 타입 추가
-interface AvatarDetailResponse {
-  avatarToken: string;
-  nickname: string;
-  profileUrl: string;
-  attendanceRate: number;
-  proofRate: number;
-}
-
-// 2. apis/service/user.ts에 함수 추가
-const getAvatarDetail = async (avatarToken: string) => {...}
-
-// 3. hooks/useAvatar.ts 생성
-export const useAvatarDetail = (avatarToken: string) => {...}
-
-// 4. 컴포넌트 연동
-```
-
-#### 2. 스터디 멤버 목록 연동
-**API**: `GET /api/v1/study/{studyToken}/enrollments/members`
-**위치**: 
-- `components/organisms/MyPage/Manage.tsx` - StudyEvaluation
-- 평가 대상자 선택 화면
-**현재**: Mock 데이터 5명 하드코딩
-**작업**:
-```typescript
-// 1. apis/@types/study-enrollments.ts에 타입 추가
-interface StudyMember {
-  avatarToken: string;
-  nickname: string;
-  profileUrl: string;
-  isLeader: boolean;
-}
-
-// 2. apis/service/study-enrollments.ts에 함수 추가
-const getStudyMembers = async (studyToken: string) => {...}
-
-// 3. hooks/useStudyEnrollments.ts 생성
-export const useStudyMembers = (studyToken: string) => {...}
-
-// 4. StudyEvaluation 컴포넌트 연동
-```
-
-#### 3. 차단 해제 기능 수정
+#### 1. 차단 해제 기능 수정
 **API**: `DELETE /api/v1/blocks/{blockId}` (백엔드 확인 후)
 **위치**: `app/(tabs)/(my)/myinfo/block-manage.tsx`
 **문제**: 500 에러 발생 중
@@ -268,8 +219,8 @@ App (_layout.tsx)
 - **미연동**: 약 30개 (38%)
 
 ### 우선순위별
-- 🔴 긴급 (1순위): 3개
-- 🟡 중요 (2순위): 5개
+- 🔴 긴급 (1순위): 1개
+- 🟡 중요 (2순위): 7개
 - 🟢 보통 (3순위): 6개
 - 🔵 낮음 (4순위): 6개
 
@@ -279,6 +230,18 @@ App (_layout.tsx)
 ✅ 인증 페이지 개선 (모든 스터디 표시)
 ✅ StudyCard 컴포넌트 분리
 ✅ ManageView 하단 여백 해결
+✅ 백엔드 전체 API 분석 (약 80개)
+✅ 스터디원 상세 정보 API 연동 (`GET /avatars/{avatarToken}`)
+  - apis/@types/user.ts에 AvatarDetail 타입 추가
+  - apis/service/user.ts에 getAvatarDetail 함수 추가
+  - hooks/useAvatar.ts 생성 (useAvatarDetail hook)
+  - member-detail.tsx 연동 (타인의 출석률/인증률)
+  - my-attendance.tsx 연동 (본인 출석률/인증률 상세)
+  - **study-status.tsx의 MyAttendance 컴포넌트 연동 (본인 출석률/인증률 요약)**
+✅ 스터디 멤버 목록 API 연동 (`GET /enrollments/members`)
+  - hooks/useStudyEnrollments.ts 생성 (useStudyMembers, useMemberAttendance hooks)
+  - Manage.tsx의 StudyEvaluation 컴포넌트 전면 개편
+  - Mock 데이터 제거, 실제 API 연동
 
 ---
 
@@ -286,8 +249,8 @@ App (_layout.tsx)
 
 ### Week 1 (긴급)
 1. 🔴 차단 해제 API 수정 (백엔드 확인 필요)
-2. 🔴 스터디원 상세 정보 연동
-3. 🔴 스터디 멤버 목록 연동
+2. � 스터디원 참여 상세 정보
+3. � 리더 권한 위임 UI
 
 ### Week 2 (중요)
 4. 🟡 스터디원 참여 상세 정보

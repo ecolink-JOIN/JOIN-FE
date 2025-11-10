@@ -14,6 +14,9 @@ import Evaluator from '@/components/molecules/Evaluator';
 import Button from '@/components/atoms/Button';
 import FineOptions from '@/components/molecules/FineOption';
 import { ApplicationsService, MyPageService, StudyService } from '@/apis';
+import { useStudyMembers } from '@/hooks/useStudyEnrollments';
+import { useAvatarDetail } from '@/hooks/useAvatar';
+import { useUserStore } from '@/store';
 
 // 스터디 모임 방법
 export const MeetingType = ({ studyToken }: { studyToken: string }) => {
@@ -207,47 +210,85 @@ export const Status = ({ value, onToggle }: { value: boolean; onToggle?: () => v
 interface MyAttendanceProps {
   id: string;
 }
-// TODO: 백엔드 API 추가 필요
-// API Endpoint: GET /study/{studyToken}/my-attendance
-// Request: { studyToken: string }
-// Response: { myAttendanceRate: number, myProofRate: number }
-// Priority: 중간
-// Description: 개인의 출석률과 인증률을 조회하는 API
+
 export const MyAttendance = ({ id }: MyAttendanceProps) => {
+  const studyToken = id;
+  const { avatarToken } = useUserStore();
+  const { data: memberDetail, isLoading, error } = useAvatarDetail(avatarToken || '', !!avatarToken);
+
   const handlePress = () => {
-    Alert.alert(
-      '기능 준비 중',
-      '나의 출석 및 인증 현황 상세 조회는 백엔드 API 개발 중입니다.\n\nAPI: GET /api/v1/study/{studyToken}/my-attendance',
-      [{ text: '확인' }],
-    );
+    router.push({
+      pathname: '/(tabs)/(my)/member/[id]/my-attendance',
+      params: { id: studyToken },
+    });
   };
 
-  useEffect(() => {
-    Alert.alert(
-      '기능 준비 중',
-      '나의 출석률/인증률 조회 기능은 백엔드 API 개발 중입니다.\n\nAPI: GET /api/v1/study/{studyToken}/my-attendance',
-      [{ text: '확인' }],
+  if (!avatarToken) {
+    return (
+      <View style={{ marginTop: 16, marginBottom: 10 }}>
+        <View
+          style={{
+            alignItems: 'center',
+            paddingVertical: 20,
+            backgroundColor: colors.gray[1],
+            borderRadius: 8,
+          }}
+        >
+          <Typography variant="body2" style={{ color: colors.gray[6], textAlign: 'center' }}>
+            로그인 정보를 불러올 수 없습니다
+          </Typography>
+        </View>
+      </View>
     );
-  }, []);
+  }
+
+  if (isLoading) {
+    return (
+      <View style={{ marginTop: 16, marginBottom: 10 }}>
+        <View
+          style={{
+            alignItems: 'center',
+            paddingVertical: 20,
+            backgroundColor: colors.gray[1],
+            borderRadius: 8,
+          }}
+        >
+          <Typography variant="body2" style={{ color: colors.gray[6] }}>
+            로딩 중...
+          </Typography>
+        </View>
+      </View>
+    );
+  }
+
+  if (error || !memberDetail) {
+    return (
+      <View style={{ marginTop: 16, marginBottom: 10 }}>
+        <View
+          style={{
+            alignItems: 'center',
+            paddingVertical: 20,
+            backgroundColor: colors.gray[1],
+            borderRadius: 8,
+          }}
+        >
+          <Typography variant="body2" style={{ color: colors.gray[6], textAlign: 'center' }}>
+            출석 정보를 불러올 수 없습니다
+          </Typography>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={{ marginTop: 16, marginBottom: 10 }}>
-      <View
-        style={{
-          alignItems: 'center',
-          paddingVertical: 20,
-          backgroundColor: colors.gray[1],
-          borderRadius: 8,
-          opacity: 0.6,
-        }}
-      >
-        <Typography variant="body2" style={{ color: colors.gray[6], textAlign: 'center' }}>
-          나의 출석률 / 인증률
-        </Typography>
-        <Typography variant="caption1" style={{ color: colors.gray[5], marginTop: 8, textAlign: 'center' }}>
-          (백엔드 API 개발 중)
-        </Typography>
-      </View>
+      <InfoViewBox
+        center
+        InfoList={[
+          { title: '출석률', value: `${memberDetail.averageAttendanceRate.toFixed(0)}%` },
+          { title: '인증률', value: `${memberDetail.averageProofRate.toFixed(0)}%` },
+        ]}
+      />
       <Divider style={{ height: 2, marginHorizontal: -20, width: 'auto', marginTop: 16 }} />
       <Pressable onPress={handlePress}>
         <RowView style={{ paddingTop: 16, justifyContent: 'space-between' }}>
@@ -469,27 +510,68 @@ export const MemberEvaluation = () => {
 // Priority: 중간
 // Description: 평가 가능한 스터디원 목록 조회 (자신 제외)
 // Current Issue: Mock 데이터 5명 하드코딩 (김지수, 박지수, 이지수, 홍지수, 미지수)
-export const StudyEvaluation = () => {
-  useEffect(() => {
-    Alert.alert(
-      '기능 준비 중',
-      '스터디원 목록 조회 기능은 현재 백엔드 API 개발 중입니다.\n\n필요한 API:\nGET /api/v1/study/{studyToken}/enrollments/members\n(평가 가능한 스터디원 목록 조회)',
-      [{ text: '확인' }],
-    );
-  }, []);
+export const StudyEvaluation = ({ studyToken }: { studyToken: string }) => {
+  const { data: members, isLoading, error } = useStudyMembers(studyToken);
 
-  const handleEvaluationPress = () => {
-    Alert.alert('기능 준비 중', '스터디원 평가 기능은 백엔드 API 연동 후 사용 가능합니다.', [{ text: '확인' }]);
-  };
+  if (isLoading) {
+    return (
+      <View style={{ marginVertical: 16, alignItems: 'center', paddingVertical: 40 }}>
+        <Typography variant="body2" style={{ color: colors.gray[6] }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={{ marginVertical: 16, alignItems: 'center', paddingVertical: 40 }}>
+        <Typography variant="body2" style={{ color: colors.gray[6], textAlign: 'center' }}>
+          스터디원 목록을 불러올 수 없습니다.
+        </Typography>
+      </View>
+    );
+  }
+
+  if (!members || members.length === 0) {
+    return (
+      <View style={{ marginVertical: 16, alignItems: 'center', paddingVertical: 40 }}>
+        <Typography variant="body2" style={{ color: colors.gray[6] }}>
+          평가 가능한 스터디원이 없습니다.
+        </Typography>
+      </View>
+    );
+  }
 
   return (
-    <View style={{ marginVertical: 16, alignItems: 'center', paddingVertical: 40 }}>
-      <Typography variant="body2" style={{ color: colors.gray[6], textAlign: 'center' }}>
-        스터디원 목록 조회 기능은{'\n'}백엔드 API 개발 중입니다.
-      </Typography>
-      <Typography variant="caption1" style={{ color: colors.gray[5], marginTop: 8, textAlign: 'center' }}>
-        API: GET /api/v1/study/{'{studyToken}'}/enrollments/members
-      </Typography>
+    <View style={{ gap: 16 }}>
+      {members.map((member, index) => (
+        <LineView key={member.memberToken || index}>
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+            <Image
+              source={require('@/assets/images/profile.png')}
+              style={{ width: 32, height: 32, borderRadius: 16 }}
+            />
+            <Typography variant="button">{member.nickname}</Typography>
+          </View>
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+            <Typography variant="caption1">{member.attendanceRate.toFixed(0)}%</Typography>
+            <Typography variant="caption1">{member.proofRate.toFixed(0)}%</Typography>
+            <Button
+              variant="contained"
+              size="small"
+              onPress={() => {
+                router.push({
+                  pathname: '/(tabs)/(my)/manage/[token]/member-detail',
+                  params: { token: studyToken, avartarToken: member.memberToken },
+                });
+              }}
+            >
+              평가하기
+            </Button>
+          </View>
+        </LineView>
+      ))}
     </View>
   );
 };
@@ -538,38 +620,76 @@ export const Attendance = ({ studyToken }: { studyToken: string }) => {
 
   return (
     <View style={{ gap: 16 }}>
-      <LineView>
-        <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-          <Typography variant="button">평균 출석률</Typography>
-          <Typography variant="caption1">{studyInfo.teamAverageAttendanceRate.toFixed(0)}%</Typography>
-        </View>
-        <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-          <Typography variant="button">평균 인증률</Typography>
-          <Typography variant="caption1">{studyInfo.teamAverageProofRate.toFixed(0)}%</Typography>
-        </View>
-      </LineView>
-      {studyInfo.studyMembersInfos.map((member, index) => (
-        <LineView key={index}>
-          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-            <Image
-              source={require('@/assets/images/profile.png')}
-              style={{ width: 32, height: 32, borderRadius: 16 }}
-            />
-            <Typography variant="button">{member.nickname}</Typography>
+      {/* 팀 평균 */}
+      <InfoViewBox
+        center
+        InfoList={[
+          { title: '평균 출석률', value: `${studyInfo.teamAverageAttendanceRate.toFixed(0)}%` },
+          { title: '평균 인증률', value: `${studyInfo.teamAverageProofRate.toFixed(0)}%` },
+        ]}
+      />
+
+      {/* 개별 멤버 */}
+      <View style={{ gap: 8 }}>
+        {/* 헤더 배지 */}
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8, paddingRight: 8 }}>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 6,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.primary,
+              backgroundColor: 'transparent',
+            }}
+          >
+            <Typography variant="caption2" style={{ color: colors.primary }}>
+              출석
+            </Typography>
           </View>
-          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-            <Typography variant="caption1">{member.averageAttendanceRate.toFixed(0)}%</Typography>
-            <Typography variant="caption1">{member.averageProofRate.toFixed(0)}%</Typography>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 6,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.primary,
+              backgroundColor: 'transparent',
+            }}
+          >
+            <Typography variant="caption2" style={{ color: colors.primary }}>
+              인증
+            </Typography>
           </View>
-        </LineView>
-      ))}
+        </View>
+
+        {/* 멤버 리스트 */}
+        {studyInfo.studyMembersInfos.map((member, index) => (
+          <LineView key={index}>
+            <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+              <Image
+                source={require('@/assets/images/profile.png')}
+                style={{ width: 32, height: 32, borderRadius: 16 }}
+              />
+              <Typography variant="button">{member.nickname}</Typography>
+            </View>
+            <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+              <Typography variant="caption1" style={{ minWidth: 50, textAlign: 'center' }}>
+                {member.averageAttendanceRate.toFixed(0)}%
+              </Typography>
+              <Typography variant="caption1" style={{ minWidth: 50, textAlign: 'center' }}>
+                {member.averageProofRate.toFixed(0)}%
+              </Typography>
+            </View>
+          </LineView>
+        ))}
+      </View>
     </View>
   );
 };
 
 //스터디 인증 승인
 export const Approval = ({ studyToken }: { studyToken: string }) => {
-  const { id } = useLocalSearchParams();
   const [studyInfo, setStudyInfo] = React.useState<MyPageResponse.StudyInfo | null>(null);
   const [loading, setLoading] = React.useState(true);
 
@@ -621,7 +741,7 @@ export const Approval = ({ studyToken }: { studyToken: string }) => {
             alignItems: 'center',
             justifyContent: 'space-between',
           }}
-          onPress={() => router.push(`/manage/${id}/certify?user=${member.nickname}`)}
+          onPress={() => router.push(`/manage/${studyToken}/certify?user=${member.avatarToken}`)}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Image source={require('@/assets/images/profile.png')} style={{ width: 24, height: 24 }} />

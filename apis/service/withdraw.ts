@@ -14,7 +14,7 @@ export const WithdrawService = () => {
   };
 
   const approveWithdraw = async (studyToken: string, withdrawId: number) => {
-    const req = (await API.patch(`${url(studyToken)}/${withdrawId}/approve`)) as Shared.HttpResponse;
+    const req = (await API.post(`${url(studyToken)}/${withdrawId}/approve`)) as Shared.HttpResponse;
     return req.data;
   };
 

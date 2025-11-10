@@ -141,7 +141,7 @@ const Certify = () => {
       <Typography variant="heading3">스터디 인증 승인</Typography>
       <ManageBox style={[shadowStyles.shadow]}>
         <ProfileImage
-          source={{ uri: userProofs.avatar.profileImageUrl || undefined }}
+          source={{ uri: userProofs.avatar.profileUrl || undefined }}
           style={{ width: 80, height: 80, borderRadius: 100 }}
         />
         <Typography variant="heading4" style={{ marginTop: 8 }}>

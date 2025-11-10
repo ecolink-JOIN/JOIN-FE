@@ -9,20 +9,14 @@ import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
 import { useQuery } from '@tanstack/react-query';
 import { StudyEnrollmentsService } from '@/apis';
 import { useUserStore } from '@/store';
+import { useAvatarDetail } from '@/hooks/useAvatar';
 
-const RoundCheck = (id: string | string[] | undefined) => {
+const RoundCheck: React.FC<{ id: string | string[] | undefined }> = ({ id }) => {
   const studyToken = typeof id === 'string' ? id : '';
   const { avatarToken } = useUserStore();
 
-  // 멤버 상세 정보 조회 (출석률, 인증률)
-  const { data: memberDetail, isLoading: isLoadingDetail } = useQuery({
-    queryKey: ['memberDetail', studyToken, avatarToken],
-    queryFn: async () => {
-      if (!avatarToken) throw new Error('avatarToken이 없습니다');
-      return StudyEnrollmentsService().getMemberDetail(avatarToken);
-    },
-    enabled: !!studyToken && !!avatarToken,
-  });
+  // 멤버 상세 정보 조회 (출석률, 인증률) - useAvatarDetail hook 사용
+  const { data: memberDetail, isLoading: isLoadingDetail } = useAvatarDetail(avatarToken || '', !!avatarToken);
 
   // 출석 및 인증 현황 조회
   const { data: attendance, isLoading: isLoadingAttendance } = useQuery({
@@ -142,9 +136,10 @@ const RoundCheck = (id: string | string[] | undefined) => {
     </ManageView>
   );
 };
+
 const RoundCheckWrapper = () => {
   const { id } = useLocalSearchParams();
-  return <FlatList data={[null]} renderItem={() => RoundCheck(id)} />;
+  return <FlatList data={[null]} renderItem={() => <RoundCheck id={id} />} />;
 };
 
 export default RoundCheckWrapper;
