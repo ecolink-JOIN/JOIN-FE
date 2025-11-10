@@ -49,7 +49,7 @@ const AlarmScreen = () => {
     try {
       // const data = await NotificationService().getNotifications();
       // setNotifications(data);
-      
+
       // Mock 데이터 (임시)
       setNotifications([]);
     } catch (error) {
