@@ -9,13 +9,21 @@ declare namespace BlocksResponse {
     data: { id: number; blockAvatarToken: string; blockDate: string };
   }
 
-  interface GetStudyBlocks extends Shared.HttpResponse {
-    data: { title: string; studyToken: string; members: Member[]; isActive: boolean }[];
+  export interface GetStudyBlocks extends Shared.HttpResponse {
+    data: StudyBlock[];
   }
 
-  interface Member {
+  export interface StudyBlock {
+    title: string;
+    studyToken: string;
+    members: Member[];
+    isActive: boolean;
+  }
+
+  export interface Member {
     nickname: string;
     avatarToken: string;
+    profileUrl?: string;
   }
 }
 

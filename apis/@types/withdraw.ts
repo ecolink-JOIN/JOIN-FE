@@ -6,6 +6,9 @@ declare namespace WithdrawResponse {
   export interface Request {
     withdrawId: number;
     nickname: string;
+    profileImage: {
+      url: string;
+    };
   }
 }
 

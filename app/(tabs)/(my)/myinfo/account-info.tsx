@@ -6,16 +6,22 @@ import React, { useEffect, useState } from 'react';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
 import Button from '@/components/atoms/Button';
 import { AvatarsService, UserService } from '@/apis';
-import { Pressable } from 'react-native';
+import { Pressable, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
+import { useRouter } from 'expo-router';
+import { useUserStore } from '@/store';
 
 const Index = () => {
+  const router = useRouter();
+  const { clearUser } = useUserStore();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newImage, setImage] = useState<File | null>(null);
   const [profileImage, setProfileImage] = useState('');
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
+  const [canWithdraw, setCanWithdraw] = useState(false);
+  const [isCheckingWithdraw, setIsCheckingWithdraw] = useState(false);
 
   useEffect(() => {
     fetchInfo();
@@ -28,8 +34,46 @@ const Index = () => {
     setEmail(data.email);
   };
 
-  const toggleModal = () => {
+  const toggleModal = async () => {
+    if (!isModalVisible) {
+      // 모달 열 때 탈퇴 가능 여부 확인
+      setIsCheckingWithdraw(true);
+      try {
+        await AvatarsService().checkWithdraw();
+        setCanWithdraw(true);
+      } catch (error: any) {
+        console.error('탈퇴 가능 여부 확인 실패:', error);
+        // 스터디장인 경우 탈퇴 불가
+        setCanWithdraw(false);
+      } finally {
+        setIsCheckingWithdraw(false);
+      }
+    }
     setIsModalVisible(!isModalVisible);
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      await AvatarsService().withdraw();
+      Alert.alert('회원 탈퇴', '회원 탈퇴가 완료되었습니다.', [
+        {
+          text: '확인',
+          onPress: () => {
+            // 로그아웃 처리 및 로그인 화면으로 이동
+            AvatarsService()
+              .logout()
+              .finally(() => {
+                // Zustand store 초기화
+                clearUser();
+                router.replace('/(auth)');
+              });
+          },
+        },
+      ]);
+    } catch (error: any) {
+      console.error('회원 탈퇴 실패:', error);
+      Alert.alert('회원 탈퇴 실패', '회원 탈퇴에 실패했습니다.\n잠시 후 다시 시도해주세요.');
+    }
   };
 
   const pickImage = async () => {
@@ -101,7 +145,14 @@ const Index = () => {
 
       <ModalWrapper isModalVisible={isModalVisible} toggleModal={toggleModal}>
         <ModalContents>
-          {true ? (
+          {isCheckingWithdraw ? (
+            <>
+              <Typography variant="subtitle2">확인 중...</Typography>
+              <Typography variant="body4" style={{ color: colors.gray[8], textAlign: 'center' }}>
+                탈퇴 가능 여부를 확인하고 있습니다.
+              </Typography>
+            </>
+          ) : !canWithdraw ? (
             <>
               <Typography variant="subtitle2">스터디장 계정 탈퇴</Typography>
               <Typography variant="body4" style={{ color: colors.black, textAlign: 'center' }}>
@@ -111,10 +162,12 @@ const Index = () => {
                 variant="contained"
                 onPress={() => {
                   toggleModal();
+                  // 마이페이지의 운영 중인 스터디 탭으로 이동
+                  router.push('/(tabs)/(my)');
                 }}
                 style={{ marginHorizontal: 'auto' }}
               >
-                스터디장 위임하기
+                스터디 관리하기
               </Button>
             </>
           ) : (
@@ -135,7 +188,7 @@ const Index = () => {
                 <Button
                   variant="contained"
                   onPress={() => {
-                    toggleModal();
+                    handleWithdraw();
                   }}
                 >
                   탈퇴하기

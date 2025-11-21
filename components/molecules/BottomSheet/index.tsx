@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 
 interface BottomSheetProps {
   bottomSheetModalRef: React.RefObject<BottomSheetModal>;
@@ -35,7 +35,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       enablePanDownToClose={false}
       {...props}
     >
-      <BottomSheetView style={{ flex: 1 }}>{component}</BottomSheetView>
+      {component}
     </BottomSheetModal>
   );
 };

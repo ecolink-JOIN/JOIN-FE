@@ -2,6 +2,13 @@ import React from 'react';
 import { ManageView, ManageBox } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 
+// TODO: 백엔드 API 추가 필요
+// API Endpoint: GET /api/v1/study/{studyToken}/notice
+// Request: { studyToken: string }
+// Response: { noticeId: number, content: string, createdAt: string }
+// Priority: 낮음
+// Description: 스터디 공지를 조회하는 API (현재는 POST만 존재)
+// Note: Manage.tsx의 StudyAnnouncement 컴포넌트와 동일한 이슈
 const Notice = () => {
   return (
     <ManageView>

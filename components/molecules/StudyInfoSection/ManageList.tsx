@@ -25,6 +25,11 @@ const ManageList: FC<ManageListProps> = ({
   studyLinks,
   openBottomSheet,
 }) => {
+  // [token]과 [id]를 studyToken으로 교체하는 헬퍼 함수
+  const replaceTokens = (href: string) => {
+    return href.replace('[token]', studyToken.toString()).replace('[id]', studyToken.toString());
+  };
+
   return active ? (
     <Container style={styles.shadow}>
       <TitleView>
@@ -36,10 +41,14 @@ const ManageList: FC<ManageListProps> = ({
           key={idx}
           onPress={() => {
             if (list.href.includes('progress')) {
-              console.log(list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`);
-              router.push((list.href.replace('[token]', studyToken.toString()) + `-${status?.toLowerCase()}`) as Href);
+              // ACTIVE 상태는 progress.tsx로, 나머지는 progress-{status}.tsx로 라우팅
+              const suffix = status === 'ACTIVE' ? '' : `-${status?.toLowerCase()}`;
+              const route = replaceTokens(list.href) + suffix;
+              console.log('라우팅:', route, 'status:', status);
+              router.push(route as Href);
             } else {
-              router.push(list.href.replace('[token]', studyToken.toString()) as Href);
+              // [token]과 [id] 둘 다 교체
+              router.push(replaceTokens(list.href) as Href);
             }
           }}
           last={idx === studyLinks.length - 1}

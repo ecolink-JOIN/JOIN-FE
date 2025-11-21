@@ -1,136 +1,93 @@
 import React from 'react';
 import Typography from '@/components/atoms/Typography';
-import { FlatList, Image, View } from 'react-native';
+import { FlatList, Image, View, ActivityIndicator } from 'react-native';
 import { ManageView, ManageBoxView, shadowStyles } from '@/components/molecules/MyMolecules/ManageView';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
 import { useLocalSearchParams } from 'expo-router';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
+import { useQuery } from '@tanstack/react-query';
+import { StudyEnrollmentsService } from '@/apis';
+import { useUserStore } from '@/store';
+import { useAvatarDetail } from '@/hooks/useAvatar';
 
-const RoundData = [
-  {
-    id: 1,
-    date: '2021.09.01',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 2,
-    date: '2021.09.08',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 3,
-    date: '2021.09.15',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 4,
-    date: '2021.09.22',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 5,
-    date: '2021.09.29',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 6,
-    date: '2021.10.06',
-    attendance: '지각',
-    certification: '인증',
-  },
-  {
-    id: 7,
-    date: '2021.10.13',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 8,
-    date: '2021.10.20',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 9,
-    date: '2021.10.27',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 10,
-    date: '2021.11.03',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 11,
-    date: '2021.11.10',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 12,
-    date: '2021.11.17',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 13,
-    date: '2021.11.24',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 14,
-    date: '2021.12.01',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 15,
-    date: '2021.12.08',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 16,
-    date: '2021.12.15',
-    attendance: '지각',
-    certification: '인증',
-  },
-  {
-    id: 17,
-    date: '2021.12.22',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 18,
-    date: '2021.12.29',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 19,
-    date: '2022.01.05',
-    attendance: '출석',
-    certification: '인증',
-  },
-  {
-    id: 20,
-    date: '2022.01.12',
-    attendance: '출석',
-    certification: '인증',
-  },
-];
+const RoundCheck: React.FC<{ id: string | string[] | undefined }> = ({ id }) => {
+  const studyToken = typeof id === 'string' ? id : '';
+  const { avatarToken } = useUserStore();
 
-const RoundCheck = (id: string | string[] | undefined) => {
+  // 멤버 상세 정보 조회 (출석률, 인증률) - useAvatarDetail hook 사용
+  const { data: memberDetail, isLoading: isLoadingDetail } = useAvatarDetail(avatarToken || '', !!avatarToken);
+
+  // 출석 및 인증 현황 조회
+  const { data: attendance, isLoading: isLoadingAttendance } = useQuery({
+    queryKey: ['memberAttendance', studyToken, avatarToken],
+    queryFn: async () => {
+      if (!avatarToken) throw new Error('avatarToken이 없습니다');
+      return StudyEnrollmentsService().getMemberAttendance(studyToken, avatarToken);
+    },
+    enabled: !!studyToken && !!avatarToken,
+  });
+
+  const isLoading = isLoadingDetail || isLoadingAttendance;
+
+  // avatarToken이 없는 경우
+  if (!avatarToken) {
+    return (
+      <ManageView>
+        <Typography variant="heading3">나의 출석 및 인증 현황</Typography>
+        <View style={{ padding: 40, alignItems: 'center' }}>
+          <Typography variant="body3" style={{ color: colors.gray[7], textAlign: 'center' }}>
+            로그인 정보를 불러올 수 없습니다.{'\n'}다시 로그인해주세요.
+          </Typography>
+        </View>
+      </ManageView>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <ManageView>
+        <Typography variant="heading3">나의 출석 및 인증 현황</Typography>
+        <View style={{ padding: 40, alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Typography variant="body3" style={{ marginTop: 16, color: colors.gray[7] }}>
+            로딩 중...
+          </Typography>
+        </View>
+      </ManageView>
+    );
+  }
+
+  if (!memberDetail || !attendance) {
+    return (
+      <ManageView>
+        <Typography variant="heading3">나의 출석 및 인증 현황</Typography>
+        <View style={{ padding: 40, alignItems: 'center' }}>
+          <Typography variant="body3" style={{ color: colors.gray[7] }}>
+            출석 정보를 불러올 수 없습니다.
+          </Typography>
+        </View>
+      </ManageView>
+    );
+  }
+
+  // 출석 상태 한글 변환
+  const getAttendanceLabel = (status: 'PRESENT' | 'LATENESS' | 'ABSENT'): string => {
+    switch (status) {
+      case 'PRESENT':
+        return '출석';
+      case 'LATENESS':
+        return '지각';
+      case 'ABSENT':
+        return '결석';
+    }
+  };
+
+  // 날짜 포맷팅
+  const formatDate = (date: Date): string => {
+    const d = new Date(date);
+    return d.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.');
+  };
   return (
     <ManageView>
       <Typography variant="heading3">나의 출석 및 인증 현황</Typography>
@@ -144,33 +101,34 @@ const RoundCheck = (id: string | string[] | undefined) => {
           }}
         >
           <Image
-            source={require('@/assets/images/profile.png')}
+            source={memberDetail.profileUrl ? { uri: memberDetail.profileUrl } : require('@/assets/images/profile.png')}
             style={{
               width: 80,
               height: 80,
+              borderRadius: 40,
             }}
           />
-          <Typography variant="heading4">닉네임</Typography>
+          <Typography variant="heading4">{memberDetail.nickname}</Typography>
 
           <InfoViewBox
             center
             InfoList={[
-              { title: '출석률', value: '95%' },
-              { title: '인증률', value: '100%' },
+              { title: '출석률', value: `${memberDetail.averageAttendanceRate.toFixed(0)}%` },
+              { title: '인증률', value: `${memberDetail.averageProofRate.toFixed(0)}%` },
             ]}
           />
         </View>
-        {RoundData.map((item) => (
-          <RoundBox key={item.id}>
-            <RoundNumber variant="body3">{item.id}회차</RoundNumber>
-            <RoundStatus variant="body3" status={item.attendance} date>
-              {item.date}
+        {attendance.meetingAttendanceStatus.map((item, index) => (
+          <RoundBox key={`${item.meetingNo}-${index}`}>
+            <RoundNumber variant="body3">{item.meetingNo}회차</RoundNumber>
+            <RoundStatus variant="body3" status={item.attendanceStatus} date>
+              {formatDate(item.studyDate)}
             </RoundStatus>
-            <RoundStatus variant="body3" status={item.attendance}>
-              {item.attendance}
+            <RoundStatus variant="body3" status={item.attendanceStatus}>
+              {getAttendanceLabel(item.attendanceStatus)}
             </RoundStatus>
-            <RoundStatus variant="body3" status={item.attendance}>
-              {item.certification}
+            <RoundStatus variant="body3" status={item.hasApproveProof ? 'PRESENT' : 'ABSENT'}>
+              {item.hasApproveProof ? '인증' : '미인증'}
             </RoundStatus>
           </RoundBox>
         ))}
@@ -178,9 +136,10 @@ const RoundCheck = (id: string | string[] | undefined) => {
     </ManageView>
   );
 };
+
 const RoundCheckWrapper = () => {
   const { id } = useLocalSearchParams();
-  return <FlatList data={[null]} renderItem={() => RoundCheck(id)} />;
+  return <FlatList data={[null]} renderItem={() => <RoundCheck id={id} />} />;
 };
 
 export default RoundCheckWrapper;

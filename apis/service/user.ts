@@ -10,5 +10,24 @@ export const UserService = () => {
     return req.data;
   };
 
-  return { avatars };
+  /**
+   * 앱 공지사항 조회 API
+   * @api-doc: GET /api/v1/notices
+   */
+  const getAppNotifications = async () => {
+    const req = (await API.get('/notices')) as UserResponse.AppNotifications;
+    return req.data;
+  };
+
+  /**
+   * 아바타 상세 정보 조회 (출석률, 인증률 포함)
+   * @api-doc: GET /api/v1/avatars/{avatarToken}
+   * @param avatarToken - 조회할 아바타 토큰
+   */
+  const getAvatarDetail = async (avatarToken: string) => {
+    const req = (await API.get(`/avatars/${avatarToken}`)) as UserResponse.AvatarDetail;
+    return req.data;
+  };
+
+  return { avatars, getAppNotifications, getAvatarDetail };
 };

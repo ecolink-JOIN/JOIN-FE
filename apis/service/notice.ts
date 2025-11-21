@@ -10,5 +10,14 @@ export const NoticeService = () => {
     return req.data;
   };
 
-  return { studyNotice };
+  /**
+   * 알림 내역 조회 - 인증 필수
+   * @api-doc: GET /notifications
+   */
+  const getNotifications = async () => {
+    const req = (await API.get('/notifications')) as NoticeResponse.NotificationList;
+    return req.data;
+  };
+
+  return { studyNotice, getNotifications };
 };

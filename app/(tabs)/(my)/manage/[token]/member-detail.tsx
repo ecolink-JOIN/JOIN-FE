@@ -1,6 +1,6 @@
 import { ScrollView } from 'react-native';
 import React from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ManageView, shadowStyles, ManageBoxView } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
@@ -12,8 +12,10 @@ import { ModalWrapper } from '@/components/molecules/ModalViews';
 import { StudyEnrollmentsService } from '@/apis';
 import { useQuery } from '@tanstack/react-query';
 import { useGlobalContext } from '@/context/GlobalContext';
+import { useAvatarDetail } from '@/hooks/useAvatar';
 
 const MemberDetail = () => {
+  const router = useRouter();
   const { userinfo } = useGlobalContext();
   const { avartarToken, token } = useLocalSearchParams<{ avartarToken: string; token: string }>();
   const [isAttendenceModalVisible, setIsAttendenceModalVisible] = React.useState(false);
@@ -24,10 +26,9 @@ const MemberDetail = () => {
   const [isForcedOutModalVisible, setIsForcedOutModalVisible] = React.useState(false);
   const [evaluationModalVisible, setEvaluationModalVisible] = React.useState(false);
 
-  const { data: memberDetail } = useQuery({
-    queryKey: ['member', avartarToken],
-    queryFn: () => StudyEnrollmentsService().getMemberDetail(avartarToken),
-  });
+  // 아바타 상세 정보 조회 (새로운 API 사용)
+  const { data: memberDetail } = useAvatarDetail(avartarToken || '');
+
   const { data: memberAttendance } = useQuery({
     queryKey: ['memberAttendance', avartarToken],
     queryFn: () => StudyEnrollmentsService().getMemberAttendance(token, avartarToken),
@@ -112,7 +113,14 @@ const MemberDetail = () => {
             <Button
               variant="contained"
               onPress={() => {
-                // TODO: 평가하기 페이지 제작
+                router.push({
+                  pathname: '/(tabs)/(my)/manage/[token]/evaluation',
+                  params: {
+                    token,
+                    avartarToken,
+                    nickname: memberDetail?.nickname || '스터디원',
+                  },
+                });
               }}
             >
               평가하기
@@ -201,7 +209,14 @@ const MemberDetail = () => {
             onPress={() => {
               StudyEnrollmentsService()
                 .delegateStudy(token, avartarToken)
-                .finally(() => {
+                .then(() => {
+                  alert('스터디장 위임이 완료되었습니다.');
+                  entrustToggleModal();
+                  router.back();
+                })
+                .catch((error) => {
+                  console.error('스터디장 위임 실패:', error);
+                  alert('스터디장 위임에 실패했습니다.\n잠시 후 다시 시도해주세요.');
                   entrustToggleModal();
                 });
             }}

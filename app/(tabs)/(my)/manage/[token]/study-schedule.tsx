@@ -143,6 +143,7 @@ const StudySchedule = ({
     endDate: getInitialDate(endDate),
   });
   const [is30day, setIs30day] = useState<boolean>(false);
+  const [isSelectingEndDate, setIsSelectingEndDate] = useState<boolean>(false);
 
   // 현재 선택된 스케줄을 관리 (편집 또는 새로 추가)
   const [selectedSchedule, setSelectedSchedule] = useState<StudyRequest.Schedule>({
@@ -199,6 +200,7 @@ const StudySchedule = ({
   }, [schedules, stDate, endDate]);
 
   const handlePresentModalPress = useCallback(() => {
+    setIsSelectingEndDate(false); // 모달 열 때 시작일 선택부터 시작
     bottomSheetModalRef.current?.present();
   }, [bottomSheetModalRef]);
 
@@ -226,62 +228,6 @@ const StudySchedule = ({
         day: '2-digit',
       })
       .replace(/\./g, '.');
-  };
-  // 날짜 선택 시 처리 및 유효성 검사
-  const showToastDate = (dates: any) => {
-    // dates 객체에서 날짜 추출
-    if (!dates || typeof dates !== 'object') {
-      console.error('유효하지 않은 날짜 데이터:', dates);
-      return;
-    }
-
-    try {
-      // 날짜를 안전하게 Date 타입으로 변환
-      const getDateObject = (dateValue: any): Date | null => {
-        if (!dateValue) return null;
-
-        if (dateValue instanceof Date) return dateValue;
-
-        if (typeof dateValue === 'object' && 'toDate' in dateValue && typeof dateValue.toDate === 'function') {
-          // dayjs 객체인 경우
-          return dateValue.toDate();
-        }
-
-        try {
-          // 문자열이나 다른 형식의 경우 Date 생성자로 시도
-          const date = new Date(dateValue.toString());
-          return !isNaN(date.getTime()) ? date : null;
-        } catch (e) {
-          return null;
-        }
-      };
-
-      const startDateObj = getDateObject(dates.startDate);
-      const endDateObj = getDateObject(dates.endDate);
-
-      // 두 날짜가 모두 유효한 경우에만 상태 업데이트
-      if (startDateObj && endDateObj) {
-        setDuration({
-          startDate: startDateObj,
-          endDate: endDateObj,
-        });
-
-        // 날짜 간격이 30일 이상인지 확인
-        const diff = endDateObj.getTime() - startDateObj.getTime();
-        if (diff < 30 * 24 * 60 * 60 * 1000) {
-          showToast({ text1: '스터디 기간은 최소 30일 이상으로 설정해주세요.' });
-          setIs30day(false);
-        } else {
-          setIs30day(true);
-        }
-      } else {
-        // 날짜 변환 실패
-        showToast({ text1: '유효한 날짜를 선택해주세요.' });
-      }
-    } catch (error) {
-      console.error('날짜 처리 오류:', error);
-      showToast({ text1: '날짜 처리 중 오류가 발생했습니다.' });
-    }
   };
   const [isModalVisible, setIsModalVisible] = React.useState(false);
 
@@ -539,20 +485,110 @@ const StudySchedule = ({
       </Button>
       <BottomSheetComp
         bottomSheetModalRef={bottomSheetModalRef}
+        snapPoints={['80%']}
+        enableContentPanningGesture={false}
         component={
           <DateView>
-            <DateTimePicker
-              mode="range"
-              locale="ko"
-              calendarTextStyle={{ fontFamily: 'Pretendard-Medium' }}
-              headerButtonColor={colors.primary}
-              selectedItemColor={colors.primary}
-              startDate={duration.startDate}
-              endDate={duration.endDate}
-              onChange={(dates: any) => {
-                showToastDate(dates);
-              }}
-            />
+            <View style={{ marginBottom: 16 }}>
+              <Typography variant="body2" style={{ textAlign: 'center', color: colors.gray[7] }}>
+                {!isSelectingEndDate ? '시작일을 선택해주세요' : '종료일을 선택해주세요'}
+              </Typography>
+              {duration.startDate && (
+                <Typography variant="body3" style={{ textAlign: 'center', color: colors.primary, marginTop: 4 }}>
+                  시작일: {formattedDate(duration.startDate.toString())}
+                  {duration.endDate && ` ~ 종료일: ${formattedDate(duration.endDate.toString())}`}
+                </Typography>
+              )}
+              {duration.startDate && !duration.endDate && (
+                <TouchableOpacity
+                  onPress={() => setIsSelectingEndDate(false)}
+                  style={{ marginTop: 8, alignSelf: 'center' }}
+                >
+                  <Typography variant="body3" style={{ color: colors.gray[6] }}>
+                    시작일 다시 선택
+                  </Typography>
+                </TouchableOpacity>
+              )}
+            </View>
+            <View style={{ width: '100%', flex: 1 }} pointerEvents="box-none">
+              <View style={{ flex: 1 }} pointerEvents="auto">
+                <DateTimePicker
+                  mode="single"
+                  locale="ko"
+                  calendarTextStyle={{ fontFamily: 'Pretendard-Medium' }}
+                  headerButtonColor={colors.primary}
+                  selectedItemColor={colors.primary}
+                  date={isSelectingEndDate ? duration.endDate : duration.startDate}
+                  timePicker={false}
+                  displayFullDays={true}
+                  firstDayOfWeek={1}
+                  minDate={
+                    isSelectingEndDate && duration.startDate ? new Date(duration.startDate.toString()) : new Date()
+                  }
+                  onChange={(params: any) => {
+                    console.log('DateTimePicker onChange called:', params);
+                    
+                    if (!params || !params.date) {
+                      console.log('Invalid params received');
+                      return;
+                    }
+
+                    const selectedDate = new Date(params.date);
+                    console.log('Selected date:', selectedDate);
+
+                    if (!isSelectingEndDate) {
+                      // 시작일 선택
+                      setDuration({
+                        startDate: selectedDate,
+                        endDate: undefined,
+                      });
+                      setIsSelectingEndDate(true);
+                      setIs30day(false);
+                      console.log('Start date selected, now selecting end date');
+                    } else {
+                      // 종료일 선택
+                      if (duration.startDate) {
+                        const startDate = new Date(duration.startDate.toString());
+                        const endDate = selectedDate;
+
+                        // 종료일이 시작일보다 이른 경우 처리
+                        if (endDate < startDate) {
+                          showToast({ text1: '종료일은 시작일 이후로 선택해주세요.' });
+                          return;
+                        }
+
+                        setDuration({
+                          startDate: startDate,
+                          endDate: endDate,
+                        });
+
+                        // 30일 검증
+                        const diffInMs = endDate.getTime() - startDate.getTime();
+                        const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+                        
+                        if (diffInMs >= thirtyDaysInMs) {
+                          setIs30day(true);
+                          console.log('Valid range selected:', {
+                            startDate,
+                            endDate,
+                            diffInDays: diffInMs / (24 * 60 * 60 * 1000),
+                          });
+                        } else {
+                          setIs30day(false);
+                          const diffInDays = Math.ceil(diffInMs / (24 * 60 * 60 * 1000));
+                          showToast({
+                            text1: `선택한 기간이 ${diffInDays}일입니다. 최소 30일 이상 선택해주세요.`,
+                          });
+                        }
+                        
+                        // 종료일 선택 완료 후 다시 시작일 선택 모드로
+                        setIsSelectingEndDate(false);
+                      }
+                    }
+                  }}
+                />
+              </View>
+            </View>
             <ButtonWrapper>
               <Button
                 variant="outlined"
@@ -715,9 +751,9 @@ const AddAlarm = styled.Pressable`
 `;
 
 const DateView = styled.View`
-  align-items: center;
+  flex: 1;
+  padding: 16px;
   justify-content: space-between;
-  padding: 8px;
 `;
 
 const ButtonWrapper = styled.View`

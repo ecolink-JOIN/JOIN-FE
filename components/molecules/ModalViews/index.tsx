@@ -1,8 +1,8 @@
 import { PropsWithChildren } from 'react';
-import { Modal } from 'react-native';
+import { Modal, View, Pressable } from 'react-native';
 import styled from 'styled-components/native';
 
-export const ModalContainer = styled.Pressable`
+const ModalBackground = styled(View)`
   flex: 1;
   justify-content: center;
   align-items: center;
@@ -10,7 +10,7 @@ export const ModalContainer = styled.Pressable`
   padding: 0 20px;
 `;
 
-export const ModalBox = styled.Pressable`
+export const ModalBox = styled.View`
   gap: 16px;
   justify-content: center;
   align-items: center;
@@ -27,9 +27,13 @@ export const ModalWrapper = ({
 }: PropsWithChildren<{ isModalVisible: boolean; toggleModal: () => void }>) => {
   return (
     <Modal visible={isModalVisible} transparent animationType="fade" onRequestClose={toggleModal}>
-      <ModalContainer onPress={toggleModal}>
-        <ModalBox>{children}</ModalBox>
-      </ModalContainer>
+      <Pressable style={{ flex: 1 }} onPress={toggleModal}>
+        <ModalBackground pointerEvents="box-none">
+          <View pointerEvents="auto">
+            <ModalBox>{children}</ModalBox>
+          </View>
+        </ModalBackground>
+      </Pressable>
     </Modal>
   );
 };

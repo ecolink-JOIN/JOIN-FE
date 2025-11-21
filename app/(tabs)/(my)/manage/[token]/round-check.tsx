@@ -1,127 +1,96 @@
 import React from 'react';
 import Typography from '@/components/atoms/Typography';
-import { FlatList, View } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { ManageView, ManageBoxView, shadowStyles } from '@/components/molecules/MyMolecules/ManageView';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
 import { useLocalSearchParams } from 'expo-router';
+import { MeetingsService } from '@/apis';
+import { useQuery } from '@tanstack/react-query';
 
-const RoundData = [
-  {
-    id: 1,
-    date: '2021.09.01',
-    status: '완료',
-  },
-  {
-    id: 2,
-    date: '2021.09.08',
-    status: '완료',
-  },
-  {
-    id: 3,
-    date: '2021.09.15',
-    status: '완료',
-  },
-  {
-    id: 4,
-    date: '2021.09.22',
-    status: '완료',
-  },
-  {
-    id: 5,
-    date: '2021.09.29',
-    status: '완료',
-  },
-  {
-    id: 6,
-    date: '2021.10.06',
-    status: '제외',
-  },
-  {
-    id: 7,
-    date: '2021.10.13',
-    status: '완료',
-  },
-  {
-    id: 8,
-    date: '2021.10.20',
-    status: '완료',
-  },
-  {
-    id: 9,
-    date: '2021.10.27',
-    status: '완료',
-  },
-  {
-    id: 10,
-    date: '2021.11.03',
-    status: '완료',
-  },
-  {
-    id: 11,
-    date: '2021.11.10',
-    status: '완료',
-  },
-  {
-    id: 12,
-    date: '2021.11.17',
-    status: '완료',
-  },
-  {
-    id: 13,
-    date: '2021.11.24',
-    status: '완료',
-  },
-  {
-    id: 14,
-    date: '2021.12.01',
-    status: '완료',
-  },
-  {
-    id: 15,
-    date: '2021.12.08',
-    status: '진행 예정',
-  },
-  {
-    id: 16,
-    date: '2021.12.15',
-    status: '추가 회차',
-  },
-  {
-    id: 17,
-    date: '2021.12.22',
-    status: '진행 예정',
-  },
-  {
-    id: 18,
-    date: '2021.12.29',
-    status: '진행 예정',
-  },
-  {
-    id: 19,
-    date: '2022.01.05',
-    status: '진행 예정',
-  },
-  {
-    id: 20,
-    date: '2022.01.12',
-    status: '진행 예정',
-  },
-];
+// MeetingStatus를 한글로 변환
+const getStatusLabel = (status: MeetingsResponse.MeetingStatus): string => {
+  switch (status) {
+    case 'COMPLETED':
+      return '완료';
+    case 'ACTIVE':
+      return '진행중';
+    case 'WAITING':
+      return '대기';
+    case 'NOT_STARTED':
+      return '시작 안 함';
+    default:
+      return '알 수 없음';
+  }
+};
 
-const RoundCheck = (id: string | string[] | undefined) => {
+// 날짜 포맷팅 (YYYY-MM-DD -> YYYY.MM.DD)
+const formatDate = (dateStr: string): string => {
+  return dateStr.replace(/-/g, '.');
+};
+
+const RoundCheck = () => {
+  const { token } = useLocalSearchParams<{ token: string }>();
+
+  const {
+    data: meetings,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['meetings', token],
+    queryFn: () => MeetingsService().getMeetings(token),
+    enabled: !!token,
+  });
+
+  if (isLoading) {
+    return (
+      <ManageView>
+        <Typography variant="heading3">스터디 회차 확인</Typography>
+        <ListView style={shadowStyles.shadow}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </ListView>
+      </ManageView>
+    );
+  }
+
+  if (error) {
+    return (
+      <ManageView>
+        <Typography variant="heading3">스터디 회차 확인</Typography>
+        <ListView style={shadowStyles.shadow}>
+          <Typography variant="body3" style={{ color: colors.gray[9], textAlign: 'center' }}>
+            회차 정보를 불러오는 중 오류가 발생했습니다.
+          </Typography>
+        </ListView>
+      </ManageView>
+    );
+  }
+
+  if (!meetings || meetings.length === 0) {
+    return (
+      <ManageView>
+        <Typography variant="heading3">스터디 회차 확인</Typography>
+        <ListView style={shadowStyles.shadow}>
+          <Typography variant="body3" style={{ color: colors.gray[9], textAlign: 'center' }}>
+            등록된 회차가 없습니다.
+          </Typography>
+        </ListView>
+      </ManageView>
+    );
+  }
+
   return (
     <ManageView>
       <Typography variant="heading3">스터디 회차 확인</Typography>
       <ListView style={shadowStyles.shadow}>
-        {RoundData.map((item) => (
-          <RoundBox key={item.id}>
-            <RoundNumber variant="body3">{item.id}회차</RoundNumber>
-            <RoundStatus variant="body3" status={item.status} date>
-              {item.date}
+        {meetings.map((meeting: MeetingsResponse.Meeting) => (
+          <RoundBox key={meeting.id}>
+            <RoundNumber variant="body3">{meeting.meetingNo}회차</RoundNumber>
+            <RoundStatus variant="body3" status={getStatusLabel(meeting.status)} date>
+              {formatDate(meeting.studyDate)}
             </RoundStatus>
-            <RoundStatus variant="body3" status={item.status}>
-              {item.status}
+            <RoundStatus variant="body3" status={getStatusLabel(meeting.status)}>
+              {getStatusLabel(meeting.status)}
             </RoundStatus>
           </RoundBox>
         ))}
@@ -129,12 +98,8 @@ const RoundCheck = (id: string | string[] | undefined) => {
     </ManageView>
   );
 };
-const RoundCheckWrapper = () => {
-  const { id } = useLocalSearchParams();
-  return <FlatList data={[null]} renderItem={() => RoundCheck(id)} />;
-};
 
-export default RoundCheckWrapper;
+export default RoundCheck;
 
 const ListView = styled(ManageBoxView)`
   gap: 14px;

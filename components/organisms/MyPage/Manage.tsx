@@ -1,4 +1,4 @@
-import { Image, Pressable, View } from 'react-native';
+import { Alert, Image, Pressable, View } from 'react-native';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
 import React, { useEffect, useState } from 'react';
@@ -13,35 +13,107 @@ import Divider from '@/components/atoms/Divider';
 import Evaluator from '@/components/molecules/Evaluator';
 import Button from '@/components/atoms/Button';
 import FineOptions from '@/components/molecules/FineOption';
-import { ApplicationsService } from '@/apis';
+import { ApplicationsService, MyPageService, StudyService } from '@/apis';
+import { useStudyMembers } from '@/hooks/useStudyEnrollments';
+import { useAvatarDetail } from '@/hooks/useAvatar';
+import { useUserStore } from '@/store';
 
 // 스터디 모임 방법
-export const MeetingType = () => {
+export const MeetingType = ({ studyToken }: { studyToken: string }) => {
+  const [form, setForm] = React.useState<SharedStudy.Form | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchMeetingType = async () => {
+      try {
+        setLoading(true);
+        const response = await StudyService().getRules(studyToken);
+        setForm(response.form);
+      } catch (error) {
+        console.error('Failed to fetch meeting type:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMeetingType();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <View style={{ paddingTop: 16, paddingBottom: 12 }}>
+        <Typography variant="caption1" style={{ textAlign: 'left' }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
   return (
     <View style={{ paddingTop: 16, paddingBottom: 12 }}>
       <Typography variant="button" numberOfLines={4} ellipsizeMode="tail" style={{ textAlign: 'left' }}>
-        온라인
+        {form === 'ONLINE' ? '온라인' : form === 'OFFLINE' ? '오프라인' : '정보 없음'}
       </Typography>
     </View>
   );
 };
 
 // 스터디 운영 상세 규칙
-export const StudyRuleDetails = () => {
+export const StudyRuleDetails = ({ studyToken }: { studyToken: string }) => {
+  const [ruleData, setRuleData] = React.useState<StudyResponse.Rule | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchRuleDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await StudyService().getRules(studyToken);
+        setRuleData(response);
+      } catch (error) {
+        console.error('Failed to fetch rule details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRuleDetails();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <View style={{ paddingTop: 16, paddingBottom: 12 }}>
+        <Typography variant="caption1" style={{ textAlign: 'left' }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (!ruleData) {
+    return (
+      <View style={{ paddingTop: 16, paddingBottom: 12 }}>
+        <Typography variant="caption1" style={{ textAlign: 'left' }}>
+          규칙 정보를 불러올 수 없습니다.
+        </Typography>
+      </View>
+    );
+  }
+
   const options = [
     {
       name: '지각',
-      fine: 1000,
+      fine: ruleData.fineReasonAmounts.tardiness || 0,
     },
     {
       name: '결석',
-      fine: 2000,
+      fine: ruleData.fineReasonAmounts.absence || 0,
     },
     {
       name: '미인증',
-      fine: 1000,
+      fine: ruleData.fineReasonAmounts.nonProof || 0,
     },
   ];
+
   return (
     <View style={{ paddingTop: 16, paddingBottom: 12 }}>
       <Typography variant="button" numberOfLines={4} ellipsizeMode="tail" style={{ textAlign: 'left' }}>
@@ -69,19 +141,45 @@ export const StudyRuleDetails = () => {
           gap: 10,
         }}
       >
-        <Typography variant="button">지각하지 마세요</Typography>
+        <Typography variant="button">{ruleData.ruleExp || '규칙 안내 메시지가 없습니다.'}</Typography>
       </View>
     </View>
   );
 };
 
 // 스터디 공지
+// TODO: 백엔드 API 추가 필요
+// API Endpoint: GET /study/{studyToken}/notice
+// Request: { studyToken: string }
+// Response: { noticeId: number, content: string, createdAt: string }
+// Priority: 낮음
+// Description: 스터디 공지를 조회하는 API (현재는 POST만 존재)
 export const StudyAnnouncement = () => {
+  useEffect(() => {
+    Alert.alert(
+      '기능 준비 중',
+      '스터디 공지 조회 기능은 백엔드 API 개발 중입니다.\n\nAPI: GET /api/v1/study/{studyToken}/notice',
+      [{ text: '확인' }],
+    );
+  }, []);
+
   return (
     <View style={{ paddingTop: 16, paddingBottom: 12 }}>
-      <Typography variant="button" numberOfLines={4} ellipsizeMode="tail" style={{ textAlign: 'left' }}>
-        {`오늘은 지난주에 공지드렸듯이\n쉬어가도록 하겠습니다~\n모두 컨디션 회복하시고 목요일에 뵈어요!\n* 다음 시간까지 29페이지까지 예습해오시면 됩니다1234123`}
-      </Typography>
+      <View
+        style={{
+          padding: 16,
+          backgroundColor: colors.gray[1],
+          borderRadius: 8,
+          opacity: 0.6,
+        }}
+      >
+        <Typography variant="body2" style={{ color: colors.gray[6], textAlign: 'center' }}>
+          스터디 공지
+        </Typography>
+        <Typography variant="caption1" style={{ color: colors.gray[5], marginTop: 8, textAlign: 'center' }}>
+          (백엔드 API 개발 중)
+        </Typography>
+      </View>
     </View>
   );
 };
@@ -112,17 +210,83 @@ export const Status = ({ value, onToggle }: { value: boolean; onToggle?: () => v
 interface MyAttendanceProps {
   id: string;
 }
+
 export const MyAttendance = ({ id }: MyAttendanceProps) => {
+  const studyToken = id;
+  const { avatarToken } = useUserStore();
+  const { data: memberDetail, isLoading, error } = useAvatarDetail(avatarToken || '', !!avatarToken);
+
   const handlePress = () => {
-    router.push(`/member/${id}/my-attendance` as Href);
+    router.push({
+      pathname: '/(tabs)/(my)/member/[id]/my-attendance',
+      params: { id: studyToken },
+    });
   };
+
+  if (!avatarToken) {
+    return (
+      <View style={{ marginTop: 16, marginBottom: 10 }}>
+        <View
+          style={{
+            alignItems: 'center',
+            paddingVertical: 20,
+            backgroundColor: colors.gray[1],
+            borderRadius: 8,
+          }}
+        >
+          <Typography variant="body2" style={{ color: colors.gray[6], textAlign: 'center' }}>
+            로그인 정보를 불러올 수 없습니다
+          </Typography>
+        </View>
+      </View>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View style={{ marginTop: 16, marginBottom: 10 }}>
+        <View
+          style={{
+            alignItems: 'center',
+            paddingVertical: 20,
+            backgroundColor: colors.gray[1],
+            borderRadius: 8,
+          }}
+        >
+          <Typography variant="body2" style={{ color: colors.gray[6] }}>
+            로딩 중...
+          </Typography>
+        </View>
+      </View>
+    );
+  }
+
+  if (error || !memberDetail) {
+    return (
+      <View style={{ marginTop: 16, marginBottom: 10 }}>
+        <View
+          style={{
+            alignItems: 'center',
+            paddingVertical: 20,
+            backgroundColor: colors.gray[1],
+            borderRadius: 8,
+          }}
+        >
+          <Typography variant="body2" style={{ color: colors.gray[6], textAlign: 'center' }}>
+            출석 정보를 불러올 수 없습니다
+          </Typography>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={{ marginTop: 16, marginBottom: 10 }}>
       <InfoViewBox
+        center
         InfoList={[
-          { title: '나의 출석률', value: '100' },
-          { title: '나의 인증률', value: '97%' },
+          { title: '출석률', value: `${memberDetail.averageAttendanceRate.toFixed(0)}%` },
+          { title: '인증률', value: `${memberDetail.averageProofRate.toFixed(0)}%` },
         ]}
       />
       <Divider style={{ height: 2, marginHorizontal: -20, width: 'auto', marginTop: 16 }} />
@@ -139,45 +303,126 @@ export const MyAttendance = ({ id }: MyAttendanceProps) => {
 };
 
 // 스터디 스케쥴
-export const StudySchedule = () => {
+export const StudySchedule = ({ studyToken }: { studyToken: string }) => {
+  const [ruleData, setRuleData] = React.useState<StudyResponse.Rule | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  const WeekofDay: Record<SharedStudy.PossibleDays, string> = {
+    MON: '월요일',
+    TUE: '화요일',
+    WED: '수요일',
+    THU: '목요일',
+    FRI: '금요일',
+    SAT: '토요일',
+    SUN: '일요일',
+  };
+
+  React.useEffect(() => {
+    const fetchSchedule = async () => {
+      try {
+        setLoading(true);
+        const response = await StudyService().getRules(studyToken);
+        setRuleData(response);
+      } catch (error) {
+        console.error('Failed to fetch schedule:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchedule();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <View style={{ marginVertical: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (!ruleData) {
+    return (
+      <View style={{ marginVertical: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          스케줄 정보를 불러올 수 없습니다.
+        </Typography>
+      </View>
+    );
+  }
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.');
+  };
+
+  const formatTime = (timeStr: string) => {
+    return timeStr.replace(/:\d{2}$/, ''); // 초 제거
+  };
+
   return (
     <View style={{ marginVertical: 16 }}>
       <RowView style={{ justifyContent: 'space-between' }}>
         <Typography variant="button">스터디 기간</Typography>
         <Typography variant="button" style={{ color: colors.gray[8] }}>
-          2024.06.04 - 2024.10.31
+          {formatDate(ruleData.startDate)} - {formatDate(ruleData.endDate)}
         </Typography>
       </RowView>
       <Divider style={{ height: 2, marginHorizontal: -20, width: 'auto', marginTop: 16 }} />
       <View style={{ paddingTop: 16, gap: 16 }}>
         <Typography variant="button">진행 요일 및 시간</Typography>
-        <LineView>
-          <Typography variant="button" style={{ color: colors.gray[8] }}>
-            화요일
-          </Typography>
-          <Typography variant="button" style={{ color: colors.gray[8] }}>
-            20:00 - 22:00
-          </Typography>
-        </LineView>
-        <RowView style={{ justifyContent: 'space-between' }}>
-          <Typography variant="button" style={{ color: colors.gray[8] }}>
-            목요일
-          </Typography>
-          <Typography variant="button" style={{ color: colors.gray[8] }}>
-            20:00 - 22:00
-          </Typography>
-        </RowView>
+        {ruleData.schedules.map((schedule, index) => (
+          <LineView key={index}>
+            <Typography variant="button" style={{ color: colors.gray[8] }}>
+              {WeekofDay[schedule.weekOfDay]}
+            </Typography>
+            <Typography variant="button" style={{ color: colors.gray[8] }}>
+              {formatTime(schedule.stTime)} - {formatTime(schedule.endTime)}
+            </Typography>
+          </LineView>
+        ))}
       </View>
     </View>
   );
 };
 
+// TODO: 백엔드 API 연동 필요
+// API Endpoint:
+//   1. GET /api/v1/avatars/{avatarToken} - 평가 대상 회원 정보 조회
+//   2. POST /api/v1/evaluation - 평가 제출 (이미 존재)
+// Request: { targetAvatarToken, evaluations: [{ evaluationCategory, point }] }
+// Response: { avatarToken, nickname, profileUrl, attendanceRate, proofRate }
+// Priority: 중간
+// Description:
+//   - 평가 대상 회원 상세 정보 조회 (닉네임, 프로필, 출석률, 인증률)
+//   - 평가 제출 시 실제 API 호출
+// Current Issue:
+//   - 닉네임, 출석률, 인증률 하드코딩
+// TODO: 백엔드 API 연동 필요
+// API Endpoint:
+//   1. GET /api/v1/avatars/{avatarToken} - 평가 대상 회원 정보 조회
+//   2. POST /api/v1/evaluation - 평가 제출 (이미 존재)
+// Request: { targetAvatarToken, evaluations: [{ evaluationCategory, point }] }
+// Response: { avatarToken, nickname, profileUrl, attendanceRate, proofRate }
+// Priority: 중간
+// Description:
+//   - 평가 대상 회원 상세 정보 조회 (닉네임, 프로필, 출석률, 인증률)
+//   - 평가 제출 시 실제 API 호출
+// Current Issue:
+//   - 닉네임, 출석률, 인증률 하드코딩
+//   - 제출 버튼에서 API 호출 없음
 export const MemberEvaluation = () => {
-  const [selectedScores, setSelectedScores] = useState<{ [key: string]: number | null }>({
-    diligence: null,
-    programKnowledge: null,
-    learningAtmosphereInfluence: null,
-  });
+  const [selectedScores, setSelectedScores] = useState<{ [key: string]: number }>({});
+
+  useEffect(() => {
+    Alert.alert(
+      '기능 준비 중',
+      '스터디원 평가 기능은 현재 백엔드 API 개발 중입니다.\n\n필요한 API:\n1. GET /api/v1/avatars/{avatarToken}\n   (평가 대상 회원 정보 조회)\n2. POST /api/v1/evaluation\n   (평가 제출)',
+      [{ text: '확인' }],
+    );
+  }, []);
 
   const handleScoreChange = (badgeValue: string, score: number) => {
     setSelectedScores((prev) => ({
@@ -201,6 +446,12 @@ export const MemberEvaluation = () => {
     },
   ];
 
+  const handleSubmit = () => {
+    Alert.alert('기능 준비 중', '평가 제출 기능은 백엔드 API 연동 후 사용 가능합니다.', [
+      { text: '확인', onPress: () => router.back() },
+    ]);
+  };
+
   return (
     <View
       style={{
@@ -211,21 +462,21 @@ export const MemberEvaluation = () => {
         paddingBottom: 20,
       }}
     >
-      <Image
-        source={require('@/assets/images/profile.png')}
-        style={{
-          width: 80,
-          height: 80,
-        }}
-      />
-      <Typography variant="heading4">닉네임</Typography>
-      <InfoViewBox
-        center
-        InfoList={[
-          { title: '출석률', value: '95%' },
-          { title: '인증률', value: '100%' },
-        ]}
-      />
+      <View style={{ alignItems: 'center', opacity: 0.5 }}>
+        <Image
+          source={require('@/assets/images/profile.png')}
+          style={{
+            width: 80,
+            height: 80,
+          }}
+        />
+        <Typography variant="heading4" style={{ marginTop: 10 }}>
+          평가 대상 회원
+        </Typography>
+        <Typography variant="caption1" style={{ color: colors.gray[6], marginTop: 4 }}>
+          (API 연동 후 실제 데이터 표시)
+        </Typography>
+      </View>
 
       {evaluations.map((evalItem) => (
         <Evaluator
@@ -243,7 +494,7 @@ export const MemberEvaluation = () => {
           padding: 16,
         }}
       >
-        <Button variant="contained" onPress={() => router.back()}>
+        <Button variant="contained" onPress={handleSubmit}>
           제출하기
         </Button>
       </View>
@@ -252,172 +503,260 @@ export const MemberEvaluation = () => {
 };
 
 // 평가할 스터디원 선택
-export const StudyEvaluation = () => {
-  const memberInfo = [
-    {
-      name: '김지수',
-      leader: true,
-      id: 1,
-      profile: require('@/assets/images/profile.png'),
-    },
-    {
-      name: '박지수',
-      leader: false,
-      id: 2,
-      profile: require('@/assets/images/profile.png'),
-    },
-    {
-      name: '이지수',
-      leader: false,
-      id: 3,
-      profile: require('@/assets/images/profile.png'),
-    },
-    {
-      name: '홍지수',
-      leader: false,
-      id: 4,
-      profile: require('@/assets/images/profile.png'),
-    },
-    {
-      name: '미지수',
-      leader: false,
-      id: 5,
-      profile: require('@/assets/images/profile.png'),
-    },
-  ];
+// TODO: 백엔드 API 연동 필요
+// API Endpoint: GET /api/v1/study/{studyToken}/enrollments/members
+// Request: { studyToken: string }
+// Response: { members: [{ avatarToken, nickname, profileUrl, isLeader }] }
+// Priority: 중간
+// Description: 평가 가능한 스터디원 목록 조회 (자신 제외)
+// Current Issue: Mock 데이터 5명 하드코딩 (김지수, 박지수, 이지수, 홍지수, 미지수)
+export const StudyEvaluation = ({ studyToken }: { studyToken: string }) => {
+  const { data: members, isLoading, error } = useStudyMembers(studyToken);
 
-  const handleEvaluationPress = (memberId: string | number) => {
-    router.push(`/member/evaluation?user=${memberId}` as Href);
-  };
+  if (isLoading) {
+    return (
+      <View style={{ marginVertical: 16, alignItems: 'center', paddingVertical: 40 }}>
+        <Typography variant="body2" style={{ color: colors.gray[6] }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={{ marginVertical: 16, alignItems: 'center', paddingVertical: 40 }}>
+        <Typography variant="body2" style={{ color: colors.gray[6], textAlign: 'center' }}>
+          스터디원 목록을 불러올 수 없습니다.
+        </Typography>
+      </View>
+    );
+  }
+
+  if (!members || members.length === 0) {
+    return (
+      <View style={{ marginVertical: 16, alignItems: 'center', paddingVertical: 40 }}>
+        <Typography variant="body2" style={{ color: colors.gray[6] }}>
+          평가 가능한 스터디원이 없습니다.
+        </Typography>
+      </View>
+    );
+  }
 
   return (
-    <View style={{ marginVertical: 16 }}>
-      {memberInfo.map((member) => (
-        <View
-          key={member.id}
-          style={{ flexDirection: 'row', paddingVertical: 8, alignItems: 'center', justifyContent: 'space-between' }}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 6, gap: 8 }}>
-            <Image source={member.profile} style={{ width: 24, height: 24 }} />
-            <Typography
-              variant="body3"
-              style={{ color: colors.gray[9], fontWeight: member.leader ? 'bold' : 'normal' }}
-            >
-              {member.name}
-              {member.leader ? ' (스터디장)' : ''}
-            </Typography>
+    <View style={{ gap: 16 }}>
+      {members.map((member, index) => (
+        <LineView key={member.memberToken || index}>
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+            <Image
+              source={require('@/assets/images/profile.png')}
+              style={{ width: 32, height: 32, borderRadius: 16 }}
+            />
+            <Typography variant="button">{member.nickname}</Typography>
           </View>
-          <Pressable
-            onPress={() => handleEvaluationPress(member.id)}
-            style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 8 }}
-          >
-            <Typography variant="body3" style={{ color: colors.gray[9] }}>
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+            <Typography variant="caption1">{member.attendanceRate.toFixed(0)}%</Typography>
+            <Typography variant="caption1">{member.proofRate.toFixed(0)}%</Typography>
+            <Button
+              variant="contained"
+              size="small"
+              onPress={() => {
+                router.push({
+                  pathname: '/(tabs)/(my)/manage/[token]/member-detail',
+                  params: { token: studyToken, avartarToken: member.memberToken },
+                });
+              }}
+            >
               평가하기
-            </Typography>
-            <Icon name="arrow-right" />
-          </Pressable>
-        </View>
+            </Button>
+          </View>
+        </LineView>
       ))}
     </View>
   );
 };
 
-// 스터디 출석 및 인증 현황
-export const Attendance = () => {
-  const memberInfo = [
-    { name: '김지수', attendance: '100%', certification: '100%', profile: require('@/assets/images/profile.png') },
-    { name: '박지수', attendance: '100%', certification: '100%', profile: require('@/assets/images/profile.png') },
-    { name: '이지수', attendance: '100%', certification: '100%', profile: require('@/assets/images/profile.png') },
-    { name: '홍지수', attendance: '100%', certification: '100%', profile: require('@/assets/images/profile.png') },
-    { name: '미지수', attendance: '100%', certification: '100%', profile: require('@/assets/images/profile.png') },
-  ];
+//출석 및 인증 현황
+export const Attendance = ({ studyToken }: { studyToken: string }) => {
+  const [studyInfo, setStudyInfo] = React.useState<MyPageResponse.StudyInfo | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        setLoading(true);
+        const response = await MyPageService().getManageStudy();
+        const currentStudy = response.find((study: MyPageResponse.StudyInfo) => study.studyToken === studyToken);
+        setStudyInfo(currentStudy || null);
+      } catch (error) {
+        console.error('Failed to fetch attendance:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAttendance();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <View style={{ padding: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (!studyInfo) {
+    return (
+      <View style={{ padding: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          출석 정보를 불러올 수 없습니다.
+        </Typography>
+      </View>
+    );
+  }
+
   return (
-    <View style={{ marginVertical: 16 }}>
+    <View style={{ gap: 16 }}>
+      {/* 팀 평균 */}
       <InfoViewBox
+        center
         InfoList={[
-          { title: '평균 출석률', value: '100%' },
-          { title: '평균 인증률', value: '97%' },
+          { title: '평균 출석률', value: `${studyInfo.teamAverageAttendanceRate.toFixed(0)}%` },
+          { title: '평균 인증률', value: `${studyInfo.teamAverageProofRate.toFixed(0)}%` },
         ]}
       />
-      <View
-        style={{
-          justifyContent: 'space-between',
-          flexDirection: 'row',
-          marginTop: 24,
-          marginBottom: 8,
-          width: 130,
-          marginLeft: 'auto',
-        }}
-      >
-        <Badge value="출석" variant="outlined" />
-        <Badge value="인증" variant="outlined" />
-      </View>
-      {memberInfo.map((member, index) => (
-        <View
-          key={index}
-          style={{ flexDirection: 'row', paddingVertical: 8, alignItems: 'center', justifyContent: 'space-between' }}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Image source={member.profile} style={{ width: 24, height: 24 }} />
-            <Typography variant="body3" style={{ color: colors.gray[9] }}>
-              {member.name}
+
+      {/* 개별 멤버 */}
+      <View style={{ gap: 8 }}>
+        {/* 헤더 배지 */}
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8, paddingRight: 8 }}>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 6,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.primary,
+              backgroundColor: 'transparent',
+            }}
+          >
+            <Typography variant="caption2" style={{ color: colors.primary }}>
+              출석
             </Typography>
           </View>
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: 130,
-              justifyContent: 'space-between',
-              paddingHorizontal: 5,
+              paddingHorizontal: 16,
+              paddingVertical: 6,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.primary,
+              backgroundColor: 'transparent',
             }}
           >
-            <Typography variant="body3" style={{ color: colors.gray[9] }}>
-              {member.attendance}
-            </Typography>
-            <Typography variant="body3" style={{ color: colors.gray[9] }}>
-              {member.certification}
+            <Typography variant="caption2" style={{ color: colors.primary }}>
+              인증
             </Typography>
           </View>
         </View>
-      ))}
+
+        {/* 멤버 리스트 */}
+        {studyInfo.studyMembersInfos.map((member, index) => (
+          <LineView key={index}>
+            <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+              <Image
+                source={require('@/assets/images/profile.png')}
+                style={{ width: 32, height: 32, borderRadius: 16 }}
+              />
+              <Typography variant="button">{member.nickname}</Typography>
+            </View>
+            <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+              <Typography variant="caption1" style={{ minWidth: 50, textAlign: 'center' }}>
+                {member.averageAttendanceRate.toFixed(0)}%
+              </Typography>
+              <Typography variant="caption1" style={{ minWidth: 50, textAlign: 'center' }}>
+                {member.averageProofRate.toFixed(0)}%
+              </Typography>
+            </View>
+          </LineView>
+        ))}
+      </View>
     </View>
   );
 };
 
 //스터디 인증 승인
-export const Approval = () => {
-  const { id } = useLocalSearchParams();
-  const memberInfo = [
-    { name: '김지수', approve: false, profile: require('@/assets/images/profile.png'), user_id: 1 },
-    { name: '박지수', approve: true, profile: require('@/assets/images/profile.png'), user_id: 2 },
-    { name: '이지수', approve: false, profile: require('@/assets/images/profile.png'), user_id: 3 },
-    { name: '홍지수', approve: true, profile: require('@/assets/images/profile.png'), user_id: 4 },
-    { name: '미지수', approve: false, profile: require('@/assets/images/profile.png'), user_id: 5 },
-  ];
+export const Approval = ({ studyToken }: { studyToken: string }) => {
+  const [studyInfo, setStudyInfo] = React.useState<MyPageResponse.StudyInfo | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchApproval = async () => {
+      try {
+        setLoading(true);
+        const response = await MyPageService().getManageStudy();
+        const currentStudy = response.find((study: MyPageResponse.StudyInfo) => study.studyToken === studyToken);
+        setStudyInfo(currentStudy || null);
+      } catch (error) {
+        console.error('Failed to fetch approval:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApproval();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <View style={{ padding: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (!studyInfo) {
+    return (
+      <View style={{ padding: 16 }}>
+        <Typography variant="caption1" style={{ textAlign: 'center' }}>
+          승인 정보를 불러올 수 없습니다.
+        </Typography>
+      </View>
+    );
+  }
+
   return (
     <View style={{ marginVertical: 8 }}>
-      {memberInfo.map((member, index) => (
+      {studyInfo.studyMembersInfos.map((member, index) => (
         <Pressable
           key={index}
-          style={{ flexDirection: 'row', paddingVertical: 8, alignItems: 'center', justifyContent: 'space-between' }}
-          onPress={() => router.push(`/manage/${id}/certify?user=${member.user_id}`)}
+          style={{
+            flexDirection: 'row',
+            paddingVertical: 8,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+          onPress={() => router.push(`/manage/${studyToken}/certify?user=${member.avatarToken}`)}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Image source={member.profile} style={{ width: 24, height: 24 }} />
+            <Image source={require('@/assets/images/profile.png')} style={{ width: 24, height: 24 }} />
             <Typography variant="body3" style={{ color: colors.gray[9] }}>
-              {member.name}
+              {member.nickname}
             </Typography>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <Typography variant="body3" style={{ color: member.approve ? colors.gray[9] : colors.primary }}>
-              {member.approve ? '승인 완료' : '승인 미완료'}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Typography
+              variant="body3"
+              style={{
+                color: member.isFullyApproved ? colors.gray[9] : colors.primary,
+              }}
+            >
+              {member.isFullyApproved ? '승인 완료' : '승인 미완료'}
             </Typography>
             <Icon name="arrow-right-outline" width={24} height={24} stroke={colors.gray[7]} />
           </View>
@@ -427,18 +766,50 @@ export const Approval = () => {
   );
 };
 
-//스터디 인증 승인
+//스터디 신청 승인
 export const ApplicationApproval = () => {
   const { token } = useLocalSearchParams<{ token: string }>();
   const [applicationList, setApplicationList] = React.useState<ApplicationsResponse.GetApplicationsResult[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    setError(false);
     ApplicationsService()
       .getApplications(token)
       .then((res) => {
         setApplicationList(res);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch applications:', err);
+        setError(true);
+        setApplicationList([]);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [token]);
+
+  if (loading) {
+    return (
+      <View style={{ marginVertical: 8, paddingVertical: 20, alignItems: 'center' }}>
+        <Typography variant="body3" style={{ color: colors.gray[6] }}>
+          로딩 중...
+        </Typography>
+      </View>
+    );
+  }
+
+  if (error || applicationList.length === 0) {
+    return (
+      <View style={{ marginVertical: 8, paddingVertical: 20, alignItems: 'center' }}>
+        <Typography variant="body3" style={{ color: colors.gray[6] }}>
+          신청한 스터디원이 없습니다
+        </Typography>
+      </View>
+    );
+  }
 
   return (
     <View style={{ marginVertical: 8 }}>
@@ -484,10 +855,46 @@ export const ApplicationApproval = () => {
 };
 
 //스터디 카카오톡 링크
-export const KakaoLink = () => {
+export const KakaoLink = ({ studyToken }: { studyToken: string }) => {
+  const [studyInfo, setStudyInfo] = React.useState<MyPageResponse.StudyInfo | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchKakaoLink = async () => {
+      try {
+        setLoading(true);
+        const response = await MyPageService().getManageStudy();
+        const currentStudy = response.find((study: MyPageResponse.StudyInfo) => study.studyToken === studyToken);
+        setStudyInfo(currentStudy || null);
+      } catch (error) {
+        console.error('Failed to fetch kakao link:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchKakaoLink();
+  }, [studyToken]);
+
+  if (loading) {
+    return (
+      <Typography variant="button" style={{ marginVertical: 8 }}>
+        로딩 중...
+      </Typography>
+    );
+  }
+
+  if (!studyInfo || !studyInfo.kakaoUrl) {
+    return (
+      <Typography variant="button" style={{ marginVertical: 8, color: colors.gray[6] }}>
+        카카오톡 링크가 없습니다.
+      </Typography>
+    );
+  }
+
   return (
     <Typography variant="button" style={{ marginVertical: 8 }}>
-      https://open.kakao.com/dkfjadfksd
+      {studyInfo.kakaoUrl}
     </Typography>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ManageList from '@/components/molecules/StudyInfoSection/ManageList';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Alert } from 'react-native';
 import NoList from '@/components/molecules/StudyInfoSection/NoList';
 import { MyPageService } from '@/apis';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
@@ -28,6 +28,8 @@ const ManageStudy = () => {
   const [studyList, setStudyList] = useState<MyPageResponse.StudyInfo[]>([]);
   const [isloading, setIsLoading] = useState(true);
   const [studyName, setStudyName] = useState('');
+  const [currentStudyToken, setCurrentStudyToken] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
@@ -39,6 +41,49 @@ const ManageStudy = () => {
         setIsLoading(false);
       });
   }, []);
+
+  const loadStudyList = async () => {
+    setIsLoading(true);
+    try {
+      const data = await MyPageService().getManageStudy();
+      setStudyList(data);
+    } catch (error) {
+      console.error('스터디 목록 로딩 실패:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleStudyNameUpdate = async () => {
+    if (!studyName.trim()) {
+      Alert.alert('알림', '스터디명을 입력해주세요.');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+
+      // TODO: 스터디명 변경 API가 백엔드에 구현되면 연동 필요
+      // 예상 API: await StudyService().updateStudyName(currentStudyToken, { name: studyName });
+
+      Alert.alert('준비 중', '스터디명 변경 기능은 백엔드 API 구현 후 사용 가능합니다.', [
+        {
+          text: '확인',
+          onPress: () => bottomSheetModalRef.current?.dismiss(),
+        },
+      ]);
+
+      // API 연동 후 활성화:
+      // await loadStudyList();
+      // Alert.alert('성공', '스터디명이 변경되었습니다.');
+      // bottomSheetModalRef.current?.dismiss();
+    } catch (error) {
+      console.error('스터디명 변경 실패:', error);
+      Alert.alert('오류', '스터디명 변경에 실패했습니다.\n잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return studyList.length ? (
     <View style={{ gap: 20 }}>
@@ -54,6 +99,7 @@ const ManageStudy = () => {
             active: study.status !== 'COMPLETED',
             openBottomSheet: (studyName: string) => {
               setStudyName(studyName);
+              setCurrentStudyToken(study.studyToken);
               bottomSheetModalRef.current?.present();
             },
           }}
@@ -64,16 +110,14 @@ const ManageStudy = () => {
         component={
           <View style={{ padding: 20, gap: 12 }}>
             <Typography variant="subtitle1">스터디명 변경</Typography>
-            <TextField placeholder="카카오톡 링크를 입력해주세요." value={studyName} onChangeText={setStudyName} />
+            <TextField placeholder="스터디명을 입력해주세요." value={studyName} onChangeText={setStudyName} />
             <Button
               variant="contained"
               style={{ marginHorizontal: 'auto' }}
-              onPress={() => {
-                // TODO: 스터디명 변경 API 호출
-                bottomSheetModalRef.current?.dismiss();
-              }}
+              onPress={handleStudyNameUpdate}
+              disabled={isSaving}
             >
-              완료
+              {isSaving ? <ActivityIndicator size="small" /> : '완료'}
             </Button>
           </View>
         }

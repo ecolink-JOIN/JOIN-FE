@@ -54,12 +54,25 @@ export default function RecruitBase() {
     });
   };
   const onSubmit = () => {
+    const today = dayjs().startOf('day');
+    const recruitEndDate = dayjs(watch('recruit_end_date'));
+    const stDate = dayjs(watch('st_date'));
+    const endDate = dayjs(watch('end_date'));
+
     if (watch('category_name') === null) {
       showToast({ text1: '카테고리를 선택해주세요' });
     } else if (watch('recruit_end_date') === undefined) {
       showToast({ text1: '모집 종료일을 입력해주세요' });
+    } else if (recruitEndDate.isBefore(today) || recruitEndDate.isSame(today)) {
+      showToast({ text1: '모집 종료일은 오늘 이후여야 합니다' });
     } else if (watch('st_date') === undefined || watch('end_date') === undefined) {
       showToast({ text1: '스터디 기간을 입력해주세요' });
+    } else if (stDate.isBefore(today) || stDate.isSame(today)) {
+      showToast({ text1: '스터디 시작일은 오늘 이후여야 합니다' });
+    } else if (endDate.isBefore(today) || endDate.isSame(today)) {
+      showToast({ text1: '스터디 종료일은 오늘 이후여야 합니다' });
+    } else if (endDate.isBefore(stDate) || endDate.isSame(stDate)) {
+      showToast({ text1: '스터디 종료일은 시작일 이후여야 합니다' });
     } else if (watch('form') === 'OFFLINE' && watch('province') === null) {
       showToast({ text1: '지역을 선택해주세요' });
     } else if (watch('form') === 'OFFLINE' && watch('city') === null) {
@@ -118,6 +131,7 @@ export default function RecruitBase() {
               mode="single"
               selectedItemColor="#FF7F5F"
               date={dayjs(watch('recruit_end_date'))}
+              minDate={dayjs().add(1, 'day')}
               onChange={(params: any) => {
                 setValue('recruit_end_date', dayjs(params.date).format('YYYY-MM-DD'));
               }}
@@ -142,10 +156,9 @@ export default function RecruitBase() {
               selectedItemColor="#FF7F5F"
               startDate={duration.start}
               endDate={duration.end}
+              minDate={dayjs().add(1, 'day')}
               onChange={({ startDate, endDate }: any) => {
-                if (duration.start !== startDate && duration.end !== endDate) {
-                  setDuration({ start: startDate, end: endDate });
-                }
+                setDuration({ start: startDate, end: endDate });
               }}
             />
             <Button

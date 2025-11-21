@@ -16,6 +16,24 @@ declare namespace Avatars {
   export interface NicknameDto extends Shared.HttpResponse {
     data: { message: string; valid: boolean };
   }
+
+  // 푸시 알림 동의 요청
+  export interface PushConsentRequest {
+    consent: boolean;
+    fcmToken: string;
+  }
+
+  // 유저 선호 변경 요청
+  export interface PreferenceRequest {
+    category: string;
+    form: 'ONLINE' | 'OFFLINE';
+    possibleDays: SharedStudy.PossibleDays[];
+    timeZone: SharedStudy.TimeZone;
+    minParticipationCount: number;
+    maxParticipationCount: number;
+    province: string;
+    city: string;
+  }
 }
 
 interface Image {

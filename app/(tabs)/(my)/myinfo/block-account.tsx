@@ -1,84 +1,124 @@
 import { ManageView, shadowStyles, ManageBoxView } from '@/components/molecules/MyMolecules/ManageView';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from '@/components/atoms/Typography';
 import { styled } from 'styled-components/native';
 import { colors } from '@/theme';
 import Button from '@/components/atoms/Button';
 import Icon from '@/components/atoms/Icon';
 import Chip from '@/components/atoms/Badge';
-import { Image, ScrollView } from 'react-native';
+import { Image, ScrollView, ActivityIndicator, View, Alert } from 'react-native';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
+import { BlocksService } from '@/apis';
 
-const list = [
-  {
-    title: '토익 990점 스터디 🔥',
-    ongoing: true,
-    members: [
-      {
-        id: 1,
-        name: '김철수',
-        img: require('@/assets/images/profile.png'),
-      },
-      {
-        id: 2,
-        name: '홍길동',
-        img: require('@/assets/images/profile.png'),
-      },
-      {
-        id: 3,
-        name: '이영희',
-        img: require('@/assets/images/profile.png'),
-      },
-      {
-        id: 4,
-        name: '박지성',
-        img: require('@/assets/images/profile.png'),
-      },
-      {
-        id: 5,
-        name: '김연아',
-        img: require('@/assets/images/profile.png'),
-      },
-    ],
-  },
-  {
-    title: '중급 토익 스터디 🍀',
-    ongoing: false,
-    members: [
-      {
-        id: 1,
-        name: '김철수',
-        img: require('@/assets/images/profile.png'),
-      },
-      {
-        id: 2,
-        name: '홍길동',
-        img: require('@/assets/images/profile.png'),
-      },
-      {
-        id: 3,
-        name: '이영희',
-        img: require('@/assets/images/profile.png'),
-      },
-      {
-        id: 4,
-        name: '박지성',
-        img: require('@/assets/images/profile.png'),
-      },
-      {
-        id: 5,
-        name: '김연아',
-        img: require('@/assets/images/profile.png'),
-      },
-    ],
-  },
-];
 const Index = () => {
-  const [search, setSearch] = React.useState('');
-  const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const [search, setSearch] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [studyList, setStudyList] = useState<BlocksResponse.StudyBlock[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedMember, setSelectedMember] = useState<{
+    avatarToken: string;
+    nickname: string;
+    studyToken: string;
+    isActive: boolean;
+    profileUrl?: string;
+  } | null>(null);
+  const [isBlocking, setIsBlocking] = useState(false);
+
+  useEffect(() => {
+    fetchStudyList();
+  }, []);
+
+  const fetchStudyList = async () => {
+    try {
+      setIsLoading(true);
+      const data = await BlocksService().getStudyBlock();
+      setStudyList(data);
+    } catch (error) {
+      console.error('스터디 목록 조회 실패:', error);
+      Alert.alert('오류', '스터디 목록을 불러오는데 실패했습니다.');
+      setStudyList([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
+    if (isModalVisible) {
+      setSelectedMember(null);
+    }
   };
+
+  const handleBlockPress = (member: BlocksResponse.Member, studyToken: string, isActive: boolean) => {
+    setSelectedMember({
+      avatarToken: member.avatarToken,
+      nickname: member.nickname,
+      studyToken,
+      isActive,
+      profileUrl: member.profileUrl,
+    });
+    setIsModalVisible(true);
+  };
+
+  const handleBlockConfirm = async () => {
+    if (!selectedMember) return;
+
+    try {
+      setIsBlocking(true);
+      const blockDate = new Date().toISOString();
+
+      if (selectedMember.isActive) {
+        // 진행 중인 스터디 멤버 차단
+        await BlocksService().postBlockStudyMember({
+          targetAvatarToken: selectedMember.avatarToken,
+          studyToken: selectedMember.studyToken,
+          blockDate,
+        });
+      } else {
+        // 일반 사용자 차단
+        await BlocksService().postBlocks({
+          targetAvatarToken: selectedMember.avatarToken,
+          blockDate,
+        });
+      }
+
+      Alert.alert('완료', '차단이 완료되었습니다.', [
+        {
+          text: '확인',
+          onPress: () => {
+            toggleModal();
+            fetchStudyList();
+          },
+        },
+      ]);
+    } catch (error) {
+      console.error('차단 실패:', error);
+      Alert.alert('오류', '차단에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsBlocking(false);
+    }
+  };
+
+  // 검색 필터링
+  const filteredStudyList = studyList.filter((study) => {
+    if (!search) return true;
+    const searchLower = search.toLowerCase();
+    return (
+      (study.title || '').toLowerCase().includes(searchLower) ||
+      study.members.some((member) => (member.nickname || '').toLowerCase().includes(searchLower))
+    );
+  });
+
+  if (isLoading) {
+    return (
+      <ManageView>
+        <Typography variant="heading3">계정 차단</Typography>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 40 }}>
+          <ActivityIndicator size="large" color={colors.primary[5]} />
+        </View>
+      </ManageView>
+    );
+  }
 
   return (
     <ScrollView>
@@ -87,46 +127,63 @@ const Index = () => {
         <SearchWrapper>
           <SearchBox>
             <SearchImg name="search" />
-            <SearchInput placeholder="검색어를 입력하세요" value={search} onChangeText={setSearch} />
+            <SearchInput placeholder="스터디 또는 닉네임 검색" value={search} onChangeText={setSearch} />
           </SearchBox>
-          <Button variant="contained">검색</Button>
+          <Button variant="contained" onPress={() => setSearch(search)}>
+            검색
+          </Button>
         </SearchWrapper>
-        {list.map((item, index) => (
-          <ManageBoxView style={shadowStyles.shadow} key={index}>
-            <TitleView>
-              <Typography variant="body3" style={{ color: colors.gray[9] }}>
-                {item.title}
-              </Typography>
-              <Chip
-                variant={item.ongoing ? 'outlined' : 'default'}
-                value={item.ongoing ? '진행중' : '완료'}
-                size="large"
-              />
-            </TitleView>
-            {item.members.map((member, index) => (
-              <Profiles key={index}>
-                <Image source={member.img} style={{ width: 24, height: 24, borderRadius: 100 }} />
-                <Typography variant="body3" style={{ marginLeft: 10 }}>
-                  {member.name}
+
+        {filteredStudyList.length === 0 ? (
+          <View style={{ padding: 40, alignItems: 'center' }}>
+            <Typography variant="body3" style={{ color: colors.gray[8] }}>
+              {search ? '검색 결과가 없습니다.' : '차단 가능한 스터디원이 없습니다.'}
+            </Typography>
+          </View>
+        ) : (
+          filteredStudyList.map((study, index) => (
+            <ManageBoxView style={shadowStyles.shadow} key={index}>
+              <TitleView>
+                <Typography variant="body3" style={{ color: colors.gray[9] }}>
+                  {study.title}
                 </Typography>
-                <ButtonView onPress={toggleModal}>
-                  <Typography variant="body3" style={{ color: colors.primary }}>
-                    차단
+                <Chip
+                  variant={study.isActive ? 'outlined' : 'default'}
+                  value={study.isActive ? '진행중' : '완료'}
+                  size="large"
+                />
+              </TitleView>
+              {study.members.map((member, memberIndex) => (
+                <Profiles key={memberIndex}>
+                  <Image
+                    source={member.profileUrl ? { uri: member.profileUrl } : require('@/assets/images/profile.png')}
+                    style={{ width: 24, height: 24, borderRadius: 100 }}
+                  />
+                  <Typography variant="body3" style={{ marginLeft: 10 }}>
+                    {member.nickname}
                   </Typography>
-                </ButtonView>
-              </Profiles>
-            ))}
-          </ManageBoxView>
-        ))}
+                  <ButtonView onPress={() => handleBlockPress(member, study.studyToken, study.isActive)}>
+                    <Typography variant="body3" style={{ color: colors.primary }}>
+                      차단
+                    </Typography>
+                  </ButtonView>
+                </Profiles>
+              ))}
+            </ManageBoxView>
+          ))
+        )}
       </ManageView>
+
       <ModalWrapper isModalVisible={isModalVisible} toggleModal={toggleModal}>
         <ModalContents>
           <Image
-            source={require('@/assets/images/profile.png')}
-            style={{ width: 80, height: 80, marginHorizontal: 'auto' }}
+            source={
+              selectedMember?.profileUrl ? { uri: selectedMember.profileUrl } : require('@/assets/images/profile.png')
+            }
+            style={{ width: 80, height: 80, borderRadius: 40, marginHorizontal: 'auto' }}
           />
-          <Typography variant="subtitle1">닉네임</Typography>
-          {false ? (
+          <Typography variant="subtitle1">{selectedMember?.nickname}</Typography>
+          {selectedMember?.isActive ? (
             <Typography variant="body4" style={{ color: colors.black, textAlign: 'center' }}>
               진행 중인 스터디 회원을 차단하면{'\n'}해당 스터디에서 즉시 탈퇴 처리 됩니다.{'\n'}
               {'\n'}스터디장의 승인 없이 스터디에서 탈퇴한다면{'\n'}
@@ -148,12 +205,11 @@ const Index = () => {
           )}
           <Button
             variant="contained"
-            onPress={() => {
-              toggleModal();
-            }}
+            onPress={handleBlockConfirm}
             style={{ marginHorizontal: 'auto' }}
+            disabled={isBlocking}
           >
-            차단하기
+            {isBlocking ? <ActivityIndicator color={colors.white} size="small" /> : '차단하기'}
           </Button>
         </ModalContents>
       </ModalWrapper>
@@ -180,26 +236,25 @@ const SearchWrapper = styled.View`
 const SearchBox = styled.View`
   position: relative;
   flex: 1;
+  flex-direction: row;
+  align-items: center;
   background-color: ${colors.white};
   border-radius: 20px;
   border: 1.5px solid ${colors.gray[4]};
   height: 44px;
   padding: 10px 20px;
-  overflow: hidden;
 `;
 
 const SearchInput = styled.TextInput`
-  position: absolute;
-  left: 50px;
   flex: 1;
-  width: 80%;
+  margin-left: 40px;
   color: ${colors.gray[9]};
+  font-size: 14px;
 `;
 
 const SearchImg = styled(Icon)`
   position: absolute;
-  top: 50%;
-  left: 10px;
+  left: 16px;
 `;
 const Profiles = styled.View`
   padding: 10px 20px;

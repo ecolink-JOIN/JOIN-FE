@@ -4,17 +4,27 @@ import Typography from '@/components/atoms/Typography';
 import StyledTextInput from '@/components/atoms/TextField';
 import { colors } from '@/theme';
 import styled from 'styled-components/native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import Button from '@/components/atoms/Button';
-import { Pressable, View } from 'react-native';
+import { Pressable, View, ActivityIndicator } from 'react-native';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
 import { Daypicker, TimePicker } from '@/components/atoms/DatePicker';
+import { BatchJobService } from '@/apis';
+import Toast from 'react-native-toast-message';
 
 const AlarmEdit = () => {
-  const params = useLocalSearchParams<{ day: string; time: string; message: string }>();
+  const params = useLocalSearchParams<{
+    day: string;
+    time: string;
+    message: string;
+    token: string;
+    batchJobId?: string;
+  }>();
   const [value, onChangeText] = React.useState(params.message);
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isEditModalVisible, setEditModalVisible] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const toggleDeleteModal = () => {
     setDeleteModalVisible(!isDeleteModalVisible);
@@ -22,6 +32,66 @@ const AlarmEdit = () => {
 
   const toggleEditModal = () => {
     setEditModalVisible(!isEditModalVisible);
+  };
+
+  const handleSave = async () => {
+    if (!params.batchJobId) {
+      Toast.show({
+        type: 'error',
+        text1: '알림 ID가 없습니다.',
+      });
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await BatchJobService().putBatchJob(
+        {
+          content: value,
+          studyToken: params.token,
+        },
+        { batchJobId: parseInt(params.batchJobId) },
+      );
+      Toast.show({
+        type: 'success',
+        text1: '알림 메시지가 수정되었습니다.',
+      });
+      router.back();
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: '알림 메시지 수정에 실패했습니다.',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!params.batchJobId) {
+      Toast.show({
+        type: 'error',
+        text1: '알림 ID가 없습니다.',
+      });
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await BatchJobService().deleteBatchJob(parseInt(params.batchJobId));
+      Toast.show({
+        type: 'success',
+        text1: '알림 메시지가 삭제되었습니다.',
+      });
+      router.back();
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: '알림 메시지 삭제에 실패했습니다.',
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -45,8 +115,10 @@ const AlarmEdit = () => {
         <TextLimit variant="body4">{value?.length || 0} / 100</TextLimit>
       </ManageBox>
       <ButtonWrapper>
-        <Button variant="contained">저장하기</Button>
-        <Button variant="outlined" onPress={toggleDeleteModal}>
+        <Button variant="contained" onPress={handleSave} disabled={isSaving}>
+          {isSaving ? <ActivityIndicator size="small" color="#fff" /> : '저장하기'}
+        </Button>
+        <Button variant="outlined" onPress={toggleDeleteModal} disabled={isSaving || isDeleting}>
           삭제하기
         </Button>
       </ButtonWrapper>
@@ -55,10 +127,12 @@ const AlarmEdit = () => {
           <Typography variant="subtitle1">자동 알림 메세지 삭제</Typography>
           <Typography variant="body4">자동 알림 메세지를 삭제하시겠습니까?</Typography>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Button variant="outlined" onPress={toggleDeleteModal}>
+            <Button variant="outlined" onPress={toggleDeleteModal} disabled={isDeleting}>
               취소
             </Button>
-            <Button variant="contained">삭제하기</Button>
+            <Button variant="contained" onPress={handleDelete} disabled={isDeleting}>
+              {isDeleting ? <ActivityIndicator size="small" color="#fff" /> : '삭제하기'}
+            </Button>
           </View>
         </ModalContents>
       </ModalWrapper>
