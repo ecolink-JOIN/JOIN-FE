@@ -1,24 +1,20 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useMemo } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import Typography from '@/components/atoms/Typography';
 import { ManageView, ManageBox, ListComponent } from '@/components/molecules/MyMolecules/ManageView';
 import { Radio } from '@/components/atoms/Radio';
 import { styled } from 'styled-components/native';
-import dayjs from 'dayjs';
 import { colors } from '@/theme';
 import BottomSheetComp from '@/components/molecules/BottomSheet';
 import DateTimePicker, { DateType } from 'react-native-ui-datepicker';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import Button from '@/components/atoms/Button';
-import { Modal, Text } from 'react-native';
+import { Modal, Text, ActivityIndicator } from 'react-native';
 import Icon from '@/components/atoms/Icon';
 import { MeetingsService } from '@/apis';
 import Toast from 'react-native-toast-message';
-
-interface DurationProps {
-  start: dayjs.Dayjs | null;
-  end: dayjs.Dayjs | null;
-}
+import { useQuery } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 
 const Round = () => {
   const { token } = useLocalSearchParams<{ token: string }>();
@@ -27,6 +23,39 @@ const Round = () => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [removedDates, setRemovedDates] = useState<string[]>([]); // 제거할 날짜 목록
+
+  // 기존 회차 목록 조회
+  const {
+    data: meetings,
+    isLoading: isMeetingsLoading,
+    refetch: refetchMeetings,
+  } = useQuery({
+    queryKey: ['meetings', token],
+    queryFn: () => MeetingsService().getMeetings(token),
+    enabled: !!token,
+  });
+
+  // 기존 회차 날짜를 DateType[] 형식으로 변환 (모든 기존 회차 표시)
+  // 모든 기존 회차 날짜 (원본)
+  const allExistingDates = useMemo(() => {
+    if (!meetings) return [];
+    return meetings.map((meeting) => dayjs(meeting.studyDate).toDate());
+  }, [meetings]);
+
+  // 기존 회차 날짜 문자열 목록 (원본)
+  const existingDateStrings = useMemo(() => {
+    if (!meetings) return [];
+    return meetings.map((meeting) => meeting.studyDate);
+  }, [meetings]);
+
+  // 달력에 표시할 기존 회차 (제거 예정인 것 제외)
+  const displayedExistingDates = useMemo(() => {
+    if (!meetings) return [];
+    return meetings
+      .filter((meeting) => !removedDates.includes(meeting.studyDate))
+      .map((meeting) => dayjs(meeting.studyDate).toDate());
+  }, [meetings, removedDates]);
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -100,72 +129,137 @@ const Round = () => {
       </Modal>
       <BottomSheetComp
         bottomSheetModalRef={bottomSheetModalRef}
+        snapPoints={['90%']}
         component={
-          <DateView>
-            <DateTimePicker
-              mode="multiple"
-              locale="ko"
-              calendarTextStyle={{ fontFamily: 'Pretendard-Medium' }}
-              headerButtonColor={colors.primary}
-              selectedItemColor={colors.primary}
-              dates={duration}
-              onChange={(dates) => setDuration(dates.dates)}
-            />
-            <Button
-              variant="contained"
-              style={{ marginHorizontal: 'auto' }}
-              disabled={isAdding}
-              onPress={async () => {
-                if (!duration || duration.length === 0) {
-                  Toast.show({
-                    type: 'form',
-                    text1: '추가할 회차 날짜를 선택해주세요.',
-                    position: 'bottom',
-                    visibilityTime: 2000,
-                  });
-                  return;
-                }
+          <BottomSheetContent>
+            {isMeetingsLoading ? (
+              <LoadingContainer>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Typography variant="body3" style={{ marginTop: 8, color: colors.gray[7] }}>
+                  회차 정보를 불러오는 중...
+                </Typography>
+              </LoadingContainer>
+            ) : (
+              <>
+                <Typography variant="heading4" style={{ marginBottom: 16, textAlign: 'center' }}>
+                  회차 추가 및 제외
+                </Typography>
 
-                setIsAdding(true);
-                try {
-                  // 선택된 날짜들을 순회하며 회차 추가
-                  for (const date of duration) {
-                    if (!date) continue; // null/undefined 체크
-                    const dateObj = new Date(date.toString());
-                    const studyDate = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
+                <DateTimePicker
+                  mode="multiple"
+                  locale="ko"
+                  calendarTextStyle={{ fontFamily: 'Pretendard-Medium' }}
+                  headerButtonColor={colors.primary}
+                  selectedItemColor={colors.primary}
+                  dates={[...displayedExistingDates, ...duration]}
+                  onChange={(params) => {
+                    // 선택된 날짜들
+                    const selectedDates = params.dates || [];
 
-                    // 기본 시간 설정 (09:00 - 10:00)
-                    await MeetingsService().postMeeting(token as string, {
-                      studyDate,
-                      stTime: '09:00',
-                      endTime: '10:00',
+                    // 선택된 날짜를 문자열로 변환
+                    const selectedDateStrings = selectedDates
+                      .map((d) => (d ? dayjs(d.toString()).format('YYYY-MM-DD') : ''))
+                      .filter(Boolean);
+
+                    // 제거된 기존 회차 찾기 (원본 meetings와 비교)
+                    const newRemovedDates = existingDateStrings.filter(
+                      (dateStr) => !selectedDateStrings.includes(dateStr),
+                    );
+                    setRemovedDates(newRemovedDates);
+
+                    // 새로 추가된 날짜만 필터링 (원본 meetings와 비교)
+                    const newDates = selectedDates.filter((date) => {
+                      if (!date) return false;
+                      const dateStr = dayjs(date.toString()).format('YYYY-MM-DD');
+                      return !existingDateStrings.includes(dateStr);
                     });
-                  }
 
-                  Toast.show({
-                    type: 'formNoButton',
-                    text1: `${duration.length}개의 회차가 추가되었습니다.`,
-                    position: 'bottom',
-                    visibilityTime: 2000,
-                  });
-                  setDuration([]);
-                  bottomSheetModalRef.current?.dismiss();
-                } catch (error) {
-                  console.error('회차 추가 실패:', error);
-                  Toast.show({
-                    type: 'form',
-                    text1: '회차 추가 중 오류가 발생했습니다.',
-                    position: 'bottom',
-                    visibilityTime: 2000,
-                  });
-                } finally {
-                  setIsAdding(false);
-                }
-              }}
-            >
-              {isAdding ? '추가 중...' : '회차 추가하기'}
-            </Button>
-          </DateView>
+                    setDuration(newDates);
+                  }}
+                />
+
+                <Button
+                  variant="contained"
+                  style={{ marginHorizontal: 'auto', marginTop: 24 }}
+                  disabled={isAdding || (duration.length === 0 && removedDates.length === 0)}
+                  onPress={async () => {
+                    setIsAdding(true);
+                    try {
+                      let addedCount = 0;
+                      let removedCount = 0;
+
+                      // 제거할 회차 처리
+                      if (removedDates.length > 0 && meetings) {
+                        for (const dateStr of removedDates) {
+                          const meeting = meetings.find((m) => m.studyDate === dateStr);
+                          if (meeting) {
+                            await MeetingsService().deleteMeeting(token as string, meeting.id);
+                            removedCount++;
+                          }
+                        }
+                      }
+
+                      // 추가할 회차 처리
+                      for (const date of duration) {
+                        if (!date) continue;
+                        const dateObj = new Date(date.toString());
+                        const studyDate = dateObj.toISOString().split('T')[0];
+
+                        await MeetingsService().postMeeting(token as string, {
+                          studyDate,
+                          stTime: '09:00',
+                          endTime: '10:00',
+                        });
+                        addedCount++;
+                      }
+
+                      // 결과 메시지
+                      let message = '';
+                      if (addedCount > 0 && removedCount > 0) {
+                        message = `${addedCount}개 추가, ${removedCount}개 제외되었습니다.`;
+                      } else if (addedCount > 0) {
+                        message = `${addedCount}개의 회차가 추가되었습니다.`;
+                      } else if (removedCount > 0) {
+                        message = `${removedCount}개의 회차가 제외되었습니다.`;
+                      }
+
+                      Toast.show({
+                        type: 'formNoButton',
+                        text1: message,
+                        position: 'bottom',
+                        visibilityTime: 2000,
+                      });
+
+                      setDuration([]);
+                      setRemovedDates([]);
+                      await refetchMeetings();
+                      bottomSheetModalRef.current?.dismiss();
+                    } catch (error) {
+                      console.error('회차 처리 실패:', error);
+                      Toast.show({
+                        type: 'form',
+                        text1: '회차 처리 중 오류가 발생했습니다.',
+                        position: 'bottom',
+                        visibilityTime: 2000,
+                      });
+                    } finally {
+                      setIsAdding(false);
+                    }
+                  }}
+                >
+                  {isAdding
+                    ? '처리 중...'
+                    : duration.length > 0 && removedDates.length > 0
+                      ? `${duration.length}개 추가, ${removedDates.length}개 제외`
+                      : duration.length > 0
+                        ? `${duration.length}개 회차 추가하기`
+                        : removedDates.length > 0
+                          ? `${removedDates.length}개 회차 제외하기`
+                          : '날짜를 선택해주세요'}
+                </Button>
+              </>
+            )}
+          </BottomSheetContent>
         }
       />
     </>
@@ -187,10 +281,15 @@ const RadioBox = styled.Pressable`
   gap: 8px;
 `;
 
-const DateView = styled.View`
+const BottomSheetContent = styled.View`
+  padding: 20px;
+  gap: 8px;
+`;
+
+const LoadingContainer = styled.View`
+  padding: 40px 0;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px;
+  justify-content: center;
 `;
 
 const ModalContainer = styled.View`
