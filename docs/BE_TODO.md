@@ -1,15 +1,40 @@
 # 백엔드 미구현 작업 목록
 
-> 업데이트: 2025년 1월 22일
+> 업데이트: 2025년 1월 22일  
+> 코드 근거 추가: 각 항목에 프론트엔드 TODO 주석과 Alert 메시지 포함
 
 ---
 
-## 긴급 - 즉시 수정 필요
+## 🔴 긴급 - 즉시 수정 필요
 
 ### 1. 공지 조회 API 미구현
 **현재 상태**:
-- POST `/api/v1/study/{studyToken}/notice` - 공지 등록 (구현됨)
-- GET `/api/v1/study/{studyToken}/notice` - 공지 조회 (미구현)
+- POST `/api/v1/study/{studyToken}/notice` - ✅ 구현됨
+- GET `/api/v1/study/{studyToken}/notice` - ❌ 미구현
+
+**프론트엔드 코드 근거**:
+```tsx
+// components/organisms/MyPage/Manage.tsx:151
+export const StudyAnnouncement = () => {
+  useEffect(() => {
+    Alert.alert(
+      '기능 준비 중',
+      '스터디 공지 조회 기능은 백엔드 API 개발 중입니다.\n\nAPI: GET /api/v1/study/{studyToken}/notice',
+      [{ text: '확인' }],
+    );
+  }, []);
+};
+
+// app/(tabs)/(my)/manage/[token]/notice.tsx:20
+useEffect(() => {
+  // TODO: 백엔드 API 미구현 - GET /api/v1/study/{studyToken}/notice
+  Alert.alert(
+    '안내',
+    '현재 공지 조회 기능은 백엔드 API 개발 대기 중입니다.',
+    [{ text: '확인' }],
+  );
+}, []);
+```
 
 **필요 작업**:
 ```java
@@ -19,7 +44,7 @@ public ApiResponse<NoticeResponse> getNotice(@PathVariable String studyToken) {
 }
 ```
 
-**Response**:
+**Response 타입**:
 ```typescript
 {
   id: number;
@@ -31,97 +56,233 @@ public ApiResponse<NoticeResponse> getNotice(@PathVariable String studyToken) {
 ```
 
 **영향받는 화면**:
-- `components/organisms/MyPage/Manage.tsx` - StudyAnnouncement
-- `app/(tabs)/(my)/manage/[token]/notice.tsx`
+- `components/organisms/MyPage/Manage.tsx:151` - StudyAnnouncement
+- `app/(tabs)/(my)/manage/[token]/notice.tsx:20`
 
-**현재 대응**: 공지 등록은 가능, 조회 시 Alert 표시
+**프론트엔드 대응**: Alert 표시 중
+
+**예상 작업 시간**: 2시간
 
 ---
 
 ### 2. 차단 해제 API 파라미터 확인
 **현재 상태**: DELETE `/api/v1/blocks/{???}` - 500 Error  
-**문제**: 파라미터 타입 불명확
+**문제**: 파라미터 타입 불명확 (blockId vs avatarToken)
 
-**확인 필요**:
+**프론트엔드 코드 근거**:
+```tsx
+// app/(tabs)/(my)/myinfo/block-manage.tsx:38,47
+try {
+  // TODO: 백엔드 차단 해제 API 확인 필요
+  // DELETE /api/v1/blocks/{id} 또는 DELETE /api/v1/blocks/{avatarToken}
+  // 현재 엔드포인트: /api/v1/blocks/{blockId}
+  await BlocksService().deleteBlock(blockId);
+} catch (error) {
+  // TODO: 백엔드 API 확인 필요 - DELETE /api/v1/blocks/{blockId} 파라미터 타입
+  Alert.alert(
+    '기능 오류',
+    '차단 해제 기능에 일시적인 문제가 발생했습니다.\n\n백엔드 API 파라미터 확인이 필요합니다.\n(blockId vs avatarToken)',
+  );
+}
+
+// apis/service/blocks.ts
+deleteBlock: (blockId: number) => API.delete(`/blocks/${blockId}`)
+```
+
+**확인 및 수정 필요**:
 ```java
+// 현재 (추정)
 @DeleteMapping("/{blockId}")  // blockId(Long)?
-또는
+
+// 또는
 @DeleteMapping("/{avatarToken}")  // avatarToken(String)?
+
+// 프론트엔드 코드와 일치하도록 명확히
 ```
 
 **프론트엔드 현재 코드**:
 ```typescript
 // apis/service/blocks.ts
-deleteBlock: (blockId: number) => 
-  API.delete(`/blocks/${blockId}`)
+deleteBlock: (blockId: number) => API.delete(`/blocks/${blockId}`)
 ```
 
 **영향받는 화면**:
-- `app/(tabs)/(my)/myinfo/block-manage.tsx`
+- `app/(tabs)/(my)/myinfo/block-manage.tsx:38,47`
 
-**현재 대응**: 차단 해제 시 에러 안내 Alert 표시
+**프론트엔드 대응**: 에러 안내 Alert 표시
+
+**예상 작업 시간**: 1시간
 
 ---
 
 ### 3. 스터디 회차 자동/수동 생성 모드 전환 API
 **현재 상태**:
-- Study 엔티티에 `isRegular` 필드만 존재 (정기/비정기)
-- `MeetingAutoService.createRegularMeetings()` - 자동 생성 로직 존재
-- 자동/수동 모드 전환 API 없음
+- Study 엔티티: `isRegular` 필드만 존재 (정기/비정기)
+- `MeetingAutoService`: 자동 생성 로직 존재
+- 모드 전환 API: ❌ 미구현
+
+**프론트엔드 코드 근거**:
+```tsx
+// app/(tabs)/(my)/manage/[token]/round.tsx:125
+<Button
+  variant="contained"
+  onPress={() => {
+    toggleModal();
+    // TODO: 백엔드 API 미구현 - PATCH /api/v1/study/{studyToken}/meeting-mode
+    Alert.alert(
+      '기능 준비 중',
+      '회차 자동/수동 생성 모드 전환 기능은 백엔드 API 개발 대기 중입니다.\n\n현재는 "회차 추가 및 제외" 메뉴에서 회차를 직접 추가/삭제할 수 있습니다.',
+      [{ text: '확인' }],
+    );
+    // setAuto(false); // API 구현 후 활성화
+  }}
+>
+  변경하기
+</Button>
+```
 
 **필요 작업**:
 ```java
-// Study.java에 필드 추가
+// 1. Study.java에 필드 추가
 private boolean isAutoMeeting; // 회차 자동 생성 여부
 
-// StudyController.java에 엔드포인트 추가
+// 2. StudyController.java에 엔드포인트 추가
 @PatchMapping("/{studyToken}/meeting-mode")
 public ApiResponse<Void> updateMeetingMode(
     @PathVariable String studyToken,
     @RequestBody MeetingModeRequest request
 ) {
-    // isAutoMeeting 필드 업데이트
+    studyService.updateMeetingMode(studyToken, request.isAutoMeeting());
+    return ApiResponse.ok();
 }
-```
 
-**Request**:
-```typescript
-{
-  isAutoMeeting: boolean;
-}
+// 3. Request DTO
+public record MeetingModeRequest(
+    @Schema(description = "회차 자동 생성 여부", example = "true")
+    boolean isAutoMeeting
+) {}
 ```
 
 **영향받는 화면**:
-- `app/(tabs)/(my)/manage/[token]/round.tsx`
+- `app/(tabs)/(my)/manage/[token]/round.tsx:125`
 
-**현재 대응**: 라디오 버튼 클릭 시 Alert 표시, 회차 추가/삭제는 정상 작동
+**프론트엔드 대응**: 라디오 버튼 클릭 시 Alert 표시, 회차 추가/삭제는 정상 작동
+
+**예상 작업 시간**: 3시간
 
 ---
 
-## 중요 - 단기 수정 필요
+## 🟡 중요 - 단기 수정 필요
 
 ### 4. 알림 API 경로 불일치
 **현재 상태**:
 - 다른 API: `/api/v1/...` (api.prefix 사용)
 - 알림 API: `/notifications` (api.prefix 미사용)
 
-**확인 필요**:
+**수정 권장**:
 ```java
 // NotificationReadController.java
-@RequestMapping("/notifications")  // api.prefix 없음
+// 변경 전
+@RequestMapping("/notifications")
 
-// 통일 권장
+// 변경 후 (통일 권장)
 @RequestMapping("${api.prefix}/notifications")
 ```
 
-**현재 대응**: 프론트엔드에서 예외 처리로 정상 작동 중
+**프론트엔드 대응**: 예외 처리로 정상 작동 중
+
+**예상 작업 시간**: 0.5시간
 
 ---
 
-### 5. 스터디 멤버 목록 조회 API
+### 5. 스터디 상세 조회 API - 평점 정보 누락
+**현재 상태**: GET `/api/v1/study/{studyToken}` - 평점 정보 미포함
+**문제**: 스터디 상세 화면에 스터디장 평점과 스터디원 평균 평점 표시 불가
+
+**프론트엔드 코드 근거**:
+```tsx
+// components/organisms/StudyDetails/StudyOverviewSection/index.tsx:42,44
+{/* TODO: 스터디장 평점 추가 */}
+<InfoWithRating name="스터디장" rating={0} />
+{/* TODO: 스터디원 평점 추가 */}
+<InfoWithRating name="스터디원" rating={0} />
+```
+
+**현재 타입**: `StudyResponse.Detail`에 평점 정보 없음
+```typescript
+// 현재 응답
+{
+  studyName: string;
+  title: string;
+  // ... 기타 필드
+  // ❌ 평점 정보 없음
+}
+```
+
+**필요 작업**:
+```java
+// StudyController.java 또는 해당 응답 DTO 수정
+@GetMapping("/{studyToken}")
+public ApiResponse<StudyDetailResponse> getStudyDetail(@PathVariable String studyToken) {
+    // 응답에 평점 정보 추가
+}
+```
+
+**Response에 추가 필요**:
+```typescript
+{
+  // 기존 필드들...
+  leaderRating: number;        // 스터디장 평점 (0-5)
+  memberAverageRating: number; // 스터디원 평균 평점 (0-5)
+}
+```
+
+**참고**: `StudyResponse.StudyInfo`에는 이미 `leader.totalRating`과 `memberAverage` 존재
+
+**영향받는 화면**:
+- `app/study/[slug]/index.tsx` - 스터디 상세 화면
+- `components/organisms/StudyDetails/StudyOverviewSection/index.tsx`
+
+**프론트엔드 대응**: 평점을 0으로 하드코딩 표시 중
+
+**예상 작업 시간**: 2시간
+
+---
+
+### 6. 스터디 멤버 목록 조회 API
 **필요 엔드포인트**: GET `/api/v1/study/{studyToken}/enrollments/members`
 
-**Response**:
+**프론트엔드 코드 근거**:
+```tsx
+// components/organisms/MyPage/Manage.tsx:529
+// TODO: 백엔드 API 연동 필요
+// API Endpoint: GET /api/v1/study/{studyToken}/enrollments/members
+// Current Issue: Mock 데이터 5명 하드코딩 (김지수, 박지수, 이지수, 홍지수, 미지수)
+export const StudyEvaluation = ({ studyToken }: { studyToken: string }) => {
+  const { data: members, isLoading, error } = useStudyMembers(studyToken);
+  // ...
+}
+
+// hooks/useStudyEnrollments.ts:9
+export const useStudyMembers = (studyToken: string, enabled = true) => {
+  return useQuery({
+    queryKey: ['study-members', studyToken],
+    queryFn: () => StudyEnrollmentsService().getStudyEnrollments(studyToken),
+    // ...
+  });
+};
+
+// apis/service/study-enrollments.ts
+const getStudyEnrollments = async (studyToken: string) => {
+  const req = (await API.get(`${url}/${studyToken}/enrollments/members`)) 
+    as StudyEnrollmentsResponse.GetMembers;
+  return req.data;
+};
+```
+
+**실제 상황**: 프론트엔드는 이미 API 호출 코드가 구현되어 있음. 백엔드 API 구현 여부 확인 필요.
+
+**Response 타입**:
 ```typescript
 {
   members: [{
@@ -136,17 +297,18 @@ public ApiResponse<Void> updateMeetingMode(
 ```
 
 **영향받는 화면**:
-- `components/organisms/MyPage/Manage.tsx` - StudyEvaluation
-- 평가 대상자 선택 화면
+- `components/organisms/MyPage/Manage.tsx:529` - StudyEvaluation (Mock 데이터 5명)
 
-**현재 대응**: Mock 데이터 5명 하드코딩
+**프론트엔드 대응**: 하드코딩 (김지수, 박지수, 이지수, 홍지수, 미지수)
+
+**예상 작업 시간**: 3시간
 
 ---
 
 ### 6. 스터디원 상세 정보 조회 API
 **필요 엔드포인트**: GET `/api/v1/avatars/{avatarToken}`
 
-**Response**:
+**Response 타입**:
 ```typescript
 {
   avatarToken: string;
@@ -161,16 +323,18 @@ public ApiResponse<Void> updateMeetingMode(
 **영향받는 화면**:
 - `app/(tabs)/(my)/manage/[token]/member/[id]/index.tsx`
 
-**현재 대응**: 닉네임, 출석률, 인증률 하드코딩
+**프론트엔드 대응**: 닉네임, 출석률, 인증률 하드코딩
 
 **요구사항**: 출석률/인증률 계산 로직 포함 필요
+
+**예상 작업 시간**: 2시간
 
 ---
 
 ### 7. 스터디원 참여 상세 정보 API
 **필요 엔드포인트**: GET `/api/v1/study/{studyToken}/enrollments/{targetToken}`
 
-**Response**:
+**Response 타입**:
 ```typescript
 {
   avatarToken: string;
@@ -186,42 +350,62 @@ public ApiResponse<Void> updateMeetingMode(
 
 **사용처**: 멤버 상세 페이지, 관리자 권한 확인
 
+**예상 작업 시간**: 2시간
+
 ---
 
-## 보통 - 중기 수정 필요
+## 🟢 보통 - 중기 수정 필요
 
-### 8. 리더 권한 위임 API
+### 8. 스터디명 변경 API
+**필요 엔드포인트**: PATCH `/api/v1/study/{studyToken}/name`
+
+**Request 타입**:
+```typescript
+{
+  name: string;
+}
+```
+
+**영향받는 화면**:
+- `components/organisms/MyPage/Main/StudyTabs/ManageStudy.tsx:66`
+
+**예상 작업 시간**: 1시간
+
+---
+
+### 9. 리더 권한 위임 API
 **필요 엔드포인트**: PATCH `/api/v1/study/{studyToken}/enrollments/delegate`
 
-**Request**:
+**Request 타입**:
 ```typescript
 {
   targetToken: string; // 새 리더의 avatarToken
 }
 ```
 
-**현재 상태**: 미구현 (UI 없음)
+**예상 작업 시간**: 2시간
 
 ---
 
-### 9. 강제 퇴출 API
+### 10. 강제 퇴출 API
 **필요 엔드포인트**: PATCH `/api/v1/study/{studyToken}/enrollments/forced-out`
 
-**Request**:
+**Request 타입**:
 ```typescript
 {
   targetToken: string; // 퇴출 대상 avatarToken
+  reason?: string; // 퇴출 사유 (선택)
 }
 ```
 
-**현재 상태**: 미구현 (UI 없음)
+**예상 작업 시간**: 2시간
 
 ---
 
-### 10. 미인증자 일괄 처리 API
+### 11. 미인증자 일괄 처리 API
 **필요 엔드포인트**: POST `/api/v1/study/{studyToken}/proofs/uncertified`
 
-**Request**:
+**Request 타입**:
 ```typescript
 {
   meetingNo: number;
@@ -229,16 +413,14 @@ public ApiResponse<Void> updateMeetingMode(
 }
 ```
 
-**현재 상태**: 미구현 (UI 없음)
+**예상 작업 시간**: 2시간
 
 ---
 
-### 11. 스터디 규칙 조회/수정 API
-**필요 엔드포인트**:
-- GET `/api/v1/study/{studyToken}/rules`
-- PUT `/api/v1/study/{studyToken}/rules`
+### 12. 스터디 규칙 수정 API
+**필요 엔드포인트**: PUT `/api/v1/study/{studyToken}/rules`
 
-**Response (GET)**:
+**Request 타입**:
 ```typescript
 {
   rules: [
@@ -322,28 +504,65 @@ public ApiResponse<Void> updateMeetingMode(
 
 ---
 
-## 우선순위 요약
+## 📊 우선순위 요약
 
-| 우선순위 | 작업 | 예상 시간 |
-|---------|------|----------|
-| P1 | 공지 조회 API 구현 | 2시간 |
-| P1 | 차단 해제 API 파라미터 확인 | 1시간 |
-| P1 | 회차 모드 전환 API 구현 | 3시간 |
-| P2 | 알림 API 경로 통일 | 1시간 |
-| P2 | 스터디 멤버 목록 API | 2시간 |
-| P2 | 스터디원 상세 정보 API | 3시간 |
-| P2 | 스터디원 참여 상세 API | 2시간 |
-| P3 | 리더 권한 위임 API | 2시간 |
-| P3 | 강제 퇴출 API | 2시간 |
-| P3 | 미인증자 일괄 처리 API | 2시간 |
-| P3 | 스터디 규칙 API | 3시간 |
-| P3 | 스터디명 변경 API | 1시간 |
+### 🔴 긴급 (1주 내) - 6시간
+1. 공지 조회 API (2시간)
+2. 차단 해제 API 파라미터 (1시간)
+3. 회차 모드 전환 API (3시간)
 
-**총 예상 시간**: 약 24시간
+### 🟡 중요 (1-2주) - 11.5시간
+4. 알림 API 경로 통일 (0.5시간)
+5. 스터디 상세 - 평점 정보 추가 (2시간) ⭐ 신규
+6. 스터디 멤버 목록 API (3시간)
+7. 스터디원 상세 정보 API (2시간)
+8. 스터디원 참여 상세 API (2시간)
+
+### 🟢 보통 (1개월) - 9시간
+8. 스터디명 변경 API (1시간)
+9. 권한 위임 API (2시간)
+10. 강제 퇴출 API (2시간)
+11. 미인증자 일괄 처리 API (2시간)
+12. 스터디 규칙 수정 API (2시간)
+
+### ⚪ 확인 필요 - TBD
+13-17. 프로필, 선호도, 탈퇴, Push, 검색 API
+
+**총 예상 시간**: 24.5시간 (확인 필요 제외)
 
 ---
 
-## 참고 정보
+## 📝 체크리스트
+
+### 긴급
+- [ ] 공지 조회 API 구현
+- [ ] 차단 해제 API 파라미터 타입 확인 및 수정
+- [ ] 회차 모드 전환 API 구현 (Study 엔티티 필드 추가 포함)
+
+### 중요
+- [ ] 알림 API 경로 통일
+- [ ] 스터디 상세 - 평점 정보 추가 ⭐ 신규
+- [ ] 스터디 멤버 목록 조회 API 구현
+- [ ] 스터디원 상세 정보 조회 API 구현
+- [ ] 스터디원 참여 상세 정보 API 구현
+
+### 보통
+- [ ] 스터디명 변경 API 구현
+- [ ] 리더 권한 위임 API 구현
+- [ ] 강제 퇴출 API 구현
+- [ ] 미인증자 일괄 처리 API 구현
+- [ ] 스터디 규칙 수정 API 구현
+
+### 확인 필요
+- [ ] 프로필 사진 업로드 API 확인
+- [ ] 선호 카테고리 수정 API 확인
+- [ ] 회원 탈퇴 API 확인
+- [ ] Push 알림 설정 API 확인
+- [ ] 검색 관련 API 확인
+
+---
+
+## 🔗 참고 정보
 
 ### Swagger 문서
 http://ec2-3-38-27-246.ap-northeast-2.compute.amazonaws.com/swagger-ui/

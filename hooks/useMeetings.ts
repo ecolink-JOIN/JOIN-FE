@@ -10,8 +10,12 @@ export const useMeetings = (studyToken: string, enabled: boolean = true) => {
     queryFn: () => MeetingsService().getMeetings(studyToken),
     enabled: enabled && !!studyToken,
     select: (data) => {
-      // 회차 번호 기준 정렬
-      return data.sort((a, b) => a.meetingNo - b.meetingNo);
+      // 날짜와 시간을 기준으로 정렬 (과거 → 미래 순)
+      return data.sort((a, b) => {
+        const dateTimeA = new Date(`${a.studyDate}T${a.stTime}`).getTime();
+        const dateTimeB = new Date(`${b.studyDate}T${b.stTime}`).getTime();
+        return dateTimeA - dateTimeB;
+      });
     },
   });
 };

@@ -362,18 +362,35 @@ export const StudySchedule = ({ studyToken }: { studyToken: string }) => {
     return timeStr.replace(/:\d{2}$/, ''); // 초 제거
   };
 
+  // 요일 순서대로 정렬
+  const dayOrder: Record<SharedStudy.PossibleDays, number> = {
+    MON: 1,
+    TUE: 2,
+    WED: 3,
+    THU: 4,
+    FRI: 5,
+    SAT: 6,
+    SUN: 7,
+  };
+
+  const sortedSchedules = [...ruleData.schedules].sort((a, b) => {
+    return dayOrder[a.weekOfDay] - dayOrder[b.weekOfDay];
+  });
+
   return (
     <View style={{ marginVertical: 16 }}>
-      <RowView style={{ justifyContent: 'space-between' }}>
+      <LineView>
         <Typography variant="button">스터디 기간</Typography>
         <Typography variant="button" style={{ color: colors.gray[8] }}>
           {formatDate(ruleData.startDate)} - {formatDate(ruleData.endDate)}
         </Typography>
-      </RowView>
-      <Divider style={{ height: 2, marginHorizontal: -20, width: 'auto', marginTop: 16 }} />
-      <View style={{ paddingTop: 16, gap: 16 }}>
-        <Typography variant="button">진행 요일 및 시간</Typography>
-        {ruleData.schedules.map((schedule, index) => (
+      </LineView>
+      <Divider style={{ height: 2, marginHorizontal: -20, width: 'auto', marginVertical: 16 }} />
+      <Typography variant="button" style={{ marginBottom: 16 }}>
+        진행 요일 및 시간
+      </Typography>
+      <View style={{ gap: 12 }}>
+        {sortedSchedules.map((schedule, index) => (
           <LineView key={index}>
             <Typography variant="button" style={{ color: colors.gray[8] }}>
               {WeekofDay[schedule.weekOfDay]}
@@ -388,128 +405,11 @@ export const StudySchedule = ({ studyToken }: { studyToken: string }) => {
   );
 };
 
-// TODO: 백엔드 API 연동 필요
-// API Endpoint:
-//   1. GET /api/v1/avatars/{avatarToken} - 평가 대상 회원 정보 조회
-//   2. POST /api/v1/evaluation - 평가 제출 (이미 존재)
-// Request: { targetAvatarToken, evaluations: [{ evaluationCategory, point }] }
-// Response: { avatarToken, nickname, profileUrl, attendanceRate, proofRate }
-// Priority: 중간
-// Description:
-//   - 평가 대상 회원 상세 정보 조회 (닉네임, 프로필, 출석률, 인증률)
-//   - 평가 제출 시 실제 API 호출
-// Current Issue:
-//   - 닉네임, 출석률, 인증률 하드코딩
-// TODO: 백엔드 API 연동 필요
-// API Endpoint:
-//   1. GET /api/v1/avatars/{avatarToken} - 평가 대상 회원 정보 조회
-//   2. POST /api/v1/evaluation - 평가 제출 (이미 존재)
-// Request: { targetAvatarToken, evaluations: [{ evaluationCategory, point }] }
-// Response: { avatarToken, nickname, profileUrl, attendanceRate, proofRate }
-// Priority: 중간
-// Description:
-//   - 평가 대상 회원 상세 정보 조회 (닉네임, 프로필, 출석률, 인증률)
-//   - 평가 제출 시 실제 API 호출
-// Current Issue:
-//   - 닉네임, 출석률, 인증률 하드코딩
-//   - 제출 버튼에서 API 호출 없음
-export const MemberEvaluation = () => {
-  const [selectedScores, setSelectedScores] = useState<{ [key: string]: number }>({});
-
-  useEffect(() => {
-    Alert.alert(
-      '기능 준비 중',
-      '스터디원 평가 기능은 현재 백엔드 API 개발 중입니다.\n\n필요한 API:\n1. GET /api/v1/avatars/{avatarToken}\n   (평가 대상 회원 정보 조회)\n2. POST /api/v1/evaluation\n   (평가 제출)',
-      [{ text: '확인' }],
-    );
-  }, []);
-
-  const handleScoreChange = (badgeValue: string, score: number) => {
-    setSelectedScores((prev) => ({
-      ...prev,
-      [badgeValue]: score,
-    }));
-  };
-
-  const evaluations = [
-    {
-      badgeValue: '성실도',
-      question: '스터디원은 얼마나 성실하게 스터디에 임했나요?',
-    },
-    {
-      badgeValue: '프로그램 숙지도',
-      question: '스터디원은 스터디 프로그램을 잘 숙지하고 있었나요?',
-    },
-    {
-      badgeValue: '학습 분위기 영향',
-      question: '스터디원은 학습 분위기에 긍정적인 영향을 주었나요?',
-    },
-  ];
-
-  const handleSubmit = () => {
-    Alert.alert('기능 준비 중', '평가 제출 기능은 백엔드 API 연동 후 사용 가능합니다.', [
-      { text: '확인', onPress: () => router.back() },
-    ]);
-  };
-
-  return (
-    <View
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 10,
-        paddingTop: 24,
-        paddingBottom: 20,
-      }}
-    >
-      <View style={{ alignItems: 'center', opacity: 0.5 }}>
-        <Image
-          source={require('@/assets/images/profile.png')}
-          style={{
-            width: 80,
-            height: 80,
-          }}
-        />
-        <Typography variant="heading4" style={{ marginTop: 10 }}>
-          평가 대상 회원
-        </Typography>
-        <Typography variant="caption1" style={{ color: colors.gray[6], marginTop: 4 }}>
-          (API 연동 후 실제 데이터 표시)
-        </Typography>
-      </View>
-
-      {evaluations.map((evalItem) => (
-        <Evaluator
-          key={evalItem.badgeValue}
-          badgeValue={evalItem.badgeValue}
-          question={evalItem.question}
-          selectedValue={selectedScores[evalItem.badgeValue]}
-          onValueChange={(score: number) => handleScoreChange(evalItem.badgeValue, score)}
-        />
-      ))}
-
-      <View
-        style={{
-          justifyContent: 'center',
-          padding: 16,
-        }}
-      >
-        <Button variant="contained" onPress={handleSubmit}>
-          제출하기
-        </Button>
-      </View>
-    </View>
-  );
-};
-
-// 평가할 스터디원 선택
-// TODO: 백엔드 API 연동 필요
-// API Endpoint: GET /api/v1/study/{studyToken}/enrollments/members
-// Request: { studyToken: string }
-// Response: { members: [{ avatarToken, nickname, profileUrl, isLeader }] }
-// Priority: 중간
-// Description: 평가 가능한 스터디원 목록 조회 (자신 제외)
-// Current Issue: Mock 데이터 5명 하드코딩 (김지수, 박지수, 이지수, 홍지수, 미지수)
+/**
+ * 평가할 스터디원 선택
+ * API: GET /api/v1/study/{studyToken}/enrollments/members
+ * 평가 가능한 스터디원 목록 조회 (자신 제외)
+ */
 export const StudyEvaluation = ({ studyToken }: { studyToken: string }) => {
   const { data: members, isLoading, error } = useStudyMembers(studyToken);
 

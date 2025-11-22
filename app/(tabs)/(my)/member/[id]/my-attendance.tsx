@@ -88,6 +88,14 @@ const RoundCheck: React.FC<{ id: string | string[] | undefined }> = ({ id }) => 
     const d = new Date(date);
     return d.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.');
   };
+
+  // 회차 정보를 날짜 순으로 정렬 (과거 → 현재 순)
+  const sortedMeetings = [...(attendance.meetingAttendanceStatus || [])].sort((a, b) => {
+    const dateA = new Date(a.studyDate).getTime();
+    const dateB = new Date(b.studyDate).getTime();
+    return dateA - dateB;
+  });
+
   return (
     <ManageView>
       <Typography variant="heading3">나의 출석 및 인증 현황</Typography>
@@ -118,7 +126,7 @@ const RoundCheck: React.FC<{ id: string | string[] | undefined }> = ({ id }) => 
             ]}
           />
         </View>
-        {attendance.meetingAttendanceStatus.map((item, index) => (
+        {sortedMeetings.map((item, index) => (
           <RoundBox key={`${item.meetingNo}-${index}`}>
             <RoundNumber variant="body3">{item.meetingNo}회차</RoundNumber>
             <RoundStatus variant="body3" status={item.attendanceStatus} date>

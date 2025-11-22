@@ -7,7 +7,6 @@ import { FlatList } from 'react-native';
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import BottomSheetComp from '@/components/molecules/BottomSheet';
 import styled from 'styled-components/native';
-import { colors } from '@/theme';
 
 const StudyRule = ({ id }: { id: string | string[] | undefined }) => {
   const bottomSheetModalRef = useRef<BottomSheetModalMethods>(null);
@@ -40,12 +39,10 @@ const StudyRule = ({ id }: { id: string | string[] | undefined }) => {
         snapPoints={['55%']}
         component={
           <DateView>
-            <Typography variant="heading4" style={{ marginBottom: 16 }}>
+            <Typography variant="heading4" style={{ marginBottom: 24 }}>
               스터디 일정
             </Typography>
-            <Typography variant="body3" style={{ color: colors.gray[7] }}>
-              스터디 규칙 페이지에서 일정을 확인하세요.
-            </Typography>
+            <StudySchedule studyToken={studyToken} />
           </DateView>
         }
       />
@@ -62,7 +59,5 @@ const StudyRuleWrapper = () => {
 export default StudyRuleWrapper;
 
 const DateView = styled.View`
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px;
+  padding: 20px;
 `;

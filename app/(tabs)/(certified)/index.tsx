@@ -38,7 +38,18 @@ function CertifiedScreen() {
 
   const joinedStudies = studiesData?.joinStudyInfos || [];
 
-  if (joinedStudies.length === 0) {
+  // 스터디 상태 기준 정렬 (ACTIVE → READY → RECRUITING → COMPLETED)
+  const sortedStudies = [...joinedStudies].sort((a, b) => {
+    const statusOrder: Record<string, number> = {
+      ACTIVE: 1,
+      READY: 2,
+      RECRUITING: 3,
+      COMPLETED: 4,
+    };
+    return (statusOrder[a.status] || 999) - (statusOrder[b.status] || 999);
+  });
+
+  if (sortedStudies.length === 0) {
     return (
       <ManageView>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -53,7 +64,7 @@ function CertifiedScreen() {
   return (
     <ManageView>
       <ScrollView contentContainerStyle={{ gap: 16 }} showsVerticalScrollIndicator={false}>
-        {joinedStudies.map((study) => (
+        {sortedStudies.map((study) => (
           <StudyCard key={study.studyToken} study={study} />
         ))}
       </ScrollView>
