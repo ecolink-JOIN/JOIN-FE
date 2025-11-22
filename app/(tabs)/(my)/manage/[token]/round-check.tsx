@@ -79,11 +79,16 @@ const RoundCheck = () => {
     );
   }
 
+  // 날짜 순으로 정렬 (오름차순)
+  const sortedMeetings = [...meetings].sort((a, b) => {
+    return new Date(a.studyDate).getTime() - new Date(b.studyDate).getTime();
+  });
+
   return (
     <ManageView>
       <Typography variant="heading3">스터디 회차 확인</Typography>
       <ListView style={shadowStyles.shadow}>
-        {meetings.map((meeting: MeetingsResponse.Meeting) => (
+        {sortedMeetings.map((meeting: MeetingsResponse.Meeting) => (
           <RoundBox key={meeting.id}>
             <RoundNumber variant="body3">{meeting.meetingNo}회차</RoundNumber>
             <RoundStatus variant="body3" status={getStatusLabel(meeting.status)} date>

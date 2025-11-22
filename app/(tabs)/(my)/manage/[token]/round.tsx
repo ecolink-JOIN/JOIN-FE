@@ -58,6 +58,9 @@ const Round = () => {
   }, [meetings, removedDates]);
 
   const handlePresentModalPress = useCallback(() => {
+    // 바텀시트를 열 때마다 상태 초기화
+    setDuration([]);
+    setRemovedDates([]);
     bottomSheetModalRef.current?.present();
   }, []);
 
@@ -130,6 +133,11 @@ const Round = () => {
       <BottomSheetComp
         bottomSheetModalRef={bottomSheetModalRef}
         snapPoints={['90%']}
+        onDismiss={() => {
+          // 바텀시트를 닫을 때 상태 초기화
+          setDuration([]);
+          setRemovedDates([]);
+        }}
         component={
           <BottomSheetContent>
             {isMeetingsLoading ? (
@@ -168,12 +176,19 @@ const Round = () => {
                     setRemovedDates(newRemovedDates);
 
                     // 새로 추가된 날짜만 필터링 (원본 meetings와 비교)
-                    const newDates = selectedDates.filter((date) => {
-                      if (!date) return false;
+                    // 중복 제거를 위해 Set 사용
+                    const newDatesSet = new Set<string>();
+                    selectedDates.forEach((date) => {
+                      if (!date) return;
                       const dateStr = dayjs(date.toString()).format('YYYY-MM-DD');
-                      return !existingDateStrings.includes(dateStr);
+                      // 기존 회차가 아닌 것만 추가
+                      if (!existingDateStrings.includes(dateStr)) {
+                        newDatesSet.add(dateStr);
+                      }
                     });
 
+                    // Set을 다시 Date 배열로 변환
+                    const newDates = Array.from(newDatesSet).map((dateStr) => dayjs(dateStr).toDate());
                     setDuration(newDates);
                   }}
                 />
@@ -202,8 +217,8 @@ const Round = () => {
                       // 추가할 회차 처리
                       for (const date of duration) {
                         if (!date) continue;
-                        const dateObj = new Date(date.toString());
-                        const studyDate = dateObj.toISOString().split('T')[0];
+                        // dayjs를 사용하여 로컬 시간 기준으로 날짜 포맷
+                        const studyDate = dayjs(date.toString()).format('YYYY-MM-DD');
 
                         await MeetingsService().postMeeting(token as string, {
                           studyDate,
@@ -230,9 +245,14 @@ const Round = () => {
                         visibilityTime: 2000,
                       });
 
+                      // 상태 초기화 및 데이터 다시 불러오기
                       setDuration([]);
                       setRemovedDates([]);
+
+                      // 회차 목록 다시 불러오기
                       await refetchMeetings();
+
+                      // 바텀시트 닫기
                       bottomSheetModalRef.current?.dismiss();
                     } catch (error) {
                       console.error('회차 처리 실패:', error);
