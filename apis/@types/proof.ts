@@ -97,4 +97,9 @@ declare namespace ProofRequest {
     proofId: number;
     rejectedReason: string;
   }
+
+  export interface UpdateUncertifiedProof {
+    targetToken: string; // 대상 스터디원 토큰
+    provenTime: string; // ISO 8601 format (YYYY-MM-DDTHH:mm:ss)
+  }
 }

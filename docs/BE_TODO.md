@@ -195,9 +195,94 @@ public record MeetingModeRequest(
 
 ---
 
+### 5. 알림 조회 API - 라우팅 정보 누락
+**현재 상태**: GET `/notifications` - studyToken 정보 미포함
+**문제**: 알림 클릭 시 해당 스터디/인증/출석 화면으로 라우팅 불가
+
+**백엔드 코드 근거**:
+```java
+// NotificationResponse.java (현재)
+@Builder
+public record NotificationResponse(
+        Long notificationId,
+        String title,
+        String content,
+        NotificationType type,  // STUDY_ANNOUNCEMENT, ATTENDANCE_CHECK, PROOF, OTHER
+        LocalDateTime createdAt,
+        boolean isRead
+        // ❌ studyToken 없음 - 라우팅 불가
+) {}
+
+// Notification 엔티티에는 study 필드 존재
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "study_id", nullable = false)
+private Study study;
+```
+
+**프론트엔드 코드 근거**:
+```tsx
+// app/(tabs)/(home)/alarm.tsx:84
+const handleNotificationPress = (notification: NotificationResponse.Notification) => {
+  // TODO: 알림 타입별 라우팅 처리
+  // ❌ studyToken 없어서 라우팅 불가
+  console.log('알림 클릭:', notification);
+};
+```
+
+**필요 작업**:
+```java
+// NotificationResponse.java 수정
+@Builder
+public record NotificationResponse(
+        Long notificationId,
+        String title,
+        String content,
+        NotificationType type,
+        LocalDateTime createdAt,
+        boolean isRead,
+        String studyToken        // ✅ 추가 필요
+) {}
+
+// NotificationTargetReaderImpl.java 수정
+return NotificationResponse.builder()
+        .notificationId(n.getId())
+        .title(n.getTitle())
+        .content(n.getContent())
+        .type(n.getNotificationType())
+        .createdAt(n.getCreatedDate())
+        .isRead(nt.isRead())
+        .studyToken(n.getStudy().getStudyToken())  // ✅ 추가
+        .build();
+```
+
+**라우팅 예시** (프론트엔드):
+```tsx
+// 알림 타입별 라우팅
+switch (notification.type) {
+  case 'STUDY_ANNOUNCEMENT':
+    router.push(`/study/${notification.studyToken}/notice`);
+    break;
+  case 'ATTENDANCE_CHECK':
+    router.push(`/study/${notification.studyToken}/attendance`);
+    break;
+  case 'PROOF':
+    router.push(`/study/${notification.studyToken}/proof`);
+    break;
+}
+```
+
+**영향받는 화면**:
+- `app/(tabs)/(home)/alarm.tsx:84` - 알림 목록 및 클릭 처리
+
+**프론트엔드 대응**: 라우팅 미구현, console.log만 출력 중
+
+**예상 작업 시간**: 1시간
+
+---
+
 ## ✅ 완료된 작업
 
-### 5. ~~스터디 상세 조회 API - 평점 정보~~ ✅ 완료
+### 6. ~~스터디 상세 조회 API - 평점 정보~~ ✅ 완료
 **API**: GET `/api/v1/study/{studyToken}`  
 **상태**: ✅ 완료 (2025-01-22)
 - 평점 정보가 이미 API에 포함되어 있었음
@@ -371,18 +456,87 @@ const getStudyEnrollments = async (studyToken: string) => {
 
 ---
 
-### 11. 미인증자 일괄 처리 API
-**필요 엔드포인트**: POST `/api/v1/study/{studyToken}/proofs/uncertified`
+### 11. 미인증 상태 수정 API 버그 수정 🐛
+**엔드포인트**: POST `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/uncertified`  
+**파일**: `ProofMapper.java`, `Proof.java`
 
-**Request 타입**:
-```typescript
-{
-  meetingNo: number;
-  action: "REJECT" | "PENALTY";
+**문제 상황**:
+```
+Column 'photo_id' cannot be null
+```
+
+**원인**:
+- `ProofMapper.toEntity(UpdateProofParams)` 메서드에서 `photo` 필드를 설정하지 않음
+- `Proof` 엔티티의 `photo` 필드가 `@OneToOne(cascade = CascadeType.ALL)`로 설정되어 있음
+- DB 스키마에서 `photo_id`가 NOT NULL 제약조건을 가지고 있을 가능성
+
+**현재 코드** (`ProofMapper.java:42-51`):
+```java
+public Proof toEntity(UpdateProofParams param, Avatar avatar, Meeting meeting) {
+    return Proof.builder()
+            .type(ProofType.PHOTO)
+            .provenDate(param.provenTime())
+            .avatar(avatar)
+            .meeting(meeting)
+            .status(ProofStatus.APPROVED)
+            .build();  // photo 필드 누락
 }
 ```
 
-**예상 작업 시간**: 2시간
+**해결 방법 옵션**:
+
+**옵션 1**: `photo` 필드를 nullable로 변경 (권장)
+```java
+// Proof.java
+@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+private ProofPhoto photo;  // @NotNull 제거
+
+// DB 마이그레이션
+ALTER TABLE proof MODIFY COLUMN photo_id BIGINT NULL;
+```
+
+**옵션 2**: 더미 `ProofPhoto` 생성
+```java
+public Proof toEntity(UpdateProofParams param, Avatar avatar, Meeting meeting) {
+    ProofPhoto dummyPhoto = ProofPhoto.builder()
+            .photoUrl("MANUAL_APPROVAL")  // 관리자 수동 승인 표시
+            .build();
+    
+    return Proof.builder()
+            .type(ProofType.PHOTO)
+            .provenDate(param.provenTime())
+            .avatar(avatar)
+            .meeting(meeting)
+            .status(ProofStatus.APPROVED)
+            .photo(dummyPhoto)
+            .build();
+}
+```
+
+**옵션 3**: 새로운 `ProofType.MANUAL` 추가
+```java
+public enum ProofType {
+    PHOTO, TIMER, MANUAL  // 관리자 수동 승인
+}
+
+public Proof toEntity(UpdateProofParams param, Avatar avatar, Meeting meeting) {
+    return Proof.builder()
+            .type(ProofType.MANUAL)
+            .provenDate(param.provenTime())
+            .avatar(avatar)
+            .meeting(meeting)
+            .status(ProofStatus.APPROVED)
+            .photo(null)  // MANUAL 타입은 photo 불필요
+            .build();
+}
+```
+
+**권장 사항**: 옵션 1 + 옵션 3 조합
+- `photo` 필드를 nullable로 변경
+- `ProofType.MANUAL` 추가하여 관리자 수동 승인과 일반 인증 구분
+- 프론트엔드에서도 MANUAL 타입 인증은 사진 없이 표시
+
+**예상 작업 시간**: 1시간
 
 ---
 
@@ -475,28 +629,29 @@ const getStudyEnrollments = async (studyToken: string) => {
 
 ## 📊 우선순위 요약
 
-### 🔴 긴급 (1주 내) - 6시간
+### 🔴 긴급 (1주 내) - 7시간
 1. 공지 조회 API (2시간)
 2. 차단 해제 API 파라미터 (1시간)
 3. 회차 모드 전환 API (3시간)
+4. 미인증 상태 수정 API 버그 수정 🐛 (1시간) ⭐ 신규
 
-### 🟡 중요 (1-2주) - 9.5시간
-4. 알림 API 경로 통일 (0.5시간)
-6. 스터디 멤버 목록 API (3시간)
-7. 스터디원 상세 정보 API (2시간)
-8. 스터디원 참여 상세 API (2시간)
+### 🟡 중요 (1-2주) - 10.5시간
+5. 알림 API 경로 통일 (0.5시간)
+6. 알림 조회 API - studyToken 추가 (1시간)
+7. 스터디 멤버 목록 API (3시간)
+8. 스터디원 상세 정보 API (2시간)
+9. 스터디원 참여 상세 API (2시간)
 
-### 🟢 보통 (1개월) - 9시간
-9. 스터디명 변경 API (1시간)
-10. 권한 위임 API (2시간)
-11. 강제 퇴출 API (2시간)
-12. 미인증자 일괄 처리 API (2시간)
+### 🟢 보통 (1개월) - 6시간
+10. 스터디명 변경 API (1시간)
+11. 권한 위임 API (2시간)
+12. 강제 퇴출 API (2시간)
 13. 스터디 규칙 수정 API (2시간)
 
 ### ⚪ 확인 필요 - TBD
 14-18. 프로필, 선호도, 탈퇴, Push, 검색 API
 
-**총 예상 시간**: 24.5시간 (확인 필요 제외)
+**총 예상 시간**: 25.5시간 (확인 필요 제외)
 
 ---
 
@@ -509,6 +664,7 @@ const getStudyEnrollments = async (studyToken: string) => {
 
 ### 중요
 - [ ] 알림 API 경로 통일
+- [ ] 알림 조회 API - studyToken 추가 ⭐ 신규
 - [ ] 스터디 멤버 목록 조회 API 구현
 - [ ] 스터디원 상세 정보 조회 API 구현
 - [ ] 스터디원 참여 상세 정보 API 구현
@@ -516,11 +672,23 @@ const getStudyEnrollments = async (studyToken: string) => {
 ### 완료
 - [x] 스터디 상세 - 평점 정보 추가 (2025-01-22)
 
+### 긴급
+- [ ] 공지 조회 API 구현
+- [ ] 차단 해제 API 파라미터 수정
+- [ ] 회차 모드 전환 API 구현
+- [ ] 미인증 상태 수정 API 버그 수정 🐛
+
+### 중요
+- [ ] 알림 API 경로 통일
+- [ ] 알림 조회 API - studyToken 추가
+- [ ] 스터디 멤버 목록 API 구현
+- [ ] 스터디원 상세 정보 API 구현
+- [ ] 스터디원 참여 상세 API 구현
+
 ### 보통
 - [ ] 스터디명 변경 API 구현
 - [ ] 리더 권한 위임 API 구현
 - [ ] 강제 퇴출 API 구현
-- [ ] 미인증자 일괄 처리 API 구현
 - [ ] 스터디 규칙 수정 API 구현
 
 ### 확인 필요

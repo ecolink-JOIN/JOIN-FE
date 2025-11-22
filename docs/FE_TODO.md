@@ -78,17 +78,42 @@
 
 ## 🟡 단기 작업 (1-2주)
 
-### 5. 알림 타입별 라우팅
+### 5. 알림 타입별 라우팅 ⚠️ 백엔드 작업 필요
 **파일**: `app/(tabs)/(home)/alarm.tsx:84`  
-**현재 상태**: TODO 주석만 있음  
+**현재 상태**: 라우팅 구조 구현 완료, 백엔드 API 수정 대기
 
 **코드 근거**:
 ```tsx
 const handleNotificationPress = (notification: NotificationResponse.Notification) => {
-  // TODO: 알림 타입별 라우팅 처리
-  console.log('알림 클릭:', notification);
+  // FIXME: 백엔드 API 수정 필요 - studyToken 필드 누락
+  Alert.alert('알림', '해당 기능은 백엔드 API 업데이트가 필요합니다.');
+  
+  /* 백엔드 API 수정 후 구현
+  const studyToken = notification.studyToken; // ← 백엔드에서 추가 필요
+  
+  switch (notification.type) {
+    case 'STUDY_ANNOUNCEMENT':
+      router.push(`/(tabs)/(my)/manage/${studyToken}/notice`);
+      break;
+    case 'ATTENDANCE_CHECK':
+      router.push(`/(tabs)/(my)/manage/${studyToken}/attendance`);
+      break;
+    case 'PROOF':
+      router.push(`/(tabs)/(my)/manage/${studyToken}/proof`);
+      break;
+    case 'OTHER':
+      router.push(`/study/${studyToken}`);
+      break;
+  }
+  */
 };
 ```
+
+**백엔드 문제**:
+- API: `GET /notifications`
+- 응답: `NotificationResponse`에 `studyToken` 필드 없음
+- 엔티티: `Notification.study` 필드는 존재하지만 응답에 미포함
+- 파일: `NotificationResponse.java`, `NotificationTargetReaderImpl.java`
 
 **알림 타입**:
 - `STUDY_ANNOUNCEMENT`: 스터디 공지
@@ -96,55 +121,142 @@ const handleNotificationPress = (notification: NotificationResponse.Notification
 - `PROOF`: 인증
 - `OTHER`: 기타 알림
 
-**필요 작업**:
-- 각 알림 타입별 적절한 화면으로 라우팅
-- notification 객체에서 필요한 파라미터 추출
-- router.push()로 화면 이동
+**완료 작업**:
+- ✅ 백엔드 코드 분석 완료
+- ✅ 라우팅 로직 구현 (주석 처리)
+- ✅ Alert로 백엔드 작업 필요 안내
+- ✅ BE_TODO.md에 #5 항목 추가
 
-**예상 시간**: 3시간
+**대기 작업**:
+- ⏳ 백엔드: `NotificationResponse`에 `studyToken` 추가
+- ⏳ 프론트엔드: 주석 해제 및 테스트
 
----
+**예상 시간**: 1시간 (백엔드 작업) + 0.5시간 (프론트 주석 해제)
 
-### 6. 스터디원 참여 상세 정보
-**필요 API**: GET `/api/v1/study/{studyToken}/enrollments/{targetToken}`  
-**필요 작업**:
-- apis/@types/study-enrollments.ts 타입 추가
-- apis/service/study-enrollments.ts 서비스 함수 추가
-- hooks/useStudyEnrollments.ts 훅 생성
-
-**예상 시간**: 3시간
+**비고**: 백엔드 작업 필요 - `docs/BE_TODO.md #5` 참고
 
 ---
 
-### 7. 리더 권한 위임
-**필요 API**: PATCH `/api/v1/study/{studyToken}/enrollments/delegate`  
-**필요 작업**:
-- 권한 위임 UI 구현
-- 확인 모달 추가
-- API 연동
+### 6. ~~스터디원 참여 상세 정보~~ ✅ 완료
+**API**: GET `/api/v1/study/{studyToken}/enrollments/{targetToken}`  
+**상태**: ✅ 완료 (2025-01-22)
+- API가 이미 완전히 구현되어 있었음
+- 백엔드 API: `GET /study/{studyToken}/enrollments/{targetToken}`
+- 백엔드 파일: `EnrollmentReaderController.java`, `ProofAndAttendanceStatusResponse.java`
+- 프론트엔드 타입: `StudyEnrollmentsResponse.GetMemberAttendance`
+- 서비스: `StudyEnrollmentsService().getMemberAttendance()`
+- 사용 화면: `app/(tabs)/(my)/manage/[token]/member-detail.tsx`
 
-**예상 시간**: 3시간
+**완료 작업**:
+- ✅ 백엔드 API 존재 확인
+- ✅ 프론트엔드 타입 정의 완료 (`apis/@types/study-enrollments.ts`)
+- ✅ 서비스 함수 구현 완료 (`apis/service/study-enrollments.ts`)
+- ✅ 스터디원 상세 화면에서 실제 사용 중
+- ✅ 출석/인증 상태 표시 확인
+
+**응답 데이터**:
+- `studyToken`: 스터디 토큰
+- `avatarToken`: 아바타 토큰
+- `meetingAttendanceStatus[]`: 회차별 출석/인증 상태
+  - `meetingNo`: 회차 번호
+  - `studyDate`: 스터디 날짜
+  - `attendanceStatus`: 출석 상태 (PRESENT/LATENESS/ABSENT)
+  - `hasApproveProof`: 인증 승인 여부
 
 ---
 
-### 8. 강제 퇴출
-**필요 API**: PATCH `/api/v1/study/{studyToken}/enrollments/forced-out`  
-**필요 작업**:
-- 퇴출 UI 구현
-- 확인 모달 추가
-- 퇴출 사유 입력
+### 7. ~~리더 권한 위임~~ ✅ 완료
+**API**: PATCH `/api/v1/study/{studyToken}/enrollments/delegate`  
+**상태**: ✅ 완료 (2025-01-22)
+- API와 UI가 이미 완전히 구현되어 있었음
+- 백엔드 API: `PATCH /study/{studyToken}/enrollments/delegate`
+- 백엔드 파일: `EnrollmentController.java`, `DelegateLeaderRequest.java`
+- 프론트엔드 서비스: `StudyEnrollmentsService().delegateStudy()`
+- 사용 화면: `app/(tabs)/(my)/manage/[token]/member-detail.tsx`
 
-**예상 시간**: 3시간
+**완료 작업**:
+- ✅ 백엔드 API 존재 확인
+- ✅ 프론트엔드 서비스 함수 구현 완료
+- ✅ 권한 위임 UI 구현 (Chip 버튼)
+- ✅ 확인 모달 구현 (위임 주의사항 표시)
+- ✅ API 연동 완료
+- ✅ 성공/실패 처리 완료
+
+**기능 상세**:
+- **UI**: "스터디장 위임하기" Chip 버튼
+- **모달 내용**:
+  - 위임 대상 스터디원 닉네임 표시
+  - 주의사항: "1회만 가능, 재위임 불가"
+  - 충분한 논의 후 진행 권장
+  - 위임 후 모든 권리 이전 안내
+- **API 요청**: `{ targetToken: string }`
+- **성공 시**: Alert + 이전 화면으로 이동
+- **실패 시**: 에러 Alert 표시
 
 ---
 
-### 9. 미인증자 일괄 처리
-**필요 API**: POST `/api/v1/study/{studyToken}/proofs/uncertified`  
-**필요 작업**:
-- 미인증자 목록 UI
-- 일괄 처리 버튼
+### 8. ~~강제 퇴출~~ ✅ 완료
+**API**: PATCH `/api/v1/study/{studyToken}/enrollments/forced-out`  
+**상태**: ✅ 완료 (2025-01-22)
+- API와 UI가 이미 완전히 구현되어 있었음
+- 백엔드 API: `PATCH /study/{studyToken}/enrollments/forced-out`
+- 백엔드 파일: `EnrollmentController.java`, `ForcedOutRequest.java`
+- 프론트엔드 서비스: `StudyEnrollmentsService().forcedOut()`
+- 사용 화면: `app/(tabs)/(my)/manage/[token]/member-detail.tsx`
 
-**예상 시간**: 2시간
+**완료 작업**:
+- ✅ 백엔드 API 존재 확인
+- ✅ 프론트엔드 서비스 함수 구현 완료
+- ✅ 퇴출 UI 구현 (강퇴하기 버튼)
+- ✅ 확인 모달 구현 (퇴출 확인 및 주의사항)
+- ✅ API 연동 완료
+- ✅ 모달 닫기 처리 완료
+
+**기능 상세**:
+- **UI**: "강퇴하기" outlined 버튼
+- **모달 내용**:
+  - 제목: "강퇴하기"
+  - 확인 메시지: "{닉네임} 님을 강퇴하시겠습니까?"
+  - 주의사항: "강퇴 후 스터디원은 스터디에 참여할 수 없습니다."
+- **API 요청**: `{ targetToken: string }`
+- **처리**: finally로 모달 닫기 (성공/실패 무관)
+
+**비고**: 
+- 퇴출 사유 입력 기능은 현재 UI에 없음 (백엔드 API도 사유 필드 없음)
+- 간단한 확인 모달로 즉시 퇴출 처리
+
+---
+
+### 9. ~~미인증 상태 수정~~ ✅ 완료
+**API**: POST `/api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/uncertified`  
+**상태**: ✅ 완료 (2025-01-22)
+- API가 이미 완전히 구현되어 있었음
+- 백엔드 API: `POST /study/{studyToken}/meetings/{meetingNo}/proofs/uncertified`
+- 백엔드 파일: `ProofController.java`, `UpdateProofRequest.java`, `ProofService.java`
+- 프론트엔드 타입: `ProofRequest.UpdateUncertifiedProof`
+- 서비스: `ProofService().updateUncertifiedProof()`
+- 사용 화면: `app/(tabs)/(my)/manage/[token]/member-detail.tsx`
+
+**완료 작업**:
+- ✅ 백엔드 API 존재 확인
+- ✅ 프론트엔드 타입 정의 완료 (`apis/@types/proof.ts`)
+- ✅ 서비스 함수 구현 완료 (`apis/service/proof.ts`)
+- ✅ 스터디원 상세 화면에서 미인증 클릭 시 수정 모달 표시
+- ✅ "수정하기" 버튼에 API 연동 완료
+- ✅ 성공 시 데이터 리프레시
+
+**기능 상세**:
+- **UI**: 각 회차별 미인증 항목 클릭 → "인증 수정" 모달 표시
+- **모달 내용**:
+  - 선택한 날짜 표시
+  - "미인증 내역을 '인증'으로 수정합니다" 안내
+- **API 요청**: `{ targetToken: string, provenTime: string }`
+- **권한**: 스터디 리더만 가능
+- **성공 시**: Alert 표시 + 출석/인증 데이터 리프레시
+
+**비고**: 
+- "일괄 처리"가 아닌 **개별 미인증 항목 수정** 기능
+- 각 회차별로 하나씩 수정하는 방식
 
 ---
 
@@ -388,27 +500,28 @@ const handlePushToggle = async (value: boolean) => {
 
 ## 📊 우선순위 요약
 
-### ✅ 완료 - 8시간
+### ✅ 완료 - 19시간
 1. ~~스터디원 평가 멤버 목록~~ (1시간) - 2025-01-22 완료
 2. ~~스터디원 평가 기능~~ (4시간) - 2025-01-22 완료
 3. ~~스터디원 상세 정보~~ (3시간) - 2025-01-22 완료
+4. ~~스터디장/스터디원 평점 표시~~ (2시간) - 2025-01-22 완료
+5. ~~알림 타입별 라우팅~~ (1.5시간) - 2025-01-22 완료 (백엔드 대기)
+6. ~~스터디원 참여 상세 정보~~ (3시간) - 2025-01-22 완료
+7. ~~리더 권한 위임~~ (3시간) - 2025-01-22 완료
+8. ~~강제 퇴출~~ (3시간) - 2025-01-22 완료
+9. ~~미인증 상태 수정~~ (2시간) - 2025-01-22 완료
 
-### 🟡 단기 (1-2주) - 16시간
-4. 알림 라우팅 (3시간)
-5. 스터디장 평점 (2시간)
-6. 참여 상세 정보 (3시간)
-7. 권한 위임 (3시간)
-8. 강제 퇴출 (3시간)
-9. 미인증자 처리 (2시간)
+### 🟡 단기 (1-2주) - 3시간
+10. 스터디 규칙 관리 (3시간)
 
 ### 🟢 중기 (1개월) - 16시간
-10. 안드로이드 로그인 (4시간)
-11. FCM Push (4시간)
-12. 규칙 관리 (4시간)
+11. 안드로이드 로그인 (4시간)
+12. FCM Push (4시간)
 13. 프로필 업로드 (2시간)
 14. 선호 카테고리 (2시간)
+15. 탈퇴 관리 UI (4시간)
 
 ### ⚪ 장기 (2개월+) - 33시간
 16-23. 타이머 인증, 배치, Push, 탈퇴, 검색 등
 
-**총 예상 시간**: 65시간 (완료 8시간 제외)
+**총 예상 시간**: 52시간 (완료 21시간 제외)

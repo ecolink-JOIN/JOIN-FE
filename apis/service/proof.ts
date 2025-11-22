@@ -100,6 +100,22 @@ export const ProofService = () => {
     return req.data;
   };
 
+  /**
+   * 미인증 상태를 인증으로 수정 - 스터디 리더만 가능
+   * @api-doc: POST /api/v1/study/{studyToken}/meetings/{meetingNo}/proofs/uncertified
+   */
+  const updateUncertifiedProof = async (
+    studyToken: string,
+    meetingNo: number,
+    body: ProofRequest.UpdateUncertifiedProof,
+  ) => {
+    const req = (await API.post(
+      `${baseUrl}/${studyToken}/meetings/${meetingNo}/proofs/uncertified`,
+      body,
+    )) as Shared.HttpResponse;
+    return req.data;
+  };
+
   return {
     uploadProofImage,
     getProof,
@@ -110,5 +126,6 @@ export const ProofService = () => {
     getProofDetail,
     getUserProofs,
     getProofSubjects,
+    updateUncertifiedProof,
   };
 };

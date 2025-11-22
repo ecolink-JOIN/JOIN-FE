@@ -9,7 +9,7 @@ import Button from '@/components/atoms/Button';
 import { InfoViewBox } from '@/components/molecules/MyMolecules/InfoView';
 import Chip from '@/components/atoms/Badge';
 import { ModalWrapper } from '@/components/molecules/ModalViews';
-import { StudyEnrollmentsService } from '@/apis';
+import { StudyEnrollmentsService, ProofService } from '@/apis';
 import { useQuery } from '@tanstack/react-query';
 import { useGlobalContext } from '@/context/GlobalContext';
 import { useAvatarDetail } from '@/hooks/useAvatar';
@@ -22,6 +22,7 @@ const MemberDetail = () => {
   const [isCertifyModalVisible, setIsCertifyModalVisible] = React.useState(false);
   const [isEntrustModalVisible, setIsEntrustModalVisible] = React.useState(false);
   const [onClickDate, setOnClickDate] = React.useState('');
+  const [selectedMeetingNo, setSelectedMeetingNo] = React.useState<number | null>(null);
   const [selectedChip, setSelectedChip] = React.useState(0);
   const [isForcedOutModalVisible, setIsForcedOutModalVisible] = React.useState(false);
   const [evaluationModalVisible, setEvaluationModalVisible] = React.useState(false);
@@ -29,7 +30,7 @@ const MemberDetail = () => {
   // 아바타 상세 정보 조회 (새로운 API 사용)
   const { data: memberDetail } = useAvatarDetail(avartarToken || '');
 
-  const { data: memberAttendance } = useQuery({
+  const { data: memberAttendance, refetch: refetchAttendance } = useQuery({
     queryKey: ['memberAttendance', avartarToken],
     queryFn: () => StudyEnrollmentsService().getMemberAttendance(token, avartarToken),
   });
@@ -70,39 +71,50 @@ const MemberDetail = () => {
           />
           <ContentBox>
             {memberAttendance && memberAttendance.meetingAttendanceStatus.length > 0 ? (
-              memberAttendance?.meetingAttendanceStatus.map((item) => (
-                <RoundBox key={item.meetingNo}>
-                  <RoundNumber variant="body3">{item.meetingNo}회차</RoundNumber>
-                  <RoundDate variant="body3">
-                    {item.studyDate.getFullYear()}.{item.studyDate.getMonth()}.{item.studyDate.getDate()}
-                  </RoundDate>
-                  <RoundStatus
-                    variant="body3"
-                    status={item.attendanceStatus === 'PRESENT'}
-                    date
-                    onPress={() => {
-                      attendenceToggleModal();
-                      setOnClickDate(item.studyDate.toLocaleDateString());
-                    }}
-                  >
-                    {item.attendanceStatus === 'PRESENT'
-                      ? '출석'
-                      : item.attendanceStatus === 'LATENESS'
-                        ? '지각'
-                        : '결석'}
-                  </RoundStatus>
-                  <RoundStatus
-                    variant="body3"
-                    status={item.hasApproveProof}
-                    onPress={() => {
-                      certifyToggleModal();
-                      setOnClickDate(item.studyDate.toLocaleDateString());
-                    }}
-                  >
-                    {item.hasApproveProof ? '인증' : '미인증'}
-                  </RoundStatus>
-                </RoundBox>
-              ))
+              <>
+                <Typography variant="body4" style={{ textAlign: 'center', color: colors.gray['7'], marginBottom: 8 }}>
+                  💡 미인증 항목을 클릭하면 인증으로 수정할 수 있습니다
+                </Typography>
+                {memberAttendance?.meetingAttendanceStatus.map((item) => {
+                  const studyDate = new Date(item.studyDate);
+                  return (
+                    <RoundBox key={item.meetingNo}>
+                      <RoundNumber variant="body3">{item.meetingNo}회차</RoundNumber>
+                      <RoundDate variant="body3">
+                        {studyDate.getFullYear()}.{studyDate.getMonth() + 1}.{studyDate.getDate()}
+                      </RoundDate>
+                      <RoundStatus
+                        variant="body3"
+                        status={item.attendanceStatus === 'PRESENT'}
+                        date
+                        onPress={() => {
+                          attendenceToggleModal();
+                          setOnClickDate(studyDate.toLocaleDateString());
+                        }}
+                      >
+                        {item.attendanceStatus === 'PRESENT'
+                          ? '출석'
+                          : item.attendanceStatus === 'LATENESS'
+                            ? '지각'
+                            : '결석'}
+                      </RoundStatus>
+                      <RoundStatus
+                        variant="body3"
+                        status={item.hasApproveProof}
+                        onPress={() => {
+                          if (!item.hasApproveProof) {
+                            setSelectedMeetingNo(item.meetingNo);
+                            certifyToggleModal();
+                            setOnClickDate(studyDate.toLocaleDateString());
+                          }
+                        }}
+                      >
+                        {item.hasApproveProof ? '인증' : '미인증'}
+                      </RoundStatus>
+                    </RoundBox>
+                  );
+                })}
+              </>
             ) : (
               <Typography variant="body3" style={{ textAlign: 'center' }}>
                 출석 내역이 없습니다.
@@ -184,7 +196,25 @@ const MemberDetail = () => {
           <Typography variant="body4" style={{ textAlign: 'center' }}>
             미인증 내역을 '인증'으로 수정합니다
           </Typography>
-          <Button variant="contained" onPress={certifyToggleModal} style={{ marginHorizontal: 'auto' }}>
+          <Button
+            variant="contained"
+            onPress={async () => {
+              if (!selectedMeetingNo) return;
+              try {
+                await ProofService().updateUncertifiedProof(token, selectedMeetingNo, {
+                  targetToken: avartarToken,
+                  provenTime: new Date().toISOString(),
+                });
+                alert('인증 수정이 완료되었습니다.');
+                certifyToggleModal();
+                // 데이터 리프레시
+                refetchAttendance();
+              } catch {
+                alert('인증 수정에 실패했습니다.');
+              }
+            }}
+            style={{ marginHorizontal: 'auto' }}
+          >
             수정하기
           </Button>
         </ModalContents>

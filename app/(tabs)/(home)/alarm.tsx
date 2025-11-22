@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, RefreshControl } from 'react-native';
+import { ScrollView, RefreshControl, Alert } from 'react-native';
 import styled from 'styled-components/native';
 import { colors } from '@/theme';
 import Typography from '@/components/atoms/Typography';
 import { NotificationService } from '@/apis';
 import { useNotificationContext } from '@/context/NotificationContext';
+import { useRouter } from 'expo-router';
 
 const Container = styled.View`
   flex: 1;
@@ -51,6 +52,7 @@ const NotificationBadge = styled.View<{ type: NotificationResponse.Notification[
 `;
 
 const AlarmScreen = () => {
+  const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
   const [notifications, setNotifications] = useState<NotificationResponse.Notification[]>([]);
   const { refreshUnreadCount } = useNotificationContext();
@@ -81,8 +83,46 @@ const AlarmScreen = () => {
   };
 
   const handleNotificationPress = (notification: NotificationResponse.Notification) => {
-    // TODO: 알림 타입별 라우팅 처리
+    // FIXME: 백엔드 API 수정 필요 - studyToken 필드 누락
+    // 현재 NotificationResponse에 studyToken이 없어 라우팅 불가
+    // 백엔드 수정 후 아래 주석 해제
+
+    Alert.alert(
+      '알림',
+      '해당 기능은 백엔드 API 업데이트가 필요합니다.\n\nNotificationResponse에 studyToken 필드 추가 필요',
+      [{ text: '확인' }],
+    );
+
     console.log('알림 클릭:', notification);
+
+    /* 백엔드 API 수정 후 구현
+    const studyToken = notification.studyToken; // ← 백엔드에서 추가 필요
+    
+    switch (notification.type) {
+      case 'STUDY_ANNOUNCEMENT':
+        // 스터디 공지 화면으로 이동
+        router.push(`/(tabs)/(my)/manage/${studyToken}/notice`);
+        break;
+        
+      case 'ATTENDANCE_CHECK':
+        // 출석 체크 화면으로 이동
+        router.push(`/(tabs)/(my)/manage/${studyToken}/attendance`);
+        break;
+        
+      case 'PROOF':
+        // 인증 화면으로 이동
+        router.push(`/(tabs)/(my)/manage/${studyToken}/proof`);
+        break;
+        
+      case 'OTHER':
+        // 스터디 상세 화면으로 이동
+        router.push(`/study/${studyToken}`);
+        break;
+        
+      default:
+        console.warn('Unknown notification type:', notification.type);
+    }
+    */
   };
 
   const getNotificationTypeLabel = (type: NotificationResponse.Notification['type']) => {
