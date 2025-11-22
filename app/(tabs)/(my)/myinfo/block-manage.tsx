@@ -44,7 +44,12 @@ const Index = () => {
             await fetchBlockList();
           } catch (error) {
             console.error('차단 해제 실패:', error);
-            Alert.alert('알림', '차단 해제 기능은 백엔드 API 개발 대기 중입니다.\n잠시 후 다시 시도해주세요.');
+            // TODO: 백엔드 API 확인 필요 - DELETE /api/v1/blocks/{blockId} 파라미터 타입
+            Alert.alert(
+              '기능 오류',
+              '차단 해제 기능에 일시적인 문제가 발생했습니다.\n\n백엔드 API 파라미터 확인이 필요합니다.\n(blockId vs avatarToken)',
+              [{ text: '확인' }],
+            );
           } finally {
             setIsUnblocking(null);
           }

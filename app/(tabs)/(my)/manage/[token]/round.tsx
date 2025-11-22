@@ -15,6 +15,7 @@ import { MeetingsService } from '@/apis';
 import Toast from 'react-native-toast-message';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import { Alert } from 'react-native';
 
 const Round = () => {
   const { token } = useLocalSearchParams<{ token: string }>();
@@ -121,7 +122,13 @@ const Round = () => {
               variant="contained"
               onPress={() => {
                 toggleModal();
-                setAuto(false);
+                // TODO: 백엔드 API 미구현 - PATCH /api/v1/study/{studyToken}/meeting-mode
+                Alert.alert(
+                  '기능 준비 중',
+                  '회차 자동/수동 생성 모드 전환 기능은 백엔드 API 개발 대기 중입니다.\n\n현재는 "회차 추가 및 제외" 메뉴에서 회차를 직접 추가/삭제할 수 있습니다.',
+                  [{ text: '확인' }],
+                );
+                // setAuto(false); // API 구현 후 활성화
               }}
               style={{ marginHorizontal: 'auto' }}
             >

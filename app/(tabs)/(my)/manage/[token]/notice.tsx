@@ -8,10 +8,22 @@ import Button from '@/components/atoms/Button';
 import { router, useLocalSearchParams } from 'expo-router';
 import { NoticeService } from '@/apis';
 import Toast from 'react-native-toast-message';
+import { Alert } from 'react-native';
+import { useEffect } from 'react';
 
 const Notice = () => {
   const [content, onChangeText] = React.useState('');
   const { token } = useLocalSearchParams<{ token: string }>();
+
+  // 백엔드 공지 조회 API 미구현 안내
+  useEffect(() => {
+    // TODO: 백엔드 API 미구현 - GET /api/v1/study/{studyToken}/notice
+    Alert.alert(
+      '안내',
+      '현재 공지 조회 기능은 백엔드 API 개발 대기 중입니다.\n\n공지 등록은 가능하지만, 등록된 공지를 다시 확인하는 기능은 추후 제공될 예정입니다.',
+      [{ text: '확인' }],
+    );
+  }, []);
 
   const onSubmit = () => {
     NoticeService()
