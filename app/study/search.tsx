@@ -6,7 +6,7 @@ import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import Icon from '@/components/atoms/Icon';
 import { useRouter } from 'expo-router';
-import { StudyService } from '@/apis';
+import { StudyService, SearchHistoryService } from '@/apis';
 import CardList from '@/components/molecules/CardList';
 import FilterBottomSheet from '@/components/organisms/FilterBottomSheet';
 import { useRecommendationContext } from '@/context/Recommendation';
@@ -76,7 +76,22 @@ const SearchScreen = () => {
   const [searchText, setSearchText] = useState('');
   const [submitText, setSubmitText] = useState('');
   const [results, setResults] = useState<StudyResponse.StudyInfo[]>([]);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [recentSearches, setRecentSearches] = useState<SearchHistoryResponse.HistoryItem[]>([]);
+
+  // 화면 진입 시 검색 기록 로드
+  useEffect(() => {
+    loadSearchHistory();
+  }, []);
+
+  const loadSearchHistory = async () => {
+    try {
+      const history = await SearchHistoryService().getHistory();
+      setRecentSearches(history || []);
+    } catch (error) {
+      console.error('검색 기록 로드 실패:', error);
+      setRecentSearches([]);
+    }
+  };
 
   useEffect(() => {
     if (searchText.length === 0) {
@@ -87,24 +102,32 @@ const SearchScreen = () => {
 
   useEffect(() => {
     if (submitText.length > 0) {
-      StudyService()
-        .search({
-          keyword: submitText,
-          pageNumber: 1,
-          pageSize: 10,
-          ...searchData,
-        })
-        .then((res) => {
-          setResults(res.content);
-        });
+      performSearch();
     }
   }, [submitText, searchData]);
 
-  const renderItem = ({ item }: { item: string }) => (
-    <RecentSearchItem onPress={() => handleRecentSearch(item)}>
+  const performSearch = async () => {
+    try {
+      const res = await StudyService().search({
+        keyword: submitText,
+        pageNumber: 1,
+        pageSize: 10,
+        ...searchData,
+      });
+      setResults(res.content || []);
+      // 검색 성공 시 기록 새로고침
+      await loadSearchHistory();
+    } catch (error) {
+      console.error('검색 실패:', error);
+      setResults([]);
+    }
+  };
+
+  const renderItem = ({ item }: { item: SearchHistoryResponse.HistoryItem }) => (
+    <RecentSearchItem onPress={() => handleRecentSearch(item.keyword)}>
       <Icon name="clock" />
       <Typography variant="body2" style={{ color: colors.gray[10] }}>
-        {item}
+        {item.keyword}
       </Typography>
     </RecentSearchItem>
   );
@@ -119,15 +142,14 @@ const SearchScreen = () => {
 
   const handleSearchSubmit = () => {
     if (searchText.trim().length > 0) {
-      setRecentSearches((prev) => [searchText, ...prev]);
       setSubmitText(searchText);
       Keyboard.dismiss();
     }
   };
 
-  const handleRecentSearch = (item: string) => {
-    setSearchText(item);
-    setSubmitText(item);
+  const handleRecentSearch = (keyword: string) => {
+    setSearchText(keyword);
+    setSubmitText(keyword);
     Keyboard.dismiss();
   };
 
@@ -169,15 +191,23 @@ const SearchScreen = () => {
               </Typography>
             </DeleteButton>
           </RecentSearchContainer>
-          <FlatList
-            data={recentSearches}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={{
-              padding: 0,
-              margin: 0,
-            }}
-          />
+          {recentSearches.length > 0 ? (
+            <FlatList
+              data={recentSearches}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+              contentContainerStyle={{
+                padding: 0,
+                margin: 0,
+              }}
+            />
+          ) : (
+            <View style={{ paddingTop: 20 }}>
+              <Typography variant="body3" style={{ color: colors.gray[7], textAlign: 'center' }}>
+                최근 검색 내역이 없습니다
+              </Typography>
+            </View>
+          )}
         </View>
       ) : (
         <View>
@@ -192,7 +222,15 @@ const SearchScreen = () => {
             <Typography variant="subtitle2">총 {results.length}개</Typography>
             <FilterBottomSheet {...{ searchData, setSearchData }} />
           </View>
-          <CardList data={results} />
+          {results.length > 0 ? (
+            <CardList data={results} />
+          ) : (
+            <View style={{ paddingTop: 40, paddingHorizontal: 20 }}>
+              <Typography variant="body3" style={{ color: colors.gray[7], textAlign: 'center' }}>
+                검색 결과가 없습니다
+              </Typography>
+            </View>
+          )}
         </View>
       )}
     </OuterContainer>
