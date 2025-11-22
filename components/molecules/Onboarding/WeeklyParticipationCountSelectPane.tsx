@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import { View } from 'react-native';
 import RowView from '@/components/atoms/View/RowView';
+import { useOnboardingContext } from '@/context/OnboardingContext';
 
 const WeeklyParticipationCountSelectPane: React.FC = () => {
-  const [value, setValue] = useState<number>(1);
+  const { studyPreferences, setStudyPreferences } = useOnboardingContext();
+  const [value, setValue] = useState<number>(studyPreferences.weeklyParticipationCount || 1);
+
+  useEffect(() => {
+    setStudyPreferences({ ...studyPreferences, weeklyParticipationCount: value });
+  }, [value]);
 
   // TODO: Slider는 확정되면 수정 예정
   return (

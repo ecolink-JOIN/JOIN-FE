@@ -7,18 +7,27 @@ import { CustomDropdown } from '@/components/atoms/Dropdown';
 import { sgis } from '@/assets/data/sgis';
 import Badge from '@/components/atoms/Badge';
 import Chip from '@/components/atoms/Badge';
+import { useOnboardingContext } from '@/context/OnboardingContext';
 
 const InterestAreaSelectPane: React.FC = () => {
-  const [province, setProvince] = useState<string | null>(null);
-  const [state, setState] = useState<string | null>(null);
+  const { studyPreferences, setStudyPreferences } = useOnboardingContext();
+  const [province, setProvince] = useState<string | null>(studyPreferences.province || null);
+  const [state, setState] = useState<string | null>(studyPreferences.city || null);
   const [provinceitems] = useState(Object.keys(sgis).map((key) => ({ label: key, value: key })));
   const [stateitems, setStateitems] = useState([{ label: '', value: '' }]);
 
   useEffect(() => {
     if (province) {
       setStateitems(sgis[province].map((state) => ({ label: state, value: state })));
+      setStudyPreferences({ ...studyPreferences, province });
     }
-  }, [province, state]);
+  }, [province]);
+
+  useEffect(() => {
+    if (state) {
+      setStudyPreferences({ ...studyPreferences, city: state });
+    }
+  }, [state]);
 
   return (
     <>

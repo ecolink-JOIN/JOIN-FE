@@ -141,6 +141,12 @@ const Index = () => {
         </Pressable>
       </ImageWrapper>
       <ManageBoxView style={shadowStyles.shadow}>
+        <LinkView onPress={() => router.push('/(tabs)/(my)/myinfo/preference')}>
+          <Typography variant="body3">선호 설정</Typography>
+          <Typography variant="body3" style={{ color: colors.gray[9] }}>
+            {'›'}
+          </Typography>
+        </LinkView>
         <LinkView>
           <Typography variant="body3">닉네임</Typography>
           <Typography variant="body3" style={{ color: colors.gray[9] }}>

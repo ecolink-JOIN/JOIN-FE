@@ -11,6 +11,24 @@ function OnboardingSelectPage() {
   const { step } = studyPreferences;
   const maxStep = 5;
 
+  // 각 단계별 완료 여부 확인
+  const isStepComplete = () => {
+    switch (step) {
+      case 0:
+        return !!studyPreferences.meetingType;
+      case 1:
+        return !!studyPreferences.province && !!studyPreferences.city;
+      case 2:
+        return !!studyPreferences.interestArea;
+      case 3:
+        return (studyPreferences.availableDays?.length ?? 0) > 0 && !!studyPreferences.availableTime;
+      case 4:
+        return !!studyPreferences.weeklyParticipationCount;
+      default:
+        return false;
+    }
+  };
+
   return (
     <StaticView>
       <OnboardingSelectGuide step={step || 0} maxStep={maxStep} />
@@ -22,11 +40,10 @@ function OnboardingSelectPage() {
               if (step !== undefined && step < 4) {
                 setStudyPreferences({ ...studyPreferences, step: step + 1 });
               } else if (step === 4) {
-                console.log(step);
                 router.replace('/(onboarding)/select/complete');
               }
             },
-            disabled: false,
+            disabled: !isStepComplete(),
           },
         ]}
       />

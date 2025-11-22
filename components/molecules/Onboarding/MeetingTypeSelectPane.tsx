@@ -3,14 +3,16 @@ import Typography from '@/components/atoms/Typography';
 import { colors } from '@/theme';
 import { View, Pressable } from 'react-native';
 import useOnboardingButtonSize from '@/hooks/useResponsiveOnboardingButtonSize';
+import { useOnboardingContext } from '@/context/OnboardingContext';
 
 const MeetingTypeSelectPane: React.FC = () => {
   const gap = 20;
   const buttonSize = useOnboardingButtonSize({ buttonCountByRow: 2, gap });
+  const { studyPreferences, setStudyPreferences } = useOnboardingContext();
 
   const options = [
-    { id: 'online', value: '온라인 스터디' },
-    { id: 'offline', value: '오프라인 스터디' },
+    { id: 'ONLINE', value: '온라인 스터디' },
+    { id: 'OFFLINE', value: '오프라인 스터디' },
   ];
 
   return (
@@ -30,16 +32,24 @@ const MeetingTypeSelectPane: React.FC = () => {
             style={{
               width: buttonSize,
               height: buttonSize,
-              backgroundColor: colors.sub2,
+              backgroundColor: studyPreferences.meetingType === option.id ? colors.primary : colors.sub2,
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: 8,
             }}
             onPress={() => {
-              console.log(`Pressed: ${option.value}`);
+              setStudyPreferences({
+                ...studyPreferences,
+                meetingType: option.id as 'ONLINE' | 'OFFLINE',
+              });
             }}
           >
-            <Typography variant="button">{option.value}</Typography>
+            <Typography
+              variant="button"
+              style={{ color: studyPreferences.meetingType === option.id ? colors.white : colors.black }}
+            >
+              {option.value}
+            </Typography>
           </Pressable>
         ))}
       </View>
