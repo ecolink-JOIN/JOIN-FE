@@ -16,7 +16,6 @@ const Index = () => {
   const router = useRouter();
   const { clearUser } = useUserStore();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [newImage, setImage] = useState<File | null>(null);
   const [profileImage, setProfileImage] = useState('');
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
@@ -78,40 +77,58 @@ const Index = () => {
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      // mediaTypes: ['images'],
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
-    if (!result.canceled) {
-      console.log(result);
 
-      setImage(result.assets[0].file || null);
-    }
     if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
-    }
-  };
+      const imageUri = result.assets[0].uri;
 
-  const updateProfileImage = async () => {
-    pickImage().then(() => {
-      if (newImage) {
-        const body = new FormData();
-        body.append('file', newImage);
-        body.append('request', {
-          string: JSON.stringify({ defaultPhoto: false }),
-          type: 'application/json',
-        });
-        AvatarsService()
-          .photos(body)
-          .then(() => {
-            alert('프로필 사진 변경이 완료되었습니다.');
-          })
-          .catch(() => {
-            alert('프로필 사진 변경 에러');
-          });
-      }
-    });
+      // 확인 팝업 표시
+      Alert.alert('프로필 사진 변경', '선택한 사진으로 프로필을 변경하시겠습니까?', [
+        {
+          text: '취소',
+          style: 'cancel',
+        },
+        {
+          text: '확인',
+          onPress: async () => {
+            try {
+              // UI 먼저 업데이트
+              setProfileImage(imageUri);
+
+              // 파일명 추출
+              const filename = imageUri.split('/').pop() || 'profile.jpg';
+              const match = /\.(\w+)$/.exec(filename);
+              const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+              // API 호출
+              const body = new FormData();
+              body.append('file', {
+                uri: imageUri,
+                name: filename,
+                type: type,
+              } as any);
+              body.append('request', {
+                string: JSON.stringify({ defaultPhoto: false }),
+                type: 'application/json',
+              });
+
+              await AvatarsService().photos(body);
+              Alert.alert('완료', '프로필 사진이 변경되었습니다.');
+
+              // 프로필 정보 새로고침
+              await fetchInfo();
+            } catch (error) {
+              console.error('프로필 사진 변경 에러:', error);
+              Alert.alert('오류', '프로필 사진 변경에 실패했습니다.');
+            }
+          },
+        },
+      ]);
+    }
   };
 
   return (
@@ -119,7 +136,7 @@ const Index = () => {
       <Typography variant="heading3">계정 정보</Typography>
       <ImageWrapper>
         <ProfileImage source={profileImage !== '' ? { uri: profileImage } : require('@/assets/images/profile.png')} />
-        <Pressable onPress={updateProfileImage}>
+        <Pressable onPress={pickImage}>
           <CameraIcon source={require('@/assets/images/camera.png')} />
         </Pressable>
       </ImageWrapper>
