@@ -39,10 +39,8 @@ const StudyOverviewSection = ({ props }: { props: StudyResponse.Detail['data'] |
           )}
         </RowView>
         <View style={{ gap: 4 }}>
-          {/* TODO: 스터디장 평점 추가 */}
-          <InfoWithRating name="스터디장" rating={0} />
-          {/* TODO: 스터디원 평점 추가 */}
-          <InfoWithRating name="스터디원" rating={0} />
+          <InfoWithRating name="스터디장" rating={props?.evaluationScore?.leaderScore ?? 0} />
+          <InfoWithRating name="스터디원" rating={props?.evaluationScore?.memberScore ?? 0} />
         </View>
       </RowView>
 

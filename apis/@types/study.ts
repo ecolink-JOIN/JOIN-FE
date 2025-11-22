@@ -18,6 +18,10 @@ declare namespace StudyResponse {
       qualificationExp: string;
       regular: boolean;
       form: SharedStudy.Form;
+      evaluationScore: {
+        leaderScore: number;
+        memberScore: number;
+      };
     };
   }
 

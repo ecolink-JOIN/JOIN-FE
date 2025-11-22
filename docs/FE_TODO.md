@@ -59,9 +59,26 @@
 
 ---
 
+### 4. ~~스터디장/스터디원 평점 표시~~ ✅ 완료
+**파일**: `components/organisms/StudyDetails/StudyOverviewSection/index.tsx`  
+**상태**: ✅ 완료 (2025-01-22)
+- 백엔드에 평점 API가 이미 구현되어 있었음
+- API: `GET /api/v1/study/{studyToken}` → `evaluationScore` 포함
+- 백엔드 DTO: `StudyDetailResponse.evaluationScore` (leaderScore, memberScore)
+- 백엔드 파일: `StudyReadController.java`, `StudyDetailResponse.java`, `EvaluationScore.java`
+
+**완료 작업**:
+- ✅ 프론트엔드 타입 업데이트 (`apis/@types/study.ts`)
+- ✅ `StudyResponse.Detail`에 `evaluationScore` 필드 추가
+- ✅ 하드코딩된 `rating={0}` 제거
+- ✅ 실제 데이터로 교체: `evaluationScore.leaderScore`, `evaluationScore.memberScore`
+- ✅ TODO 주석 제거
+
+---
+
 ## 🟡 단기 작업 (1-2주)
 
-### 4. 알림 타입별 라우팅
+### 5. 알림 타입별 라우팅
 **파일**: `app/(tabs)/(home)/alarm.tsx:84`  
 **현재 상태**: TODO 주석만 있음  
 
@@ -85,37 +102,6 @@ const handleNotificationPress = (notification: NotificationResponse.Notification
 - router.push()로 화면 이동
 
 **예상 시간**: 3시간
-
----
-
-### 5. 스터디장/스터디원 평점 표시
-**파일**: `components/organisms/StudyDetails/StudyOverviewSection/index.tsx:42,44`  
-**현재 상태**: rating prop이 하드코딩 0으로 설정됨
-
-**코드 근거**:
-```tsx
-{/* TODO: 스터디장 평점 추가 */}
-<InfoWithRating name="스터디장" rating={0} />
-{/* TODO: 스터디원 평점 추가 */}
-<InfoWithRating name="스터디원" rating={0} />
-```
-
-**분석 결과**:
-- 타입 정의 확인: `StudyResponse.StudyInfo`에는 `leader.totalRating`과 `memberAverage` 존재
-- 현재 문제: `StudyResponse.Detail`에는 평점 정보가 없음
-- 스터디 상세 API(`GET /api/v1/study/{studyToken}`)가 평점 정보를 반환하지 않음
-
-**필요 작업**:
-1. **백엔드**: 스터디 상세 API 응답에 평점 정보 추가 필요
-   - `leaderRating`: 스터디장 평점
-   - `memberAverageRating`: 스터디원 평균 평점
-2. **프론트엔드**: 
-   - 타입 업데이트 (`StudyResponse.Detail`)
-   - 실제 평점 데이터로 rating prop 전달
-
-**예상 시간**: 2시간 (백엔드 API 수정 + 프론트 연동)
-
-**비고**: 백엔드 작업 필요 - `docs/BE_TODO.md` 참고
 
 ---
 

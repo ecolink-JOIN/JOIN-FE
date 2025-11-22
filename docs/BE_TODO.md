@@ -195,59 +195,28 @@ public record MeetingModeRequest(
 
 ---
 
-### 5. 스터디 상세 조회 API - 평점 정보 누락
-**현재 상태**: GET `/api/v1/study/{studyToken}` - 평점 정보 미포함
-**문제**: 스터디 상세 화면에 스터디장 평점과 스터디원 평균 평점 표시 불가
+## ✅ 완료된 작업
 
-**프론트엔드 코드 근거**:
-```tsx
-// components/organisms/StudyDetails/StudyOverviewSection/index.tsx:42,44
-{/* TODO: 스터디장 평점 추가 */}
-<InfoWithRating name="스터디장" rating={0} />
-{/* TODO: 스터디원 평점 추가 */}
-<InfoWithRating name="스터디원" rating={0} />
-```
+### 5. ~~스터디 상세 조회 API - 평점 정보~~ ✅ 완료
+**API**: GET `/api/v1/study/{studyToken}`  
+**상태**: ✅ 완료 (2025-01-22)
+- 평점 정보가 이미 API에 포함되어 있었음
+- 백엔드: `StudyDetailResponse.evaluationScore` (EvaluationScore)
+- 필드: `leaderScore`, `memberScore`
+- 파일: 
+  - `StudyReadController.java` - GET /{studyToken} 엔드포인트
+  - `StudyDetailResponse.java` - evaluationScore 필드
+  - `EvaluationScore.java` - leaderScore, memberScore 필드
 
-**현재 타입**: `StudyResponse.Detail`에 평점 정보 없음
-```typescript
-// 현재 응답
-{
-  studyName: string;
-  title: string;
-  // ... 기타 필드
-  // ❌ 평점 정보 없음
-}
-```
-
-**필요 작업**:
-```java
-// StudyController.java 또는 해당 응답 DTO 수정
-@GetMapping("/{studyToken}")
-public ApiResponse<StudyDetailResponse> getStudyDetail(@PathVariable String studyToken) {
-    // 응답에 평점 정보 추가
-}
-```
-
-**Response에 추가 필요**:
-```typescript
-{
-  // 기존 필드들...
-  leaderRating: number;        // 스터디장 평점 (0-5)
-  memberAverageRating: number; // 스터디원 평균 평점 (0-5)
-}
-```
-
-**참고**: `StudyResponse.StudyInfo`에는 이미 `leader.totalRating`과 `memberAverage` 존재
-
-**영향받는 화면**:
-- `app/study/[slug]/index.tsx` - 스터디 상세 화면
-- `components/organisms/StudyDetails/StudyOverviewSection/index.tsx`
-
-**프론트엔드 대응**: 평점을 0으로 하드코딩 표시 중
-
-**예상 작업 시간**: 2시간
+**완료 작업**:
+- ✅ 백엔드 소스 코드 직접 확인
+- ✅ EvaluationScore DTO 존재 확인
+- ✅ 프론트엔드 타입 업데이트 완료 (`apis/@types/study.ts`)
+- ✅ 하드코딩 제거 및 실제 데이터 연동
 
 ---
+
+## 🟡 중요 - 기능 개선 (단기)
 
 ### 6. 스터디 멤버 목록 조회 API
 **필요 엔드포인트**: GET `/api/v1/study/{studyToken}/enrollments/members`
@@ -511,22 +480,21 @@ const getStudyEnrollments = async (studyToken: string) => {
 2. 차단 해제 API 파라미터 (1시간)
 3. 회차 모드 전환 API (3시간)
 
-### 🟡 중요 (1-2주) - 11.5시간
+### 🟡 중요 (1-2주) - 9.5시간
 4. 알림 API 경로 통일 (0.5시간)
-5. 스터디 상세 - 평점 정보 추가 (2시간) ⭐ 신규
 6. 스터디 멤버 목록 API (3시간)
 7. 스터디원 상세 정보 API (2시간)
 8. 스터디원 참여 상세 API (2시간)
 
 ### 🟢 보통 (1개월) - 9시간
-8. 스터디명 변경 API (1시간)
-9. 권한 위임 API (2시간)
-10. 강제 퇴출 API (2시간)
-11. 미인증자 일괄 처리 API (2시간)
-12. 스터디 규칙 수정 API (2시간)
+9. 스터디명 변경 API (1시간)
+10. 권한 위임 API (2시간)
+11. 강제 퇴출 API (2시간)
+12. 미인증자 일괄 처리 API (2시간)
+13. 스터디 규칙 수정 API (2시간)
 
 ### ⚪ 확인 필요 - TBD
-13-17. 프로필, 선호도, 탈퇴, Push, 검색 API
+14-18. 프로필, 선호도, 탈퇴, Push, 검색 API
 
 **총 예상 시간**: 24.5시간 (확인 필요 제외)
 
@@ -541,10 +509,12 @@ const getStudyEnrollments = async (studyToken: string) => {
 
 ### 중요
 - [ ] 알림 API 경로 통일
-- [ ] 스터디 상세 - 평점 정보 추가 ⭐ 신규
 - [ ] 스터디 멤버 목록 조회 API 구현
 - [ ] 스터디원 상세 정보 조회 API 구현
 - [ ] 스터디원 참여 상세 정보 API 구현
+
+### 완료
+- [x] 스터디 상세 - 평점 정보 추가 (2025-01-22)
 
 ### 보통
 - [ ] 스터디명 변경 API 구현
