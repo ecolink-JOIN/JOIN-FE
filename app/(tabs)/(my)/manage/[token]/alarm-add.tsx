@@ -60,10 +60,10 @@ const AlarmAdd = () => {
     try {
       setIsSubmitting(true);
       await BatchJobService().postBatchJob(data);
-      
+
       // 목록 쿼리 무효화하여 자동 갱신
       await queryClient.invalidateQueries({ queryKey: ['batchJobs', token] });
-      
+
       Alert.alert('완료', '자동 알림 메시지가 정상적으로 추가되었습니다.', [
         {
           text: '확인',
@@ -72,7 +72,8 @@ const AlarmAdd = () => {
       ]);
     } catch (error: any) {
       console.error('자동 알림 추가 실패:', error);
-      const errorMessage = error?.response?.data?.message || '자동 알림 추가에 실패했습니다.\n잠시 후 다시 시도해주세요.';
+      const errorMessage =
+        error?.response?.data?.message || '자동 알림 추가에 실패했습니다.\n잠시 후 다시 시도해주세요.';
       Alert.alert('오류', errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -113,16 +114,8 @@ const AlarmAdd = () => {
         <TextLimit variant="body4">{watch('content')?.length || 0} / 100</TextLimit>
       </ManageBox>
       <ButtonWrapper>
-        <Button 
-          variant="contained" 
-          onPress={onSubmit} 
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            '알림 메시지 예약하기'
-          )}
+        <Button variant="contained" onPress={onSubmit} disabled={isSubmitting}>
+          {isSubmitting ? <ActivityIndicator size="small" color="#fff" /> : '알림 메시지 예약하기'}
         </Button>
       </ButtonWrapper>
       <ModalWrapper isModalVisible={isEditModalVisible} toggleModal={() => setEditModalVisible(false)}>

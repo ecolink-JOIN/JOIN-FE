@@ -12,7 +12,12 @@ import { useQuery } from '@tanstack/react-query';
 const Alarm = () => {
   const { token } = useLocalSearchParams<{ token: string }>();
 
-  const { data: alarmList, isLoading, error, refetch } = useQuery({
+  const {
+    data: alarmList,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['batchJobs', token],
     queryFn: () => BatchJobService().getBatchJobs(token),
     enabled: !!token,

@@ -30,7 +30,7 @@ const AlarmEdit = () => {
     token: string;
     batchJobId?: string;
   }>();
-  
+
   const queryClient = useQueryClient();
   const [value, onChangeText] = React.useState(params.message);
   const [day, setDay] = useState(params.day);
@@ -42,7 +42,7 @@ const AlarmEdit = () => {
     day: params.day as SharedStudy.PossibleDays,
     time: params.time,
   });
-  
+
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isEditModalVisible, setEditModalVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -95,10 +95,10 @@ const AlarmEdit = () => {
         },
         { batchJobId: parseInt(params.batchJobId) },
       );
-      
+
       // 목록 쿼리 무효화하여 자동 갱신
       await queryClient.invalidateQueries({ queryKey: ['batchJobs', params.token] });
-      
+
       Alert.alert('완료', '알림 메시지가 수정되었습니다.', [
         {
           text: '확인',
@@ -107,7 +107,8 @@ const AlarmEdit = () => {
       ]);
     } catch (error) {
       console.error('알림 메시지 수정 실패:', error);
-      const errorMessage = (error as any)?.response?.data?.message || '알림 메시지 수정에 실패했습니다.\n잠시 후 다시 시도해주세요.';
+      const errorMessage =
+        (error as any)?.response?.data?.message || '알림 메시지 수정에 실패했습니다.\n잠시 후 다시 시도해주세요.';
       Alert.alert('오류', errorMessage);
     } finally {
       setIsSaving(false);
@@ -123,10 +124,10 @@ const AlarmEdit = () => {
     try {
       setIsDeleting(true);
       await BatchJobService().deleteBatchJob(parseInt(params.batchJobId));
-      
+
       // 목록 쿼리 무효화하여 자동 갱신
       await queryClient.invalidateQueries({ queryKey: ['batchJobs', params.token] });
-      
+
       Alert.alert('완료', '알림 메시지가 삭제되었습니다.', [
         {
           text: '확인',
@@ -135,7 +136,8 @@ const AlarmEdit = () => {
       ]);
     } catch (error) {
       console.error('알림 메시지 삭제 실패:', error);
-      const errorMessage = (error as any)?.response?.data?.message || '알림 메시지 삭제에 실패했습니다.\n잠시 후 다시 시도해주세요.';
+      const errorMessage =
+        (error as any)?.response?.data?.message || '알림 메시지 삭제에 실패했습니다.\n잠시 후 다시 시도해주세요.';
       Alert.alert('오류', errorMessage);
     } finally {
       setIsDeleting(false);
@@ -164,9 +166,9 @@ const AlarmEdit = () => {
         <TextLimit variant="body4">{value?.length || 0} / 100</TextLimit>
       </ManageBox>
       <ButtonWrapper>
-        <Button 
-          variant="contained" 
-          onPress={handleSave} 
+        <Button
+          variant="contained"
+          onPress={handleSave}
           disabled={isSaving || isDeleting || !value || value.length < 10}
         >
           {isSaving ? <ActivityIndicator size="small" color="#fff" /> : '저장하기'}
