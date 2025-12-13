@@ -1,5 +1,5 @@
-import { ScrollView } from 'react-native';
-import React from 'react';
+import { ScrollView, Alert, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { ManageBoxView, ManageView, shadowStyles } from '@/components/molecules/MyMolecules/ManageView';
 import Typography from '@/components/atoms/Typography';
@@ -12,21 +12,57 @@ import { useQuery } from '@tanstack/react-query';
 
 const WidthDrawal = () => {
   const { token } = useLocalSearchParams<{ token: string }>();
-  const [isApproveModalVisible, setIsApproveModalVisible] = React.useState(false);
-  const [isWithdrawModalVisible, setIsWithdrawModalVisible] = React.useState(false);
-  const [selectedWithdrawId, setSelectedWithdrawId] = React.useState<number | null>(null);
-  const { data: requestList, refetch } = useQuery({
-    queryKey: ['requestList', token],
+  const [selectedWithdrawId, setSelectedWithdrawId] = useState<number | null>(null);
+  const [selectedNickname, setSelectedNickname] = useState<string>('');
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const {
+    data: requestList,
+    refetch,
+    isLoading,
+  } = useQuery({
+    queryKey: ['withdrawRequestList', token],
     queryFn: () => WithdrawService().getRequest(token),
+    enabled: !!token,
   });
 
-  const approveToggleModal = () => {
-    setIsApproveModalVisible(!isApproveModalVisible);
+  const handleApprovePress = (withdrawId: number, nickname: string) => {
+    setSelectedWithdrawId(withdrawId);
+    setSelectedNickname(nickname);
   };
 
-  const withdrawToggleModal = () => {
-    setIsWithdrawModalVisible(!isWithdrawModalVisible);
+  const handleApprove = async () => {
+    if (!selectedWithdrawId || isProcessing) return;
+
+    try {
+      setIsProcessing(true);
+      await WithdrawService().approveWithdraw(token, selectedWithdrawId);
+
+      Alert.alert('완료', '탈퇴가 승인되었습니다.', [
+        {
+          text: '확인',
+          onPress: () => {
+            setSelectedWithdrawId(null);
+            setSelectedNickname('');
+            refetch();
+          },
+        },
+      ]);
+    } catch (error: any) {
+      console.error('탈퇴 승인 실패:', error);
+      Alert.alert('오류', '탈퇴 승인에 실패했습니다.\n잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
+
+  const handleModalClose = () => {
+    if (!isProcessing) {
+      setSelectedWithdrawId(null);
+      setSelectedNickname('');
+    }
+  };
+
   return (
     <ScrollView>
       <ManageView>
@@ -43,15 +79,20 @@ const WidthDrawal = () => {
             탈퇴 요청한 계정
           </Typography>
           <ContentsWrapper>
-            {requestList && requestList.length > 0 ? (
+            {isLoading ? (
+              <LoadingWrapper>
+                <ActivityIndicator size="large" color={colors.primary} />
+              </LoadingWrapper>
+            ) : requestList && requestList.length > 0 ? (
               requestList.map((user) => (
                 <Contents key={user.withdrawId}>
                   <ProfileImage
-                    source={{ uri: user.profileImage?.url }}
-                    style={{ width: 28, height: 28, borderRadius: 100 }}
+                    source={
+                      user.profileImage?.url ? { uri: user.profileImage.url } : require('@/assets/images/profile.png')
+                    }
                   />
                   <Typography variant="body3">{user.nickname}</Typography>
-                  <ApproveButton onPress={() => setSelectedWithdrawId(user.withdrawId)}>
+                  <ApproveButton onPress={() => handleApprovePress(user.withdrawId, user.nickname)}>
                     <Typography variant="body3" style={{ color: colors.primary }}>
                       탈퇴 승인
                     </Typography>
@@ -59,48 +100,37 @@ const WidthDrawal = () => {
                 </Contents>
               ))
             ) : (
-              <Typography variant="body3" style={{ color: colors.gray[9] }}>
-                탈퇴 요청한 계정이 없습니다.
-              </Typography>
+              <EmptyMessage>
+                <Typography variant="body3" style={{ color: colors.gray[9] }}>
+                  탈퇴 요청한 계정이 없습니다.
+                </Typography>
+              </EmptyMessage>
             )}
           </ContentsWrapper>
         </ManageBoxView>
       </ManageView>
 
-      <ModalWrapper isModalVisible={isApproveModalVisible} toggleModal={approveToggleModal}>
+      <ModalWrapper isModalVisible={selectedWithdrawId !== null} toggleModal={handleModalClose}>
         <ModalContents>
-          <Typography variant="subtitle1">인증 승인 필요</Typography>
-          <Typography variant="body4" style={{ textAlign: 'center' }}>
-            해당 스터디원의 인증에 대한 승인이 미완료되어있어요!{'\n'}인증 승인을 완료하고 다시 시도해주세요.
-          </Typography>
-          <Button variant="contained" onPress={approveToggleModal} style={{ marginHorizontal: 'auto' }}>
-            인증 승인하러 가기
-          </Button>
-        </ModalContents>
-      </ModalWrapper>
-      <ModalWrapper isModalVisible={selectedWithdrawId !== null} toggleModal={withdrawToggleModal}>
-        <ModalContents>
-          <Typography variant="subtitle1" style={{ width: 150, height: 28 }}>
+          <Typography variant="subtitle1" style={{ textAlign: 'center' }}>
             스터디원 탈퇴 승인
           </Typography>
-          <Typography variant="body4" style={{ textAlign: 'center' }}>
-            해당 스터디원의 탈퇴를 승인합니다.{'\n'}‘확인'을 누르면 스터디에서 탈퇴처리됩니다.
+          <Typography variant="body4" style={{ textAlign: 'center', color: colors.gray[8] }}>
+            <Typography variant="body4" style={{ fontWeight: 'bold', color: colors.black }}>
+              {selectedNickname}
+            </Typography>
+            님의 탈퇴를 승인하시겠습니까?{'\n'}
+            승인 후에는 해당 스터디원이{'\n'}
+            스터디에서 탈퇴 처리됩니다.
           </Typography>
-          <Button
-            variant="contained"
-            onPress={() =>
-              WithdrawService()
-                .approveWithdraw(token, selectedWithdrawId!)
-                .finally(() => {
-                  setSelectedWithdrawId(null);
-                  setIsWithdrawModalVisible(false);
-                  refetch();
-                })
-            }
-            style={{ marginHorizontal: 'auto' }}
-          >
-            확인
-          </Button>
+          <ButtonWrapper>
+            <Button variant="outlined" onPress={handleModalClose} disabled={isProcessing}>
+              취소
+            </Button>
+            <Button variant="contained" onPress={handleApprove} disabled={isProcessing}>
+              {isProcessing ? '처리 중...' : '승인'}
+            </Button>
+          </ButtonWrapper>
         </ModalContents>
       </ModalWrapper>
     </ScrollView>
@@ -108,24 +138,39 @@ const WidthDrawal = () => {
 };
 
 export default WidthDrawal;
-const ContentsWrapper = styled.Pressable`
+
+const ContentsWrapper = styled.View`
   border-top-width: 2px;
   border-top-color: ${colors.gray[2]};
   padding: 16px 20px;
   gap: 20px;
 `;
 
+const LoadingWrapper = styled.View`
+  padding: 40px 0;
+  align-items: center;
+  justify-content: center;
+`;
+
+const EmptyMessage = styled.View`
+  padding: 40px 0;
+  align-items: center;
+  justify-content: center;
+`;
+
 const ProfileImage = styled.Image`
-  width: 80px;
-  height: 80px;
+  width: 28px;
+  height: 28px;
   border-radius: 100px;
-  margin-right: 20px;
+  margin-right: 12px;
 `;
 
 const Contents = styled.View`
   align-items: center;
   flex-direction: row;
-  border-bottom-color: ${colors.gray[3]};
+  padding-bottom: 16px;
+  border-bottom-width: 1px;
+  border-bottom-color: ${colors.gray[2]};
 `;
 
 const ApproveButton = styled.Pressable`
@@ -136,7 +181,6 @@ const ApproveButton = styled.Pressable`
   justify-content: center;
   border-radius: 6px;
   background-color: ${colors.sub2};
-  color: ${colors.primary};
 `;
 
 const ModalContents = styled.View`
@@ -144,4 +188,10 @@ const ModalContents = styled.View`
   justify-content: center;
   align-items: center;
   padding: 32px;
+`;
+
+const ButtonWrapper = styled.View`
+  margin-top: 10px;
+  flex-direction: row;
+  gap: 10px;
 `;

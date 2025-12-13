@@ -138,65 +138,158 @@ const handlePushToggle = async (value: boolean) => {
 - 푸시 알림 권한 요청 구현
 - 토큰 갱신 로직
 
+### 5. ~~탈퇴 관리 UI~~ ✅ 완료
+**API**:
+- `GET /study/{studyToken}/withdraw/request` - 탈퇴 요청 목록 조회
+- `POST /study/{studyToken}/withdraw/{withdrawId}/approve` - 탈퇴 승인
+- `POST /study/{studyToken}/withdraw` - 탈퇴 요청 생성
+
+**파일**: `app/(tabs)/(my)/manage/[token]/withdrawal.tsx`  
+**상태**: ✅ 완료 (2025-01-22)
+
+**백엔드 API**:
+- API: `GET /study/{studyToken}/withdraw/request`
+  - 응답: `WithdrawResponse.RequestList`
+    - `withdrawId`: 탈퇴 요청 ID (Long)
+    - `nickname`: 닉네임 (String)
+    - `profileImage`: 프로필 이미지 (Image)
+- API: `POST /study/{studyToken}/withdraw/{withdrawId}/approve`
+  - 탈퇴 승인 처리
+- 백엔드 파일: `WithdrawController.java`, `WithdrawResponse.java`, `WithdrawRequest.java`
+
+**프론트엔드 완료 작업**:
+- ✅ 타입 정의 완료 (`apis/@types/withdraw.ts`)
+  - `WithdrawResponse.RequestList`, `Request` 인터페이스
+  - `WithdrawRequest.PostWithdraw` 인터페이스
+- ✅ 서비스 함수 구현 완료 (`apis/service/withdraw.ts`)
+  - `getRequest(studyToken)` - 탈퇴 요청 목록 조회
+  - `approveWithdraw(studyToken, withdrawId)` - 탈퇴 승인
+  - `postWithdraw(studyToken, body)` - 탈퇴 요청 생성
+- ✅ 탈퇴 요청 승인 UI 구현 (`withdrawal.tsx`)
+  - React Query로 데이터 페칭
+  - 로딩 상태 (ActivityIndicator)
+  - 빈 상태 메시지
+  - 프로필 이미지 fallback 처리
+  - 모달로 승인 확인 (닉네임 표시, 취소/승인 버튼)
+  - Alert로 성공/실패 처리
+  - 에러 처리 및 재시도
+- ✅ 불필요한 "인증 승인 필요" 모달 제거
+- ✅ 상태 관리 개선 (isProcessing)
+
+**비고**: 반려 기능은 백엔드 API가 없어 미구현
+
 **예상 시간**: 4시간
 
 ---
 
-### 5. ~~선호 카테고리 수정~~ ✅ 완료
-**API**: PUT `/api/v1/avatars/preference`  
-**상태**: ✅ 완료 (2025-01-22)
+## 🟢 중기 작업 (1개월)
 
-**백엔드 API**:
-- API: `PUT /avatars/preference`
-- 요청 바디: `ChangePreferenceRequest`
-  - `category`: 카테고리 (예: "입시", "고시", "취업", "자격증", "사이드프로젝트", "기타")
-  - `form`: StudyForm (ONLINE/OFFLINE)
-  - `possibleDays`: List<DayType> (가능한 요일 배열)
-  - `timeZone`: TimeZone (MORNING/AFTERNOON/EVENING/NIGHT)
-  - `minParticipationCount`: 최소 참여 인원 (Integer)
-  - `maxParticipationCount`: 최대 참여 인원 (Integer)
-  - `province`: 시/도 (String)
-  - `city`: 구/군 (String)
-- 백엔드 파일: `AvatarController.java`, `ChangePreferenceRequest.java`, `PreferenceStoreImpl.java`
+### 6. 안드로이드 로그인
+**파일**: 
+- `components/organisms/CTA/SignInCTA.tsx:12`
+- `app/index.tsx:10`
 
-**프론트엔드 완료 작업**:
-- ✅ 타입 정의 완료 (`apis/@types/signup.ts`)
-  - `Avatars.PreferenceRequest` 인터페이스
-- ✅ 서비스 함수 구현 완료 (`apis/service/signup.ts`)
-  - `AvatarsService().updatePreference(body)` 함수
-- ✅ 온보딩 화면 구현 및 컨텍스트 연동 (`app/(onboarding)/select/`)
-  - 스터디 형태 선택 (MeetingTypeSelectPane) - 'ONLINE'/'OFFLINE' 타입 매핑
-  - 지역 선택 (LocationSelectPane) - province/city 저장
-  - 관심 분야 선택 (InterestAreaSelectPane) - 카테고리 직접 저장
-  - 요일/시간 선택 (DateTimeSelectPane) - MONDAY/TUESDAY 등, MORNING/AFTERNOON/EVENING
-  - 주간 참여 횟수 (WeeklyParticipationCountSelectPane)
-- ✅ 온보딩 컨텍스트 타입 수정 (`context/OnboardingContext.tsx`)
-  - 한글 → 영문 타입 매핑 완료
-  - TODO 주석 제거
-- ✅ 온보딩 완료 시 API 호출 (`complete.tsx`)
-  - useEffect에서 자동으로 API 호출
-  - 타입 변환 후 updatePreference 실행
-- ✅ 각 단계별 완료 조건 체크 (`index.tsx`)
-  - 다음 버튼 활성화/비활성화 로직
-- ✅ 선호 설정 수정 화면 존재 확인 (`preference.tsx`)
-  - 이미 완전한 UI와 기능 구현됨
-  - 카테고리, 형태, 요일, 시간대, 인원, 지역 모두 설정 가능
-- ✅ 계정 정보 화면에 "선호 설정" 링크 추가 (`account-info.tsx`)
+**코드 근거**:
+```tsx
+// SignInCTA.tsx
+const signIn = async (provider: (typeof providers)[number]) => {
+  // TODO: 안드로이드 로그인 처리
+  router.replace('/(tabs)');
+  // const path: Href = `/(auth)/oauth?provider=${provider}`;
+  // router.push(path);
+};
 
-**구현된 기능**:
-1. 온보딩 시 선호 설정 자동 저장
-2. 계정 정보 > 선호 설정에서 수정 가능
-3. 한글/영문 타입 자동 변환
-4. 각 단계별 입력 검증
-5. 저장 성공/실패 Alert 표시
+// app/index.tsx
+useEffect(() => {
+  // TODO: 안드로이드용 토큰 저장
+  TokenStorage.setToken('6f0a5645-c440-4cb5-8d5a-343e8fe7df06');
+  // ...
+}, [router]);
+```
+
+**현재 상태**: iOS만 작동, 안드로이드는 하드코딩 토큰 사용
+
+**필요 작업**:
+- 안드로이드 OAuth 플로우 구현
+- 토큰 저장 로직 완성
+- 하드코딩 토큰 제거
+
+**예상 시간**: 4시간
 
 ---
 
-### 5. 탈퇴 관리 UI
-**현재 상태**: API 구현됨 (`apis/service/withdraw.ts`)  
-**필요 작업**:
-- 탈퇴 신청 목록 UI
-- 승인/반려 기능
+### 7. ~~배치 작업 UI~~ ✅ 완료
+**API**:
+- `GET /batch-job/{studyToken}/batch-jobs` - 자동 알림 조회
+- `POST /batch-job` - 자동 알림 등록
+- `PUT /batch-job/{batchJobId}` - 자동 알림 변경
+- `DELETE /batch-job/{batchJobId}` - 자동 알림 삭제
+
+**파일**: 
+- `app/(tabs)/(my)/manage/[token]/alarm.tsx` - 목록 화면
+- `app/(tabs)/(my)/manage/[token]/alarm-add.tsx` - 추가 화면
+- `app/(tabs)/(my)/manage/[token]/alarm-edit.tsx` - 수정 화면
+
+**상태**: ✅ 완료 (2025-01-22)
+
+**백엔드 API**:
+- API: `GET /batch-job/{studyToken}/batch-jobs`
+  - 응답: `List<BatchJobResponse>`
+    - `batchJobId`: 자동 알림 ID (Long)
+    - `content`: 알림 내용 (String, 10-100자)
+    - `day`: 요일 (DayType: MON/TUE/WED/THU/FRI/SAT/SUN)
+    - `time`: 발송 시간 (LocalTime, 예: "18:30")
+- API: `POST /batch-job`
+  - 요청: `BatchJobRequest`
+    - `content`: 알림 내용 (String, 필수, 10-100자)
+    - `day`: 요일 (DayType, 필수)
+    - `time`: 발송 시간 (LocalTime, 필수)
+    - `studyToken`: 스터디 토큰 (String, 필수)
+- API: `PUT /batch-job/{batchJobId}`
+  - 요청: `BatchJobUpdateRequest`
+    - `content`: 알림 내용 (String, 선택, 10-100자)
+    - `day`: 요일 (DayType, 선택)
+    - `time`: 발송 시간 (LocalTime, 선택)
+    - `studyToken`: 스터디 토큰 (String, 필수)
+- API: `DELETE /batch-job/{batchJobId}`
+  - 자동 알림 삭제
+- 백엔드 파일: `BatchJobController.java`, `BatchJobRequest.java`, `BatchJobUpdateRequest.java`, `BatchJobResponse.java`
+
+**프론트엔드 완료 작업**:
+- ✅ 타입 정의 완료 (`apis/@types/batch-job.ts`)
+  - `BatchJobRequest.PostBatchJobBody`, `PutBatchJobBody` 인터페이스
+  - `BatchJobResponse.Job` 인터페이스
+- ✅ 서비스 함수 구현 완료 (`apis/service/batch-job.ts`)
+  - `getBatchJobs(studyToken)` - 자동 알림 목록 조회
+  - `postBatchJob(body)` - 자동 알림 등록
+  - `putBatchJob(body, params)` - 자동 알림 수정
+  - `deleteBatchJob(batchJobId)` - 자동 알림 삭제
+- ✅ 자동 알림 목록 UI (`alarm.tsx`)
+  - React Query로 데이터 페칭
+  - 로딩 상태 (ActivityIndicator)
+  - 빈 상태 메시지
+  - 요일 한글 변환 (MON → 월요일)
+- ✅ 자동 알림 추가 UI (`alarm-add.tsx`)
+  - 요일/시간 선택 모달 (Daypicker, TimePicker)
+  - 메시지 입력 (10-100자 제한)
+  - 유효성 검증 (최소 10자)
+  - Alert로 성공/실패 처리
+  - 로딩 상태 및 disabled 처리
+- ✅ 자동 알림 수정 UI (`alarm-edit.tsx`)
+  - 요일/시간 수정 기능 활성화
+  - 메시지 수정 (10-100자 제한)
+  - 유효성 검증
+  - 삭제 확인 모달
+  - Alert로 성공/실패 처리
+  - 로딩 상태 및 disabled 처리
+
+**구현된 기능**:
+1. 자동 알림 목록 조회 (요일별 정렬)
+2. 자동 알림 추가 (요일, 시간, 메시지)
+3. 자동 알림 수정 (요일, 시간, 메시지 모두 수정 가능)
+4. 자동 알림 삭제 (확인 모달)
+5. 유효성 검증 (메시지 10-100자)
+6. 에러 처리 및 성공 메시지
 
 **예상 시간**: 4시간
 
@@ -204,7 +297,7 @@ const handlePushToggle = async (value: boolean) => {
 
 ## ⚪ 장기 작업 (2개월+)
 
-### 6. 타이머 인증
+### 8. 타이머 인증
 **파일**: `app/(tabs)/(certified)/index.tsx:313`  
 **현재 상태**: "출시 예정" 표시  
 **필요 작업**:
@@ -216,17 +309,19 @@ const handlePushToggle = async (value: boolean) => {
 
 ---
 
-### 7. 배치 작업 UI
-**현재 상태**: API 구현됨 (`apis/service/batch-job.ts`)  
+### 8. 타이머 인증
+**파일**: `app/(tabs)/(certified)/index.tsx:313`  
+**현재 상태**: "출시 예정" 표시  
 **필요 작업**:
-- 배치 작업 목록 UI
-- 생성/수정/삭제 기능
+- 타이머 UI 구현
+- 타이머 로직
+- API 설계 및 연동
 
-**예상 시간**: 4시간
+**예상 시간**: 8시간
 
 ---
 
-### 8. Push 알림 설정
+### 9. Push 알림 설정
 **필요 API**: PUT `/api/v1/push`  
 **필요 작업**:
 - 알림 설정 UI
@@ -235,7 +330,7 @@ const handlePushToggle = async (value: boolean) => {
 
 ---
 
-### 9. 인증 주제 관리
+### 10. 인증 주제 관리
 **필요 API**: GET `/api/v1/study/{studyToken}/proofs/subjects`  
 **필요 작업**:
 - 인증 주제 목록 UI
@@ -245,7 +340,7 @@ const handlePushToggle = async (value: boolean) => {
 
 ---
 
-### 10. 일반 공지사항
+### 11. 일반 공지사항
 **필요 API**: GET `/api/v1/notices`  
 **필요 작업**:
 - 공지사항 목록 페이지
@@ -257,22 +352,16 @@ const handlePushToggle = async (value: boolean) => {
 
 ## 🔧 코드 정리
 
-### 11. OAuth 로그인 성공 처리 완료
+### 12. OAuth 로그인 성공 처리 완료
 **파일**: `app/(auth)/oauth.tsx:55`  
 **필요 작업**: TODO 주석 제거 또는 추가 처리 확인
 
 ---
 
-### 12. S3 업로드 TODO 제거
+### 13. S3 업로드 TODO 제거
 **파일**: `app/(tabs)/(certified)/proof.tsx:45`  
 **현재 상태**: 이미 구현됨 (`utils/imageUpload.ts`)  
 **필요 작업**: TODO 주석 제거
-
----
-
-### 13. 온보딩 컨텍스트 정리 ✅ 완료
-**파일**: `context/OnboardingContext.tsx:4`  
-**상태**: ✅ 완료 - TODO 주석 제거 및 타입 정리 완료정리 완료
 
 ---
 
@@ -306,16 +395,41 @@ const handlePushToggle = async (value: boolean) => {
 1. 알림 타입별 라우팅 (1.5시간) - 백엔드 작업 대기
 2. 스터디 규칙 관리 (3시간)
 
-### 🟢 중기 (1개월) - 12시간
+### 🟢 중기 (1개월) - 8시간
 3. 안드로이드 로그인 (4시간)
 4. FCM Push (4시간)
-5. 탈퇴 관리 UI (4시간)
 
-### ⚪ 장기 (2개월+) - 22시간
-6-10. 타이머 인증, 배치, Push, 인증 주제, 공지사항 등
+### ⚪ 장기 (2개월+) - 18시간
+5-9. 타이머 인증, Push, 인증 주제, 공지사항 등
 
 ### 🔧 코드 정리 - 미정
-11-17. OAuth, S3, 온보딩, Slider, 테스트 페이지 등
+10-15. OAuth, S3, Slider, 테스트 페이지 등
 
-**총 예상 시간**: 38.5시간
+**총 예상 시간**: 30.5시간
+
+---
+
+## ✅ 완료 항목 (2025-01-22)
+
+### 선호 카테고리 수정 (2시간)
+- 온보딩 컴포넌트 5개 컨텍스트 연동
+- OnboardingContext 타입 정리
+- complete.tsx API 자동 호출
+- index.tsx 단계별 검증
+- account-info.tsx 링크 추가
+
+### 탈퇴 관리 UI (4시간)
+- 탈퇴 요청 목록 조회 UI
+- 탈퇴 승인 기능
+- 로딩 상태, 에러 처리
+- 프로필 이미지 fallback
+- 모달 개선 (닉네임 표시, 취소/승인)
+
+### 배치 작업 UI (4시간)
+- 자동 알림 목록 조회 (React Query)
+- 자동 알림 추가 (요일, 시간, 메시지)
+- 자동 알림 수정 (요일, 시간, 메시지 모두 수정 가능)
+- 자동 알림 삭제 (확인 모달)
+- 유효성 검증 (메시지 10-100자)
+- 에러 처리 및 성공 메시지
 

@@ -13,7 +13,7 @@ declare namespace BatchJobRequest {
   export interface PostBatchJobBody {
     content: string;
     day: SharedStudy.PossibleDays;
-    time?: string;
+    time: string;
     studyToken: string;
   }
 }
